@@ -1,4 +1,5 @@
 #summary BioHacker:  Finding and fixing unproduceable metabolites, stoichiometric inconsistencies, and pathway holes with a Truth Maintenance System.
+#labels Phase-Requirements
 = Introduction =
 A metabolic network is defined as the set of biochemical reactions that the enzymes coded for in an organism's genome are capable of catalyzing.
 
