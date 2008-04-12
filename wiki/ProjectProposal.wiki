@@ -30,8 +30,7 @@ Once we have detected and corrected all stoichiometric inconsistencies, we are l
 
 If we include chemical formula-type information, then not only should it be able to do things like atomic balancing, but it should also be able to answer questions such as:
 
-  4. Given a 6-carbon compound such as glucose, is it possible to produce a 2-carbon compound such as acetate without losing any carbons? 
-i.e.   C6H12O6  + O2 --> 3 C2H3O2 +   H2O + OH
+  4. Given a 6-carbon compound such as glucose, is it possible to produce a 2-carbon compound such as acetate without losing any carbons? i.e.   C6H12O6  + O2 --> 3 C2H3O2 +   H2O + OH
 
 If we include chemical structure information, and allow the representation of general patterns of compounds, then we would like it to be able to answer this kind of question:
 
