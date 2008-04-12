@@ -56,7 +56,7 @@ Some engineering desiderata:
   * It is currently unclear what kind of reasoner we want to use. 
           o We will most likely roll our own, based on examples in class and the BPS book.
           o However, there are some open source  reasoners I (Jeremy) have previous experience with:
-                + Snark: The advantage of Snark is that it is written in lisp, and has already been incorporated into BioBike as Biodeducta
+                + Snark: The advantage of Snark is that it is written in lisp, and has already been incorporated into !BioBike as Biodeducta
                 + Pellet: A java implementation of a Description Logic Reasoner.  Perhaps overkill for our needs.
                 + FaCT:  A lisp implementation of a Description Logic Reasoner.  
                 + FaCT++:  A C++ implementation of FaCT, that is OWL 1.1 compliant.
