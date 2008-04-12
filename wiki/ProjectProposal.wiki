@@ -45,27 +45,25 @@ Using this formalism, it should be possible to ask the following sorts of questi
 
 Some engineering desiderata:
 
-  *  What pathway database to use?
-          o !BioCyc: written in lisp, developed by SRI.  Advantages: a very clean API to access data.  Contains chemical compounds with structures, a chemical ontology, reactions, genes, pathways.  Not all compounds have structures, some are generic compounds.  Some reactions are unbalanced.
-          o KEGG:  A larger KB than Biocyc.  50% of compounds have no structure, many unbalanced reactions.
-          o iAF1260:  A cleaner database, in that every reaction is balanced, and every metabolite has full structures associated with it
+  * What pathway database to use?
+          * !BioCyc: written in lisp, developed by SRI.  Advantages: a very clean API to access data.  Contains chemical compounds with structures, a chemical ontology, reactions, genes, pathways.  Not all compounds have structures, some are generic compounds.  Some reactions are unbalanced.
+          * KEGG:  A larger KB than Biocyc.  50% of compounds have no structure, many unbalanced reactions.
+          * iAF1260:  A cleaner database, in that every reaction is balanced, and every metabolite has full structures associated with it
 
   * What type of TMS to use?
-          o  It seems that we can represent most of what we care about using simple horn clauses, so either a JTMS or an ATMS seems most appropriate
-          o We may want to modify our JTMS so that instead of propagating in and out labels through the network, it records a derivation count with each justification that is the maximum number of justifications between it and an assumption or premise (infinity if the justification doesn't hold).  See Page 195, problem 8 of BPS.
+          *  It seems that we can represent most of what we care about using simple horn clauses, so either a JTMS or an ATMS seems most appropriate
+          * We may want to modify our JTMS so that instead of propagating in and out labels through the network, it records a derivation count with each justification that is the maximum number of justifications between it and an assumption or premise (infinity if the justification doesn't hold).  See Page 195, problem 8 of BPS.
   * It is currently unclear what kind of reasoner we want to use. 
-          o We will most likely roll our own, based on examples in class and the BPS book.
-          o However, there are some open source  reasoners I (Jeremy) have previous experience with:
-                + Snark: The advantage of Snark is that it is written in lisp, and has already been incorporated into !BioBike as Biodeducta
-                + Pellet: A java implementation of a Description Logic Reasoner.  Perhaps overkill for our needs.
-                + FaCT:  A lisp implementation of a Description Logic Reasoner.  
-                + FaCT++:  A C++ implementation of FaCT, that is OWL 1.1 compliant.
+          * We will most likely roll our own, based on examples in class and the BPS book.
+          * However, there are some open source  reasoners I (Jeremy) have previous experience with:
+                * Snark: The advantage of Snark is that it is written in lisp, and has already been incorporated into !BioBike as Biodeducta
+                * Pellet: A java implementation of a Description Logic Reasoner.  Perhaps overkill for our needs.
+                * FaCT:  A lisp implementation of a Description Logic Reasoner.  
+                * FaCT++:  A C++ implementation of FaCT, that is OWL 1.1 compliant.
   * What kind of query/constraint language do we want to develop?  Again, we will probably roll our own (structured in the SICP terms of primitives, means of combinations & means of abstractions), but there are several existing query languages that have been developed on top of lisp for this kind of domain:
-          o Biovelo:  Developed by the Biocyc folks at SRI.  Already works out of the box with Biocyc
-          o Biolingua:  Developed by Jeff Shrager for multiple databases. May need quite a bit of adapting
-          o We will explore both of these languages, and adopt/adapt them as seems necessary.
-
-
+          * Biovelo:  Developed by the Biocyc folks at SRI.  Already works out of the box with Biocyc
+          * Biolingua:  Developed by Jeff Shrager for multiple databases. May need quite a bit of adapting
+          * We will explore both of these languages, and adopt/adapt them as seems necessary.
 
 The main goal of this task is to aid the metabolic reconstruction process, so emphasis will be placed on the clarity of the explanations provided by the TMS.
 
