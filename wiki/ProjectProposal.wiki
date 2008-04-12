@@ -3,8 +3,8 @@
 = Introduction =
 A metabolic network is defined as the set of biochemical reactions that the enzymes coded for in an organism's genome are capable of catalyzing.
 
-For example,  a gene in a genome produces a protein product P1 that is capable of catalyzing a reaction R1, which converts the small molecules A + B -> C.
-Another gene produces a protein product P2 that is capable of catalyzing a reaction R2, which converts small molecules C + D -> E.
+For example,  a gene in a genome produces a protein product P1 that is capable of catalyzing a reaction Re1, which converts the small molecules A + B -> C.
+Another gene produces a protein product P2 that is capable of catalyzing a reaction Re2, which converts small molecules C + D -> E.
 
 In general, the full set of metabolic reactions constitutes a hypergraph network, where sets of reactants are converted to sets of products.
 
