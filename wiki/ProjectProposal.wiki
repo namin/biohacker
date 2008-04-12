@@ -36,9 +36,9 @@ If we include chemical structure information, and allow the representation of ge
 
   5. A new, artificially sweetened, and heavily preserved food product from !BrandX is currently waiting approval from the FDA. The FDA would like to know if the chemicals present in this product's ingredients will somehow combine with chemicals in the human body to produce harmful (carcinogenic, neurotoxic, dispeptic, etc) compounds. The FDA has a database of known toxins, but no way of knowing if a complex chain reaction stemming from the mixture of ingredient chemicals and human body chemicals might produce them.
 
-If we represent the relationships of genes to the reactions that their products catalyze, then we have a complicated AND-OR network, where, if two proteins are members of an enzyme complex that catalyzes a reaction, then g1 AND g2 -> Re1
-On the other hand, if two proteins are both capable of independently catalyzing a reaction then, g3 OR g4 --> Re2
-Of course, any given reaction might be catalyzed by a group of protein complexes:  (OR (AND g5 g6) (AND g7 g8) ) --> Re3
+If we represent the relationships of genes to the reactions that their products catalyze, then we have a complicated AND-OR network, where, if two proteins are members of an enzyme complex that catalyzes a reaction, then g1 AND g2 -> Re1.
+On the other hand, if two proteins are both capable of independently catalyzing a reaction then, g3 OR g4 --> Re2.
+Of course, any given reaction might be catalyzed by a group of protein complexes:  (OR (AND g5 g6) (AND g7 g8) ) --> Re3.
 Using this formalism, it should be possible to ask the following sorts of questions:
 
   6. For any given nutrient set, find the smallest set of genes that can still produce all the essential compounds necessary for growth.
