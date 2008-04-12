@@ -46,7 +46,7 @@ Using this formalism, it should be possible to ask the following sorts of questi
 Some engineering desiderata:
 
   *  What pathway database to use?
-          o BioCyc: written in lisp, developed by SRI.  Advantages: a very clean API to access data.  Contains chemical compounds with structures, a chemical ontology, reactions, genes, pathways.  Not all compounds have structures, some are generic compounds.  Some reactions are unbalanced.
+          o !BioCyc: written in lisp, developed by SRI.  Advantages: a very clean API to access data.  Contains chemical compounds with structures, a chemical ontology, reactions, genes, pathways.  Not all compounds have structures, some are generic compounds.  Some reactions are unbalanced.
           o KEGG:  A larger KB than Biocyc.  50% of compounds have no structure, many unbalanced reactions.
           o iAF1260:  A cleaner database, in that every reaction is balanced, and every metabolite has full structures associated with it
 
