@@ -1,0 +1,43 @@
+>  (standard-poly)
+ Measured f to be 10
+ Minimal conflict: {A1,M1,M2}
+There are 3 minimal diagnoses:
+{A1}
+{M2}
+{M1}
+There are 3 minimum cardinality diagnoses:
+{A1}
+{M2}
+{M1}
+Measuring <Cell (>> X P)> has cost 2.0
+Measuring <Cell (>> Y P)> has cost 2.0
+Measuring <Cell (>> G P)> has cost 2.0
+Measuring <Cell (>> A P)> has cost 4.7548876
+Measuring <Cell (>> B P)> has cost 4.7548876
+Measuring <Cell (>> C P)> has cost 4.7548876
+Measuring <Cell (>> D P)> has cost 4.7548876
+Measuring <Cell (>> E P)> has cost 4.7548876
+Measuring <Cell (>> Z P)> has cost 4.7548876
+Measuring <Cell (>> F P)> has cost 4.7548876
+ Measured g to be 12
+ Minimal conflict: {A1,M1,M2}
+ Minimal conflict: {A1,A2,M1,M3}
+There are 4 minimal diagnoses:
+{A2,M2}
+{A1}
+{M2,M3}
+{M1}
+There are 2 minimum cardinality diagnoses:
+{A1}
+{M1}
+Measuring <Cell (>> X P)> has cost 0.0
+Measuring <Cell (>> A P)> has cost 2.0
+Measuring <Cell (>> B P)> has cost 2.0
+Measuring <Cell (>> C P)> has cost 2.0
+Measuring <Cell (>> D P)> has cost 2.0
+Measuring <Cell (>> E P)> has cost 2.0
+Measuring <Cell (>> Y P)> has cost 2.0
+Measuring <Cell (>> Z P)> has cost 2.0
+Measuring <Cell (>> F P)> has cost 2.0
+Measuring <Cell (>> G P)> has cost 2.0
+DONE
