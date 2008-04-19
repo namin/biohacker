@@ -129,5 +129,5 @@
     (terpri)
     (dotimes (j n)
       (format t "~A"
-	      (if (member `(queen ,i ,j) solution
+	      (if (member `(queen ,(1+ i) ,(1+ j)) solution
 			  :TEST #'equal) "Q" "-")))))

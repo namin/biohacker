@@ -123,9 +123,10 @@
 
 ;;; Converts a regular node to an assumption and enables it.
 (defun assume-node (node &aux (jtms (tms-node-jtms node)))
-  (unless (tms-node-assumption? node)
+  (unless (or (tms-node-assumption? node) (tms-node-premise? node))
     (debugging-jtms jtms "~%Converting ~A into an assumption" node)
-    (setf (tms-node-assumption? node) t))
+    (setf (tms-node-assumption? node) t)
+    (push node (jtms-assumptions jtms)))
   (enable-assumption node))
 
 (defun make-contradiction (node &aux (jtms (tms-node-jtms node)))
