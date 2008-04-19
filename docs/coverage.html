@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <title>The Network Coverage Problem</title>
+  </head>
+  <body>
+    <h1>The Network Coverage Problem</h1>
+
+<h2>Given</h2>
+
+<h3>Beliefs holding over all organisms</h3>
+
+<p>
+We believe in a set of chemical <em>reactions</em>, converting
+<em>reactants</em> (inputs) into <em>products</em> (outputs).  These
+reactions are organized into <em>pathways</em>, typically catabolisms,
+converting nutrients into intermediary compounds, and anabolisms,
+converting intermediary compounds into essential compounds. The notion
+of <em>converter</em> from a set of inputs to a set of outputs
+generalizes over reactions and pathways. A converter is either
+primitive (a reaction) or compound (a pathway). A compound converter
+is a graph, where each node represents a converter; each directed edge,
+an inner input-output dependency; a dangling incoming edge, an input;
+and a dangling outgoing edge, an output. With these primitives
+(reactions), means of combinations (pathways) and means of
+abstractions (converters), we organize our set of reactions
+hierarchically.
+</p>
+
+<h3>Assumptions per organism</h3>
+
+<p>
+We assume an organism is capable of <em>catalyzing</em> a subset of
+our universal set of reactions, because an organism has a set of
+genes, and genes codes for proteins, and proteins forms enzymes, and
+enzymes control reactions.
+</p>
+
+<h3>Beliefs holding per organism</h3>
+
+<p>
+For each organism, we believe in a set of compounds essential for
+growth of the organism.  Crucially, we collect and also believe some growth
+/ no-growth <em>experiments</em>.  In addition to an <em>outcome</em>
+(growth / no-growth), an experiment specifies the presence/absence of
+nutrients and genes.
+</p>
+
+
+<h2>Show</h2>
+
+<h3>Underestimations</h3>
+
+<p>
+If we enable the assumptions of a <em>growth experiment</em>, and we
+<em>cannot</em> produce all essential compounds, we have a contradiction: our
+assumptions of the organisms must contain <em>false negatives</em>,
+i.e. some <em>additional</em> universal reactions should be assumed.
+</p>
+
+<h3>Overestimations</h3>
+
+<p>
+If we enable the assumptions of a <em>no-growth experiment</em>, and
+we <em>can</em> produce all essential compounds, we have a contradiction: our
+asssumptions of the organisms must contain <em>false positives</em>,
+i.e. some assumptions must be <em>retracted</em>.
+</p>
+
+<h2>Efficienctly</h2>
+
+<p>
+By organizing the converters hierarchically, we can consider the
+higher-level converters first, delving into their internals only when
+necessary or requested.
+</p>
+
+    <hr>
+    <address><a href="mailto:namin@mit.edu">Nada Amin</a></address>
+<!-- Created: Sat Apr 19 00:20:21 EDT 2008 -->
+<!-- hhmts start -->
+Last modified: Sat Apr 19 01:41:46 EDT 2008
+<!-- hhmts end -->
+  </body>
+</html>
