@@ -5,23 +5,16 @@
 ;; Source code type
 
 (defvar *default-source-type*
-  #+(OR Lucid Symbolics MCL) "lisp"
-  #+ACLPC "lsp")
+  "lisp")
 
 ;; compiled file type
 (defvar *default-bin-type*
-  #+RT "bbin"
-  #+(:AND :LUCID :RIOS) "rbin"
-  #+:IRIX "mbin"
-  #+MCL "fasl"
-  #+ACLPC "fsl")
+  "fasl")
 
 ;; Where to get stuff
 (defvar *default-pathname* 
-  #+:ILS "/u/bps/code/"
-  #+:PARC "virgo:/virgo/dekleer/bps/"
-  #+:MCL "Macintosh HD:BPS:"
-  #+:ACLPC "e:\\code\\")
+  *bps-home*
+)
 
 (defun load-files (file-list &optional (path *default-pathame*)
 			     (type *default-bin-type*))

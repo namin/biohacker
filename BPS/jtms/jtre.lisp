@@ -14,9 +14,7 @@
 (in-package :COMMON-LISP-USER)
 
 (defvar *jtre-path*
-  #+ILS "/u/bps/code/jtms/"
-  #+PARC "virgo:/virgo/dekleer/bps/code/jtms/"
-  #+MCL "Macintosh HD:BPS:jtms:")
+  (make-bps-path "jtms"))
 
 (defvar *jtre-files*
   '("jtms"      ;; JTMS
@@ -39,6 +37,9 @@
         "jsrules"  ;; Bookkeeping rules
         "jsops"    ;; Sample integration library
         ))
+
+(defun compile-jtms ()
+  (compile-load-files *jtre-files* *jtre-path*))
 
 (defun compile-jqueens ()
   (unless (and (boundp '*jtre*)
