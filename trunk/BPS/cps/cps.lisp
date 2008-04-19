@@ -14,9 +14,7 @@
 (in-package :COMMON-LISP-USER)
 
 (setq *cps-path*
-      #+ILS "/u/bps/code/cps/"
-      #+PARC "virgo:/virgo/dekleer/bps/code/cps/"
-      #+MCL "Macintosh HD:BPS:cps:")
+      (make-bps-path "cps"))
 
 (defvar *cps-files* '("search" "variants"))
 (defvar *algebra-files* '("match" "algebra" "simplify"))

@@ -17,12 +17,13 @@
 ;; This version is the simplest.
 
 (defvar *tre-path*
-  #+ILS "/u/bps/code/tre/"
-  #+PARC "virgo:/virgo/dekleer/bps/code/jtms/"
-  #+MCL "Macintosh HD:BPS:tre:tre.lisp")
+  (make-bps-path "tre"))
 
 (defvar *tre-files*
   '("tinter" ;; User interface
     "data"   ;; Assertions and database
     "rules"  ;; Storing and retrieving rules
     "unify"))  ;; Pattern matching & variables
+
+(defun compile-tre ()
+  (compile-load-files *tre-files* *tre-path*))

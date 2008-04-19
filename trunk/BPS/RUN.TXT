@@ -1,0 +1,17 @@
+Create init.lisp
+$ cd utils
+$ ./gen.sh
+
+Always load init.lisp
+
+Per directory
+loader file    loader method
+cps/cps.lisp   (compile-cps)
+tre/tre.lisp   (compile-tre)
+ftre/ftre.lisp (load-ftre)
+jtms/jtre.lisp (compile-jtms)
+
+
+
+
+
