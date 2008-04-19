@@ -1,0 +1,31 @@
+;; -*- Mode: Lisp; -*- 
+
+(defun intercept (&optional (debugging? nil))
+  (create-tcon "test" :PROTOTYPE-FILE "/u/bps/code/tcon/motion.lisp"
+	       :DEBUGGING debugging?)
+  (create 'sat '2d-motion)
+  (create 'int '2d-motion)
+  (== (>> deltat sat) (>> deltat int))
+  (== (>> x end sat) (>> x end int))
+  (== (>> y end sat) (>> y end int))
+  (set-parameter (>> yaccel sat) -9.98)
+  (set-parameter (>> yaccel int) -9.98)
+  (set-parameter (>> xaccel sat) 0.0)
+  (set-parameter (>> xaccel int) 0.0)
+  (set-parameter (>> x start sat) -1000.0)
+  (set-parameter (>> y start sat) 1000.0)
+  (set-parameter (>> x vstart sat) 100.0)
+  (set-parameter (>> y vstart sat) -100.0)
+  (set-parameter (>> x start int) 100.0)
+  (set-parameter (>> y start int) 0.0))
+
+(defun show ()
+  (what-is (>> theta vstart int))
+  (what-is (>> deltat xmotion int))
+  (what-is (>> y end sat)))
+
+(defun diff ()
+  (what-is (>> x end sat))
+  (what-is (>> y end sat))
+  (what-is (>> x end int))
+  (what-is (>> y end int)))

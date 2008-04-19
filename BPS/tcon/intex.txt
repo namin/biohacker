@@ -1,0 +1,64 @@
+;;; Interception example -- 2/17/92
+
+> (intercept)
+;;; Loading source file "/u/bps/code/tcon/motion.lisp"
+32
+0
+> (set-parameter (>> y end sat) 100.0)
+447
+0
+> (constraint-values (>> vstart int))
+
+ (>> X VSTART INT) = -63.30380008156704.
+ (>> Y VSTART INT) = 48.45800007415186.
+ (>> SIGNX VSTART INT) = -1.0.
+ (>> SIGNY VSTART INT) = 1.0.
+ (>> R VSTART INT) = 79.72169639410284.
+ (>> THETA VSTART INT) = 2.48825566963078.
+ (>> QUADRENT VSTART INT) = 2.
+NIL
+> (constraint-values (>> int))
+
+ (>> XACCEL INT) = 0.0.
+ (>> YACCEL INT) = -9.98.
+ (>> DELTAT INT) = 6.735911837021377.
+NIL
+> (change-parameter (>> y end sat) 200.0)
+447
+147
+> (constraint-values (>> int))
+
+ (>> XACCEL INT) = 0.0.
+ (>> YACCEL INT) = -9.98.
+ (>> DELTAT INT) = 6.12684334948592.
+NIL
+> (constraint-values (>> vstart int))
+
+ (>> X VSTART INT) = -79.5378039316603.
+ (>> Y VSTART INT) = 63.21618539241843.
+ (>> SIGNX VSTART INT) = -1.0.
+ (>> SIGNY VSTART INT) = 1.0.
+ (>> R VSTART INT) = 101.59994266651854.
+ (>> THETA VSTART INT) = 2.4700340490900947.
+ (>> QUADRENT VSTART INT) = 2.
+NIL
+> (change-parameter (>> y end sat) 500.0)
+447
+147
+> (constraint-values (>> int))
+
+ (>> XACCEL INT) = 0.0.
+ (>> YACCEL INT) = -9.98.
+ (>> DELTAT INT) = 4.143349486240177.
+NIL
+> (constraint-values (>> vstart int))
+
+ (>> X VSTART INT) = -165.48569065994462.
+ (>> Y VSTART INT) = 141.35062787267694.
+ (>> SIGNX VSTART INT) = -1.0.
+ (>> SIGNY VSTART INT) = 1.0.
+ (>> R VSTART INT) = 217.6361960088415.
+ (>> THETA VSTART INT) = 2.434690647204288.
+ (>> QUADRENT VSTART INT) = 2.
+NIL
+> 

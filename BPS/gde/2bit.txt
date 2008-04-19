@@ -1,0 +1,24 @@
+> (standard-2bit)
+There are 5 minimum cardinality diagnoses:
+{(X2 BIT1 ADD)}
+{(X1 BIT1 ADD)}
+{(O1 BIT0 ADD)}
+{(A2 BIT0 ADD)}
+{(A1 BIT0 ADD)}
+Measuring <Cell (>> RIPPLE ADD)> has cost 6.7548876
+Measuring <Cell (>> X BIT0 ADD)> has cost 8.0
+Measuring <Cell (>> Y BIT0 ADD)> has cost 8.0
+Measuring <Cell (>> Z BIT1 ADD)> has cost 8.0
+Measuring <Cell (>> CI BIT0 ADD)> has cost 11.60964
+Measuring <Cell (>> A BIT0 ADD)> has cost 11.60964
+Measuring <Cell (>> B BIT0 ADD)> has cost 11.60964
+Measuring <Cell (>> Q BIT0 ADD)> has cost 11.60964
+Measuring <Cell (>> Z BIT0 ADD)> has cost 11.60964
+Measuring <Cell (>> CO BIT1 ADD)> has cost 11.60964
+Measuring <Cell (>> A BIT1 ADD)> has cost 11.60964
+Measuring <Cell (>> B BIT1 ADD)> has cost 11.60964
+Measuring <Cell (>> Q BIT1 ADD)> has cost 11.60964
+Measuring <Cell (>> X BIT1 ADD)> has cost 11.60964
+Measuring <Cell (>> Y BIT1 ADD)> has cost 11.60964
+Please enter result of measuring <Cell (>> RIPPLE ADD)>
+
