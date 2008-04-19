@@ -77,7 +77,7 @@ function SETUP-ALGEBRA-PROBLEM sets up the algebra problem space.
    :STATE-PRINTER #'(lambda (f) (format nil "~A" f))
    :SOLUTION-ELEMENT-PRINTER #'print-derivation-step
    :STATES-IDENTICAL? 'equal
-   :DISTANCE-REMAINING 'algebra-distance
+   :DISTANCE-REMAINING #'algebra-distance
    :OPERATORS '((Isolate-Log try-isolate-log)
 		(Isolate-Sum try-isolate-sum)
 		(Isolate-Difference try-isolate-difference)
