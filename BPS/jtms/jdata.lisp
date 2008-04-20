@@ -68,10 +68,6 @@
 	    (show-datum datum) (datum-assumption? datum) reason)))
   datum)
 
-(defun why? (fact &optional (*JTRE* *JTRE*) &aux r)
-  (when (setq r (referent fact))
-	(why-node (datum-tms-node r))))
-
 (defun already-assumed? (fact  &aux r)
   (when (setq r (referent fact))
     (datum-assumption? r)))
