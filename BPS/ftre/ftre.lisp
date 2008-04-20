@@ -25,7 +25,7 @@
         "frules"    ;; Rule system
         "unify"     ;; Unifier
         "funify"    ;; Open-coding for unification
-        "fnd-ex"    ;; Natural deduction examples for ftre
+        "my-fnd-ex" ;; Natural deduction examples for ftre
         "fqueens"   ;; n-queens setup for FTRE
         ))
 

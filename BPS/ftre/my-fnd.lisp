@@ -182,7 +182,14 @@
 	(maphash #'(lambda (key dbclass) 
 		     (dolist (fact (dbclass-facts dbclass))
 		       (try-rules fact *ftre*)))
-		 (ftre-dbclass-table *ftre*)))
+		 (ftre-dbclass-table *ftre*))
+	;only run on local facts below current depth
+	(let ((below nil)) 
+	  (dolist (fact (ftre-local-data *ftre*))
+	    (if (numberp fact)
+		(setq below t)
+	      (when below
+		(try-rules fact *ftre*))))))
 
 (rule ((show contradiction) ;contradiction detection
        (not ?p) ?p)
