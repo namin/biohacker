@@ -332,7 +332,7 @@
 ;;; Adding clauses
 (defun add-clause (true-nodes false-nodes &optional informant)
   (add-clause-internal (nconc (mapcar #'tms-node-true-literal true-nodes)
-			      (mapcar #'tms-node-false false-nodes))
+			      (mapcar #'tms-node-false-literal false-nodes))
 		       informant
 		       nil))
 

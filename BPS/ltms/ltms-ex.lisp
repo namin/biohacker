@@ -28,7 +28,7 @@
   (explain-node (find-node *ltms* "r")))
 
 (defun test-formula (&optional complete)
-	(declare (special r s tt u))
+  (declare (special r s tt u))
   (setq *ltms* (create-ltms "Formula" :complete complete)
 	r (tms-create-node *ltms* "r")
 	s (tms-create-node *ltms* "s")
@@ -45,7 +45,7 @@
   (test-tax1 3))
 
 (defun test-ask ()
-	(declare (special n1 n2))
+  (declare (special n1 n2))
   (setq *ltms* (create-ltms "Testing asking")
 	n1 (tms-create-node *ltms* "N1" :assumptionp T)
 	n2 (tms-create-node *ltms* "N2" :assumptionp T))

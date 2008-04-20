@@ -20,8 +20,8 @@
   `(add-clause-internal
      (sort-clause (mapcar #'(lambda (literal)
 			      (if (eq (cdr literal) :TRUE)
-				  (tms-node-true (,mapf (car literal)))
-				  (tms-node-false (,mapf (car literal)))))
+				  (tms-node-true-literal (,mapf (car literal)))
+				  (tms-node-false-literal (,mapf (car literal)))))
 			  ,literals))
      ,informant
      t))
@@ -103,8 +103,8 @@
 ;;; Add clause
 (defun add-clause (true-nodes false-nodes &optional informant)
   (add-clause-internal
-    (sort-clause (nconc (mapcar #'tms-node-true true-nodes)
-			(mapcar #'tms-node-false false-nodes)))
+    (sort-clause (nconc (mapcar #'tms-node-true-literal true-nodes)
+			(mapcar #'tms-node-false-literal false-nodes)))
     informant
     nil))
 
@@ -385,8 +385,8 @@
 
 (defun tms-env (node sign &aux label env)
   (if (tms-node-assumption? node)
-      (push (list (ecase sign (:TRUE (tms-node-true node))
-		              (:FALSE (tms-node-false node))))
+      (push (list (ecase sign (:TRUE (tms-node-true-literal node))
+		              (:FALSE (tms-node-false-literal node))))
 	    label))
   (dolist (p (ecase sign (:TRUE (tms-node-true-clauses node))
 		         (:FALSE (tms-node-false-clauses node))))
@@ -398,13 +398,13 @@
       (dolist (lit (clause-literals p))
 	(unless (eq (car lit) node)
 	  (push (if (eq (cdr lit) :TRUE)
-		    (tms-node-false (car lit))
-		    (tms-node-true (car lit)))
+		    (tms-node-false-literal (car lit))
+		    (tms-node-true-literal (car lit)))
 		env)))
       (push env label)))
   label)
 
-(defun pi (formula &aux ltms tltms literals clauses)
+(defun prime-implicates (formula &aux ltms tltms literals clauses)
   (setq ltms (create-ltms "Prime Implicates")
 	tltms (create-ltms "Prime Implicates"
 			   :COMPLETE :DELAY :DELAY-SAT nil)
