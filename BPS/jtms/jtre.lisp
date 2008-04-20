@@ -38,7 +38,7 @@
         "jsops"    ;; Sample integration library
         ))
 
-(defun compile-jtms ()
+(defun compile-jtre ()
   (compile-load-files *jtre-files* *jtre-path*))
 
 (defun compile-jqueens ()
