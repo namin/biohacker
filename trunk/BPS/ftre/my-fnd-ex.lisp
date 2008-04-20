@@ -3,6 +3,7 @@
 ;;;; Natural deduction examples for FTRE.
 ;;;;  Modified: forbus on Tue Apr 2 10:31:13 1996
 ;;;;  Modified: namin for exercises 17 and 18
+;;;;            all exs can be solved :)
 
 ;;; Copyright (c) 1993-1996 Kenneth D. Forbus, Northwestern University,
 ;;; and Johan de Kleer, the Xerox Corporation.
@@ -96,7 +97,6 @@
 		     (assert! '(goal (not J))))))
   (solved? *ftre*))
 
-;; not solved
 (defun ex7 (&key (debugging nil) (debugging-contexts nil)
 		 (max-depth 5)) 
   (setup-ftre "Ex 7" :DEBUGGING debugging
@@ -109,7 +109,6 @@
 		     (assert! '(goal (and P M))))))
   (solved? *ftre*))
 
-;; not solved
 (defun ex8 (&key (debugging nil) (debugging-contexts nil)
 		 (max-depth 5))     ;; A tough one
   (setup-ftre "Ex 8" :DEBUGGING debugging
