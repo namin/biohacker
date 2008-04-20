@@ -63,6 +63,9 @@
        (implies ?p ?q))
       (rassert! (show ?p)))
 
+(rule ((implies ?p ?q)) ;; use implications when you can, this is to solve ex7
+      (rassert! (show ?p)))
+
 (a-rule ((show (implies ?p ?q)) ;; Conditional Introduction
 	 :TEST (not (fetch `(implies ,?p ,?q))))
     (debug-nd "~%~D: Trying CI on (implies ~A ~A)."
