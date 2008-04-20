@@ -110,7 +110,7 @@
 	(in-node? (datum-tms-node r))))
 
 (defun out? (fact &optional (*JTRE* *JTRE*) &aux r)
-  (or (not (setq r (referent fact))) ; seems reasonable that a non-existent assertion is out
+  (or (not (setq r (referent fact))) ; a non-existent fact is out
       (out-node? (datum-tms-node r))))
     
 (defun why? (fact &optional (*JTRE* *JTRE*) &aux r)
