@@ -50,7 +50,8 @@
 ;;;; Inserting data
 
 (defun assert! (fact &optional (*ftre* *ftre*))
-  (when (insert fact *ftre*) (try-rules fact *ftre*)))
+  (when (insert fact *ftre*) 
+    (try-rules fact *ftre*)))
 
 (defmacro rassert! (fact) `(assert! ,(quotize fact)))
 
@@ -58,7 +59,8 @@
   (when (null fact) (error "~% Can't assert NIL."))
   (setq dbclass (get-dbclass fact ftre))
   (cond ((member fact (dbclass-facts dbclass)
-		 :TEST #'equal) nil)
+		 :TEST #'equal) 
+	 nil)
 	((= (ftre-depth ftre) 0)
 	 (push fact (dbclass-facts dbclass)))
 	((member fact (ftre-local-data ftre)

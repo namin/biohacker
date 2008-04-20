@@ -130,3 +130,17 @@
 			    (assert! '(goal B)))))
   (solved? *ftre*))
 
+;1. Show (or P (not P))           (IP 2 2 3)
+;2.      (not (or P (not P)))     Asn
+;3.      Show (or (not P) P)      (OI 4)
+;4.           Show (not P)        (NI 5 2 6)
+;5.           P                   Asn
+;6.           Show (or (not P) P) (OI 5)
+(defun ex10 (&key (debugging nil) (debugging-contexts nil)
+		  (max-depth 5))     ;; A tough one
+  (setup-ftre "Ex 10" :DEBUGGING debugging
+	:DEBUGGING-CONTEXTS debugging-contexts
+	:MAX-DEPTH 5)
+  (time (run-forms *ftre*
+		   '((assert! '(goal (or (not p) p))))))
+  (solved? *ftre*))

@@ -146,11 +146,12 @@
 
 (rule ((show ?r) ;; OR elimination
        :TEST (not (or (fetch ?r)
-		      (eq ?r 'contradiction)
-		      (not (simple-proposition? ?r))))
+	              (eq ?r 'contradiction)
+	              (not (simple-proposition? ?r))
+		      ))
        (or ?d1 ?d2)
        :TEST  (not (or (eq ?d1 'contradiction)
-		       (eq ?d2 'contradiction))))
+                       (eq ?d2 'contradiction))))
        (debug-nd "~%~D: OE-BC: (show (implies ~A ~A))"
 		 (ftre-depth *ftre*) ?d1 ?r)
        (rassert! (show (implies ?d1 ?r)))	 
@@ -167,13 +168,21 @@
 (a-rule ((show ?p) ;indirect proof.
 	 :TEST (not (or (fetch ?p)
 			(eq ?p 'contradiction)
-			(not (simple-proposition? ?p)))))
-    (debug-nd "~%~D: IP attempt: ~A."
-	      (ftre-depth *ftre*) ?p)
-    (when (seek-in-context `(not ,?p)
-			   'contradiction)
-      (debug-nd "~%~D: IP: ~A" (ftre-depth *ftre*) ?p)
-      (rassert! ?p)))
+			;(not (simple-proposition? ?p))
+			)))
+	(debug-nd "~%~D: IP attempt: ~A."
+		  (ftre-depth *ftre*) ?p)
+	(when (seek-in-context `(and (not ,?p) (doit))
+			       'contradiction)
+	  (debug-nd "~%~D: IP: ~A" (ftre-depth *ftre*) ?p)
+	  (rassert! ?p)))
+
+(a-rule ((doit) :TEST (> (ftre-depth *ftre*) 0))
+	(debug-nd "~%~D: Trying all rules." (ftre-depth *ftre*))
+	(maphash #'(lambda (key dbclass) 
+		     (dolist (fact (dbclass-facts dbclass))
+		       (try-rules fact *ftre*)))
+		 (ftre-dbclass-table *ftre*)))
 
 (rule ((show contradiction) ;contradiction detection
        (not ?p) ?p)
