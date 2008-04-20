@@ -62,7 +62,7 @@
   (length 0)      ; Number of literals.
   (sats 0)	  ; Number of terms which satisfy it.
   (status nil))   ; :SUBSUMED | :QUEUED | :DIRTY | :NOT-INDEXED | nil
-
+
 (defun print-ltms (ltms stream ignore)
    (declare (ignore ignore))
    (format stream "#<LTMS: ~A>" (ltms-title ltms)))
@@ -96,7 +96,7 @@
   `(if (ltms-complete ,ltms)
        (walk-trie ,f (ltms-clauses ,ltms))
        (mapc ,f (ltms-clauses ,ltms))))
-
+
 ;;; Basic inference-engine interface.
 
 (defun create-ltms (title &key (node-string 'default-node-string)
@@ -152,7 +152,7 @@
 
 (defun false-node? (node) (eq (tms-node-label node) :FALSE))
 
-
+
 (defun tms-create-node (ltms datum &key assumptionp)
   (if (and (ltms-nodes ltms) (gethash datum (ltms-nodes ltms)))
       (ltms-error "Two nodes with same datum:" datum))
@@ -193,7 +193,7 @@
     (find-alternative-support (tms-node-ltms node)
 			      (propagate-unknownness node))))
     
-
+
 ;;; Adding formulas to the LTMS.
 (defun add-formula (ltms formula &optional informant)
   (setq informant (list :IMPLIED-BY formula informant))
@@ -254,7 +254,7 @@
 (defun normalize-conjunction (exp negate)
   (mapcan #'(lambda (sub) (normalize-1 sub negate)) (cdr exp)))
 
-
+
 (defun normalize-iff (exp negate)
   (nconc (normalize-1 `(:IMPLIES ,(cadr exp) ,(caddr exp)) negate)
 	 (normalize-1 `(:IMPLIES ,(caddr exp) ,(cadr exp)) negate)))
@@ -307,7 +307,7 @@
 		     `(,(tms-node-datum s) (find-node ,run-tms ,(tms-node-mark s))))
 		 bound)
      ,@result))
-
+
 (defun expand-formula (x)
   (setq x (macroexpand x))
   (cond ((not (listp x)) x)
@@ -328,7 +328,7 @@
 	((not (listp x)) `',x)
 	(t (cons (partial (car x)) (partial (cdr x))))))
 
-
+
 ;;; Adding clauses
 (defun add-clause (true-nodes false-nodes &optional informant)
   (add-clause-internal (nconc (mapcar #'tms-node-true-literal true-nodes)
@@ -378,7 +378,7 @@
     (ecase (if (eq a culprit) sign (tms-node-label a))
       (:TRUE (push a falses))
       (:FALSE (push a trues)))))
-
+
 ;;; Boolean Constraint Propagation.
 
 (proclaim '(special *clauses-to-check*))
@@ -434,7 +434,7 @@
 	    (dolist (clause (tms-node-true-clauses node))
 	      (if (< (decf (clause-pvs clause)) 2)
 		  (push clause *clauses-to-check*))))))
-
+
 ;;; Retracting an assumption.
 (defun propagate-unknownness (in-node)
   (let (node old-value node2 unknown-queue ltms)
@@ -471,7 +471,7 @@
       (check-clauses ltms (tms-node-true-clauses node))
       (check-clauses ltms (tms-node-false-clauses node))))
   (if (eq T (ltms-complete ltms)) (ipia ltms)))
-
+
 ;;; Contradiction handling interface.
 (defun check-for-contradictions (ltms &aux violated-clauses)
   (setq violated-clauses
@@ -520,7 +520,7 @@
 			    (enable-assumption (car av) (cdr av)))
 			 ,@ body)
      (dolist (av ,assumption-values) (retract-assumption (car av)))))
-
+
 ;;; Inquiring about well-founded support
 (defun support-for-node (node &aux result support)
   (cond ((null (setq support (tms-node-support node))) nil)
@@ -552,7 +552,7 @@
 		((null (tms-node-support node)) (ltms-error "Node is unknown" node))
 		(t (push (tms-node-support node) new-clauses))))
 	(setf (tms-node-mark node) mark)))))
-
+
 ;;; Simple user interface
 (proclaim '(special *contra-assumptions*))
 
@@ -604,7 +604,7 @@
       (retract-assumption culprit)
       (add-nogood culprit sign culprits)
       t)))
-
+
 (defun clause-antecedents (clause &aux result)
   (dolist (pair (clause-literals clause) result)
     (unless (eq (tms-node-support (car pair)) clause)
@@ -658,7 +658,7 @@
 	     (ltms-nodes (tms-node-ltms node)))
     (explain-1 node)))
 
-
+
 (defun explain-1 (node &aux antecedents)
   (cond ((tms-node-mark node))
 	((eq :ENABLED-ASSUMPTION (tms-node-support node))
@@ -700,7 +700,7 @@
   (dolist (cl (tms-node-false-clauses node))
     (format T "~%") (pretty-print-clause cl)))
 
-
+
 (defun explore-network (node)
   (unless (known-node? node)
 	  (format t "~% Sorry, ~A not believed." (node-string node))
