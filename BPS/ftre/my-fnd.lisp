@@ -177,7 +177,7 @@
 	  (debug-nd "~%~D: IP: ~A" (ftre-depth *ftre*) ?p)
 	  (rassert! ?p)))
 
-(a-rule ((doit) :TEST (> (ftre-depth *ftre*) 0))
+(a-rule ((doit))
 	(debug-nd "~%~D: Trying all rules." (ftre-depth *ftre*))
 	(maphash #'(lambda (key dbclass) 
 		     (dolist (fact (dbclass-facts dbclass))
