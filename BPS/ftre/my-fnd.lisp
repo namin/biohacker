@@ -58,12 +58,10 @@
       (debug-nd "~%~D: CE: ~A (from ~A)" (ftre-depth *ftre*) ?q ?p)
       (rassert! ?q))
 
-(rule ((show ?q) ;; backward chaining.
-       :TEST (not (fetch ?q))
-       (implies ?p ?q))
-      (rassert! (show ?p)))
-
-(rule ((implies ?p ?q)) ;; use implications when you can, this is to solve ex7
+;; instead of backward chaining
+;; just use implications when you can
+;; this is to solve ex7
+(rule ((implies ?p ?q)) 
       (rassert! (show ?p)))
 
 (a-rule ((show (implies ?p ?q)) ;; Conditional Introduction
@@ -175,11 +173,14 @@
 			)))
 	(debug-nd "~%~D: IP attempt: ~A."
 		  (ftre-depth *ftre*) ?p)
-	(when (seek-in-context `(and (not ,?p) (doit))
+	(when (seek-in-context `(and (not ,?p) (doit)) ;; to trigger the doit rule
 			       'contradiction)
 	  (debug-nd "~%~D: IP: ~A" (ftre-depth *ftre*) ?p)
 	  (rassert! ?p)))
 
+;; re-run all rules on facts below the current depth
+;; this is because new assumptions might create new opportunities for old facts
+;; this is to solve ex8 and ex10
 (a-rule ((doit))
 	(debug-nd "~%~D: Trying all rules." (ftre-depth *ftre*))
 	(maphash #'(lambda (key dbclass) 
