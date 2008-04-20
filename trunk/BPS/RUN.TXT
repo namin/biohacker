@@ -9,7 +9,7 @@ loader file    loader method
 cps/cps.lisp   (compile-cps)
 tre/tre.lisp   (compile-tre)
 ftre/ftre.lisp (load-ftre)
-jtms/jtre.lisp (compile-jtms)
+jtms/jtre.lisp (compile-jtre)
 
 
 

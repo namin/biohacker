@@ -61,16 +61,21 @@
   (cond	((not (datum-assumption? datum))
 	 (setf (datum-assumption? datum) reason)
 	 (debugging-jtre "~%    Assuming ~A via ~A." fact reason)
-	 (assume-node node)
-	 (enable-assumption node))
+	 (assume-node node))
 	((eq reason (datum-assumption? datum)))
 	(t (error
 	    "Fact ~A assumed because of ~A assumed again because of ~A"
 	    (show-datum datum) (datum-assumption? datum) reason)))
   datum)
 
-(defun already-assumed? (fact) (datum-assumption? (referent fact t)))
-
+(defun why? (fact &optional (*JTRE* *JTRE*) &aux r)
+  (when (setq r (referent fact))
+	(why-node (datum-tms-node r))))
+
+(defun already-assumed? (fact  &aux r)
+  (when (setq r (referent fact))
+    (datum-assumption? r)))
+
 ;;;; Retraction
 
 (defun retract! (fact &optional (just 'user) (quiet? nil)
@@ -109,8 +114,8 @@
 	(in-node? (datum-tms-node r))))
 
 (defun out? (fact &optional (*JTRE* *JTRE*) &aux r)
-  (when (setq r (referent fact))
-	(out-node? (datum-tms-node r))))
+  (or (not (setq r (referent fact))) ; seems reasonable that a non-existent assertion is out
+      (out-node? (datum-tms-node r))))
     
 (defun why? (fact &optional (*JTRE* *JTRE*) &aux r)
   (when (setq r (referent fact))
@@ -126,7 +131,7 @@
     (setq bindings (unify pattern (datum-lisp-form candidate)))
     (unless (eq bindings :FAIL)
       (push (sublis bindings pattern) unifiers))))
-
+
 ;;;; More display-intensive procedures
 
 (defun wfs (fact &optional (*JTRE* *JTRE*))
@@ -180,7 +185,7 @@
 	       (format stream "~%~A: ~A" (show-datum datum)
 		       (if (in-node? (datum-tms-node datum))
 			   "IN" "OUT"))))))
-
+
 ;;;; Database system
 
 (defun get-dbclass (fact &optional (*JTRE* *JTRE*)
@@ -241,7 +246,7 @@
 
 (defun view-node (node)
   (datum-lisp-form (tms-node-datum node)))
-
+
 ;;;; More query routines
 
 (defun show-datum (datum)

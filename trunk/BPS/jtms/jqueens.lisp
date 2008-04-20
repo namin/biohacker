@@ -20,9 +20,7 @@
 (proclaim '(special *JTRE*))
 
 (defvar *queen-rules-file*
-  #+ILS "/u/bps/code/jtms/jqrule.rbin"
-  #+PARC "virgo:/virgo/dekleer/bps/code/jtms/jqrule.lisp"
-  #+MCL "Macintosh HD:BPS:jtms:jqrule.fasl")
+  (make-bps-source-file-name *jtre-path* "jqrule"))
 
 (defun test-queens (from to)
   (do ((n from (1+ n)))
