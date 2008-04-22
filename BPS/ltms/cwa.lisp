@@ -189,7 +189,7 @@
 		(setq form (read))
 		(print (eval form))
 		(run-rules))))))
-
+
 ;;;; Shakedown procedure
 
 (defun cwa-shakedown ()

@@ -34,7 +34,7 @@
        (assuming `((:NOT ,fact)) *LTRE*
 		 (run-rules)))
    (known? fact)))
-
+
 ;;;; Example of indirect proof
 
 (defun indirect-proof-example ()
