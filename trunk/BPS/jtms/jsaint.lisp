@@ -62,11 +62,11 @@
 ;;;; User entry point
 
 (defvar *jsaint-rules*  ;; Fundamentals
-  #+UNIX "/u/bps/code/jtms/jsrules.lisp"
-  #+MCL "Macintosh HD:BPS:jtms:jsrules.fasl")
+  (make-bps-source-file-name *jtre-path* "jsrules")
+)
 (defvar *jsaint-operators*  ;; Operators
-  #+UNIX "/u/bps/code/jtms/jsops.lisp"
-  #+MCL "Macintosh HD:BPS:jtms:jsops.fasl")
+  (make-bps-source-file-name *jtre-path* "jsops")
+)
 
 (defun solve-integral (integral
 		       &key (title (symbol-name (gensym)))
