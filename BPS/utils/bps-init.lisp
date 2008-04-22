@@ -201,12 +201,15 @@
 	 (concatenate 'string path file ext))
 	(t (concatenate 'string path *path-sepchar* file ext))))
 
-(defun make-bps-path (&rest strings)
-  (concatenate 'string *bps-path*
+(defun make-path (path &rest strings)
+  (concatenate 'string path
 	       (reduce #'(lambda (str1 str2)
 			   (concatenate 'string str1 *path-sepchar* str2))
 		       strings)
 	       *path-sepchar*))
+
+(defun make-bps-path (&rest strings)
+  (apply #'make-path (cons *bps-path* strings)))
 
 (defun make-bps-source-file-name (path name)
    (concatenate 'string path name *src-ext*))
