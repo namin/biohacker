@@ -28,12 +28,11 @@
 
 (defmacro reaction (name reactants &rest products &aux statements)
   (dolist (compound (append reactants products))
-    (push 
-     `(assume! '(nutrient ,compound) :POTENTIAL-NUTRIENT)
-     statements))
-  (push 
-   `(assert! '(reaction ,name ,reactants ,@products) '(:BELIEF (UNIVERSAL)))
-   statements)
+    (push `(assume! '(nutrient ,compound) :POTENTIAL-NUTRIENT) statements))
+  (push `(assert! '(reaction ,name ,reactants ,@products) '(:IS-ENABLED (enabled-reaction ,name))) statements)
+  (push `(assert! '(enabled-reaction ,name) '(:BELIEF (UNIVERSAL))) statements)
+  (push `(assert! '(enabled-reaction ,name) '(:ADD (assume-reaction ,name))) statements)
+  (push `(assume! '(assume-reaction ,name) :POTENTIAL-REACTION) statements)
   (push 'progn statements)
   statements)
 
@@ -62,8 +61,12 @@
 
 
 
-(defun nutrients-sufficient-for-growth (&aux envs)
+(defun nutrients-sufficient-for-growth (&aux universal-node envs)
+  (setq universal-node (get-tms-node '(UNIVERSAL)))
   (setq envs (assumptions-of '(GROWTH)))
+  (setq envs (remove-if-not #'(lambda (env)
+			      (find universal-node (env-assumptions env)))
+			    envs))
   (mapcar #'nutrients envs))
 
 (assume! '(UNIVERSAL) :UNIVERSAL)
@@ -86,3 +89,14 @@
 
 (consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A) (NUTRIENT B))))
 ; NIL
+
+(consistent-with? 
+ '(NO-GROWTH) 
+ (environment-of '((ASSUME-REACTION R1) (ASSUME-REACTION R2) (ASSUME-REACTION R3) (NUTRIENT A) (NUTRIENT B))))
+; NIL
+
+(consistent-with? 
+ '(NO-GROWTH) 
+ (environment-of '((ASSUME-REACTION R1) (ASSUME-REACTION R2) (NUTRIENT A) (NUTRIENT B))))
+; T
+
