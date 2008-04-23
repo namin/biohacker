@@ -94,7 +94,7 @@
 (consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A))))
 ; T
 
-(consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A) (NUTRIENT B))))
+(consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A) (NUTRIENT B) (NOT (DISABLED-REACTION R1)) (NOT (DISABLED-REACTION R2)) (NOT (DISABLED-REACTION R3)))))
 ; NIL
 
 (consistent-with? 
