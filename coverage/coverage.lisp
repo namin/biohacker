@@ -23,6 +23,9 @@
 	  (assert! `(compound ,product)
 		   `(:PRODUCT-OF-REACTION ,?def ,@inputs)))))
 
+(rule :INTERN ((growth))
+      (rnogood! :OUTCOME (growth) (no-growth)))
+
 (defmacro reaction (name reactants &rest products &aux statements)
   (dolist (compound (append reactants products))
     (push 
@@ -41,10 +44,13 @@
 						compounds))))
 
 
+(defun env-forms (env)
+  (mapcar #'(lambda (node)
+	      (datum-lisp-form (tms-node-datum node)))
+	  (env-assumptions env)))
+
 (defun nutrients (env &aux forms nutrients)
-  (setq forms (mapcar #'(lambda (node)
-			  (datum-lisp-form (tms-node-datum node)))
-		      (env-assumptions env)))
+  (setq forms (env-forms env))
   (setq nutrients (remove-if-not #'(lambda (form)
 				     (eq (car form)
 					 'NUTRIENT))
@@ -61,6 +67,7 @@
   (mapcar #'nutrients envs))
 
 (assume! '(UNIVERSAL) :UNIVERSAL)
+(assume! '(NO-GROWTH) :NO-GROWTH)
 
 ;; Example
 (reaction R1 (A B) C G)
@@ -73,3 +80,9 @@
 
 (nutrients-sufficient-for-growth)
 ;((A B) (B C G) (D G) (B F) (E))
+
+(consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A))))
+; T
+
+(consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A) (NUTRIENT B))))
+; NIL
