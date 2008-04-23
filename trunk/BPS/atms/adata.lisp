@@ -54,7 +54,7 @@
 
 (defmacro rnogood! (informant &rest facts)
   `(assert! 'false ,(quotize (cons informant facts))))
-
+
 ;;;; Database system
 
 (defun get-dbclass (fact &aux dbclass)
@@ -110,7 +110,7 @@
 
 (defun get-candidates (pattern)
   (dbclass-facts (get-dbclass pattern)))
-
+
 ;;;; Interface and display of data
 
 (defun true? (fact &optional (*atre* *atre*) &aux r)
@@ -158,7 +158,7 @@
 (defun justifications (fact &optional (*atre* *atre*)
 			    (stream *standard-output*))
   (node-justifications (get-tms-node fact *atre*) stream))
-    
+
 ;;; More interrogatives
 
 (defun the-e (num &optional (*atre* *atre*))
@@ -188,7 +188,7 @@
   (dolist (just (atms-justs (atre-atms *atre*)))
     (when (= (just-index just) num)
       (return-from GET-just just))))
-
+
 ;;; Extra printing routines
 
 (defun show-datum (datum) (format nil "~A"

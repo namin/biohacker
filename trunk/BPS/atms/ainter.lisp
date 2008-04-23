@@ -43,7 +43,7 @@
 
 (defmacro debugging-atre (msg &rest args)
   `(when (atre-debugging *atre*) (format t ,msg  ,@args)))
-
+
 ;;; Dbclasses, datums, and  rules
 
 (defstruct (dbclass (:PRINT-FUNCTION print-atre-dbclass))
@@ -79,7 +79,7 @@
   body         ; Procedure that does the rules' work
   in-nodes     ; Must have a jointly non-empty label
   imp-nodes)   ; Must be implied by the focus
-  
+
 ;;; Setting up ATRE
 
 (defun create-atre (title &key debugging)
@@ -135,7 +135,7 @@
 	       (mapcar #'(lambda (f) (get-tms-node f atre))
 		       choice-set))
 	   choice-sets)))
-
+
 ;;;; Implied-by rules
 
 ;; The rule expansion code sets up the necessary tests for
