@@ -14,9 +14,7 @@
 (in-package :COMMON-LISP-USER)
 
 (defvar *blocks-file*
-  #+ILS  "/u/bps/code/atms/blocks"
-  #+PARC "virgo:/virgo/dekleer/bps/code/atms/blocks"
-  #+MCL "Macintosh HD:BPS:atms:blocks")
+  (make-bps-source-file-name *atre-path* "blocks"))
 
 (defun build-blocks-problem (title blocks-list
 				   &optional (debugging nil)
