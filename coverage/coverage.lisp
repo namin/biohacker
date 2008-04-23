@@ -49,9 +49,10 @@
 				     (eq (car form)
 					 'NUTRIENT))
 				 forms))
+  (setq nutrients (mapcar #'cadr nutrients))
   (sort nutrients (lambda (a b)
-		    (string-lessp (string (cadr a))
-				  (string (cadr b))))))
+		    (string-lessp (string a)
+				  (string b)))))
 
 
 
@@ -71,8 +72,4 @@
 (run-rules)
 
 (nutrients-sufficient-for-growth)
-;(((NUTRIENT A) (NUTRIENT B))
-; ((NUTRIENT B) (NUTRIENT C) (NUTRIENT G))
-; ((NUTRIENT D) (NUTRIENT G)) 
-; ((NUTRIENT B) (NUTRIENT F))
-; ((NUTRIENT E)))
+;((A B) (B C G) (D G) (B F) (E))
