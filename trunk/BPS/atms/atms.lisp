@@ -57,7 +57,7 @@
 	   (informant nil)
 	   (consequence nil)
 	   (antecedents nil))
-
+
 (defun print-just (just stream ignore)
   (declare (ignore ignore))
   (format stream "<~A ~D>" (just-informant just)
@@ -101,7 +101,7 @@
 (defun env-order (e1 e2)
   (< (env-index e1) (env-index e2)))
 
-
+
 ;;; Basic inference engine interface.
 
 (defun create-atms (title &key (node-string 'default-node-string)
@@ -154,7 +154,7 @@
     (push (create-env atms (list node)) (tms-node-label node)))
   node)
 
-
+
 (defun assume-node (node &aux atms)
   (unless (tms-node-assumption? node)
     (setq atms (tms-node-atms node))
@@ -196,7 +196,7 @@
   (justify-node informant
 		(atms-contra-node (tms-node-atms (car nodes)))
 		nodes))
-
+
 ;;; Label updating
 
 (defun propagate (just antecedent envs &aux new-envs)
@@ -222,7 +222,7 @@
       (rplaca new-envs nil)))
   (setq new-envs (delete nil new-envs :TEST #'eq))
   (unless new-envs (return-from update nil))))
-
+
 (defun update-label (node new-envs &aux envs)
   (setq envs (tms-node-label node))
   (do ((new-envs new-envs (cdr new-envs)))
@@ -277,7 +277,7 @@
 (defun supporting-antecedent? (nodes env)
   (dolist (node nodes t) (unless (in-node? node env) (return nil))))
 
-
+
 (defun remove-node (node &aux atms)
   (if (tms-node-consequences node)
       (error "Can't remove node with consequences"))
@@ -292,7 +292,7 @@
   (dolist (env (tms-node-label node))
     (setf (env-nodes env)
 	  (delete node (env-nodes env) :test #'eq :count 1))))
-
+
 ;;; Creating and extending environments.
 
 (defun create-env (atms assumptions &aux e)
@@ -326,7 +326,7 @@
   ;; Presumes the list of assumptions is ordered properly
   (or (lookup-env assumptions)
       (create-env atms assumptions)))
-
+
 ;;; Env tables.
 
 (defun insert-in-table (table env &aux count entry)
@@ -361,7 +361,7 @@
 	     :S12))
 	((subsetp (env-assumptions e2) (env-assumptions e1))
 	 :S21)))
-
+
 ;;; Processing nogoods
 
 (defun new-nogood (atms cenv just &aux count)
@@ -404,7 +404,7 @@
   (dolist (node (env-nodes env))
     (setf (tms-node-label node)
 	  (delete env (tms-node-label node) :COUNT 1))))
-
+
 ;;; Interpretation construction
 
 (proclaim '(special *solutions*))
@@ -450,7 +450,7 @@
 	       (get-depth-solutions1 new-solution
 				     (cdr choice-sets)))))))
 
-
+
 (defun extend-via-defaults (solution remaining original)
   (do ((new-solution)
        (defaults remaining (cdr defaults)))
@@ -465,7 +465,7 @@
     (setq new-solution (cons-env (car defaults) solution))
     (unless (env-nogood? new-solution)
       (extend-via-defaults new-solution (cdr defaults) original))))
-
+
 ;;; Generating explanations
 ;;; This returns a list of justifications which form a DAG for the 
 ;;; derivation. This is quite complicated because this is really a 
@@ -492,7 +492,7 @@
 		  (setq new-explanation
 			(explain-node-1 env a queued-nodes new-explanation))
 		  (unless new-explanation (return nil)))))))))
-
+
 ;;; Printing
 (defun why-node (node &optional (stream t) (prefix ""))
   (format stream "~%<~A~A,{" prefix (tms-node-datum node))
@@ -531,7 +531,7 @@
     (setq printer (atms-node-string (tms-node-atms (car assumptions)))))
   (dolist (a assumptions) (push (funcall printer a) strings))
   (format stream "{~{~A~^,~}}" (sort strings #'string-lessp)))
-
+
 ;;; Printing global data
 
 (defun print-nogoods (atms &optional (stream t))
