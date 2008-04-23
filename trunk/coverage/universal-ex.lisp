@@ -14,18 +14,12 @@
 (nutrients-sufficient-for-growth)
 ;((A B) (B C G) (D G) (B F) (E))
 
-(consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A))))
-; T
+(direct-outcome '(a) nil)
+;NO-GROWTH
 
-(consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A) (NUTRIENT B) (NOT (DISABLED-REACTION R1)) (NOT (DISABLED-REACTION R2)) (NOT (DISABLED-REACTION R3)))))
-; NIL
+(direct-outcome '(a b) nil)
+;GROWTH
 
-(consistent-with? 
- '(NO-GROWTH) 
- (environment-of '((ASSUMED-REACTION R1) (ASSUMED-REACTION R2) (ASSUMED-REACTION R3) (NUTRIENT A) (NUTRIENT B))))
-; NIL
+(direct-outcome '(a b) '(r3))
+;NO-GROWTH
 
-(consistent-with? 
- '(NO-GROWTH) 
- (environment-of '((ASSUMED-REACTION R1) (ASSUMED-REACTION R2) (NUTRIENT A) (NUTRIENT B))))
-; T
