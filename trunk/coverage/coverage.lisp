@@ -59,3 +59,28 @@
 (defun direct-outcome (nutrients disabled-reactions &aux env)
   (setq env (closed-environment-of nutrients disabled-reactions '(UNIVERSAL)))
   (if (in? '(GROWTH) env) 'GROWTH 'NO-GROWTH))
+
+(defun recs-of-env (recs)
+  #'(lambda (le) 
+      (mapcar 
+       #'cadr
+       (remove-if-not 
+	#'(lambda (rec) 
+	    (in-node? (get-tms-node rec) le))
+	recs))))
+
+(defun growth->no-growth (env &aux les recs recs-of-env)
+  (setq les (remove-if-not #'(lambda (le) (subset-env? le env))
+			   (tms-node-label (get-tms-node '(GROWTH)))))
+  (setq recs (fetch '(enabled-reaction ?r)))
+  (remove-duplicates (mapcar (recs-of-env recs) les) :test #'equal))
+
+(defun no-growth->growth (nutrients disabled-reactions extra-forms &aux env les)
+  (setq nutrients (mapcar #'(lambda (nutrient) `(nutrient ,nutrient)) nutrients))
+  (setq env (environment-of (append nutrients extra-forms)))
+  (unless (consistent-with? '(GROWTH) env)
+    (return-from no-growth->growth nil))
+  (setq les (remove-if-not #'(lambda (le) (subset-env? env le))
+			   (tms-node-label (get-tms-node '(GROWTH)))))
+  (setq recs (mapcar #'(lambda (rec) `(enabled-reaction ,rec)) disabled-reactions))
+  (remove-duplicates (mapcar (recs-of-env recs) les) :test #'equal))
