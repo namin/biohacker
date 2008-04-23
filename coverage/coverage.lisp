@@ -4,44 +4,18 @@
 (defvar *coverage-path*
   (make-path *trunk-home* "coverage"))
 
+(defvar *coverage-rules-file*
+  (make-bps-source-file-name *coverage-path* "coverage-rules"))
+
 (defvar *debugging-coverage* t)
 
 (defmacro debugging-coverage (msg &rest args)
   `(when *debugging-coverage* (format t ,msg ,@ args)))
 
-(setq *atre* (create-atre "test" :debugging t))
-
-(rule :INTERN ((nutrient ?x) :var ?def)
-      (rassert! (compound ?x)
-		(:NUTRIENT-IS-COMPOUND ?def)))
-
-(rule :INTERN ((reaction ?reaction ?reactants . ?products) :var ?def)
-      (let ((inputs (mapcar #'(lambda (reactant)
-				`(compound ,reactant))
-			    ?reactants)))
-	(dolist (product ?products)
-	  (assert! `(compound ,product)
-		   `(:PRODUCT-OF-REACTION ,?def ,@inputs)))))
-
-(rule :INTERN ((growth))
-      (rnogood! :OUTCOME (growth) (no-growth)))
-
-(rule :INTERN ((reaction ?name ?reactants . ?products))
-      (dolist (?compound (append ?reactants ?products))
-	(rassume! (nutrient ?compound) :POTENTIAL-NUTRIENT))
-      (rassume! (assumed-reaction ?name) :POTENTIAL-REACTION)
-      (rassume! (disabled-reaction ?name) :DISABLED-REACTION)
-      (rassume! (not (disabled-reaction ?name)) :DEFAULT-REACTION)
-      (rassert! (enabled-reaction ?name) (:ADD (assumed-reaction ?name)))
-      (rassert! (enabled-reaction ?name) (:BELIEF (UNIVERSAL) (not (disabled-reaction ?name)))))
-
-
-(rule :INTERN ((disabled-reaction ?name) :var ?def)
-      (rnogood! :NEG (not ?def) ?def)
-      (rnogood! :ANTI (assumed-reaction ?name) ?def))
-
-(rule :INTERN ((assumed-reaction ?name) :var ?def)
-      (rnogood! :REDUNDANT ?def (UNIVERSAL)))
+(defun create-coverage-problem (&key (debugging nil))
+  (setq *atre* (create-atre "Coverage Problem" :debugging debugging))
+  (load *coverage-rules-file*)
+  *atre*)
 
 (defmacro reaction (name reactants &rest products)
   `(assert! '(reaction ,name ,reactants ,@products) '(:IS-ENABLED (enabled-reaction ,name))))
@@ -51,7 +25,6 @@
 	    '(:SUFFICIENT-FOR-GROWTH ,@ (mapcar #'(lambda (compound)
 						    `(compound ,compound))
 						compounds))))
-
 (defun env-forms (env)
   (mapcar #'(lambda (node)
 	      (datum-lisp-form (tms-node-datum node)))
@@ -75,34 +48,3 @@
 			      (find universal-node (env-assumptions env)))
 			    envs))
   (mapcar #'nutrients envs))
-
-(assume! '(UNIVERSAL) :UNIVERSAL)
-(assume! '(NO-GROWTH) :NO-GROWTH)
-
-;; Example
-(reaction R1 (A B) C G)
-(reaction R2 (B C) D)
-(reaction R3 (D G) E)
-(reaction R4 (B F) E)
-(growth E)
-
-(run-rules)
-
-(nutrients-sufficient-for-growth)
-;((A B) (B C G) (D G) (B F) (E))
-
-(consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A))))
-; T
-
-(consistent-with? '(NO-GROWTH) (environment-of '((UNIVERSAL) (NUTRIENT A) (NUTRIENT B) (NOT (DISABLED-REACTION R1)) (NOT (DISABLED-REACTION R2)) (NOT (DISABLED-REACTION R3)))))
-; NIL
-
-(consistent-with? 
- '(NO-GROWTH) 
- (environment-of '((ASSUMED-REACTION R1) (ASSUMED-REACTION R2) (ASSUMED-REACTION R3) (NUTRIENT A) (NUTRIENT B))))
-; NIL
-
-(consistent-with? 
- '(NO-GROWTH) 
- (environment-of '((ASSUMED-REACTION R1) (ASSUMED-REACTION R2) (NUTRIENT A) (NUTRIENT B))))
-; T
