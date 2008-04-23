@@ -1,5 +1,5 @@
 ;; must load ../BPS/utils/init.lisp
-;; must load ../BPS/jtms/jtre.lisp & evaluate (compie-jtre)
+;; must load ../BPS/atms/atre.lisp & evaluate (compie-atre)
 
 (defvar *coverage-path*
   (make-path *trunk-home* "coverage"))
@@ -9,13 +9,13 @@
 (defmacro debugging-coverage (msg &rest args)
   `(when *debugging-coverage* (format t ,msg ,@ args)))
 
-(setq *jtre* (create-jtre "test" :debugging t))
+(setq *atre* (create-atre "test" :debugging t))
 
-(rule ((:IN (nutrient ?x) :var ?def))
+(rule :INTERN ((nutrient ?x) :var ?def)
       (rassert! (compound ?x)
 		(:NUTRIENT-IS-COMPOUND ?def)))
 
-(rule ((:IN (reaction ?reaction ?reactants . ?products) :var ?def))
+(rule :INTERN ((reaction ?reaction ?reactants . ?products) :var ?def)
       (let ((inputs (mapcar #'(lambda (reactant)
 				`(compound ,reactant))
 			    ?reactants)))
@@ -23,31 +23,56 @@
 	  (assert! `(compound ,product)
 		   `(:PRODUCT-OF-REACTION ,?def ,@inputs)))))
 
-(defmacro reaction (name reactants &rest products)
-  (assert! `(quote (reaction ,name ,reactants ,@products)) '(:BELIEF (UNIVERSAL))))
+(defmacro reaction (name reactants &rest products &aux statements)
+  (dolist (compound (append reactants products))
+    (push 
+     `(assume! '(nutrient ,compound) :POTENTIAL-NUTRIENT)
+     statements))
+  (push 
+   `(assert! '(reaction ,name ,reactants ,@products) '(:BELIEF (UNIVERSAL)))
+   statements)
+  (push 'progn statements)
+  statements)
 
-(assert! '(nutrient A) '(:BELIEF (UNIVERSAL)))
-(assert! '(nutrient B) '(:BELIEF (UNIVERSAL)))
-(assert! '(reaction R1 (A B) C G) '(:BELIEF (UNIVERSAL)))
+(defmacro growth (&rest compounds)
+  `(assert! '(growth)
+	    '(:SUFFICIENT-FOR-GROWTH ,@ (mapcar #'(lambda (compound)
+						    `(compound ,compound))
+						compounds))))
+
+
+(defun nutrients (env &aux forms nutrients)
+  (setq forms (mapcar #'(lambda (node)
+			  (datum-lisp-form (tms-node-datum node)))
+		      (env-assumptions env)))
+  (setq nutrients (remove-if-not #'(lambda (form)
+				     (eq (car form)
+					 'NUTRIENT))
+				 forms))
+  (sort nutrients (lambda (a b)
+		    (string-lessp (string (cadr a))
+				  (string (cadr b))))))
+
+
+
+(defun nutrients-sufficient-for-growth (&aux envs)
+  (setq envs (assumptions-of '(GROWTH)))
+  (mapcar #'nutrients envs))
+
 (assume! '(UNIVERSAL) :UNIVERSAL)
-(run-rules)
-(retract! '(UNIVERSAL) :UNIVERSAL)
+
+;; Example
+(reaction R1 (A B) C G)
+(reaction R2 (B C) D)
+(reaction R3 (D G) E)
+(reaction R4 (B F) E)
+(growth E)
+
 (run-rules)
 
-(defun check-universal-compounds (compounds &aux ok not-ok fetched)
-  (assume! '(UNIVERSAL) :UNIVERSAL)
-  (run-rules)
-  (dolist (compound compounds)
-    (cond ((null (setq fetched (fetch `(compound ,compound))))
-	   (debugging-coverage "~% Compound ~A missing." compound)
-	   (push compound not-ok))
-	  ((in-node? (get-tms-node (car fetched)))
-	   (debugging-coverage "~% Compound ~A in." compound)
-	   (push compound ok))
-	  (t
-	   (debugging-coverage "% Compound ~A out." compound)
-	   (push compound not-ok))))
-  (retract! '(UNIVERSAL) :UNIVERSAL)
-  (run-rules)
-  (values ok not-ok))
-
+(nutrients-sufficient-for-growth)
+;(((NUTRIENT A) (NUTRIENT B))
+; ((NUTRIENT B) (NUTRIENT C) (NUTRIENT G))
+; ((NUTRIENT D) (NUTRIENT G)) 
+; ((NUTRIENT B) (NUTRIENT F))
+; ((NUTRIENT E)))
