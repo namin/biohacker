@@ -158,7 +158,7 @@
   (assume! `(open ,item) :EXPAND-AGENDA-ITEM jtre)
   ;; Look for quick win, extra consequences.
   (run-rules jtre))
-
+
 ;;;; Queuing problems
 ;; Queue entries take the form (<difficulty> . <subproblem>)
 ;; Difficulty estimates are based on the form of the subproblem

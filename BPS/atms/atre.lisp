@@ -14,9 +14,8 @@
 (in-package :COMMON-LISP-USER)
 
 (defvar *atre-path*
-  #+ILS "/u/bps/code/atms/"
-  #+PARC "virgo:/virgo/dekleer/bps/code/atms/"
-  #+MCL "Macintosh HD:BPS:atms:")
+  (make-bps-path "atms")
+)
 
 (setq *atre-files*
   '("atms"      ;; ATMS
@@ -34,6 +33,9 @@
 	"bcode"   ;; Blocks World support
 	"blocks")) ;; Rules for Blocks World
 
+(defun compile-atre ()
+  (compile-load-files *atre-files* *atre-path*))
+
 (defun compile-planner () ;; Assumes ATRE is compiled and loaded.
   (compile-load-files '("aplanr" "plan-a" "plan-e" "bcode")
 		      *atre-path*)
@@ -41,11 +43,3 @@
 	       (not (null *plnpr*)))
 	  (create-planning-problem "DUMMY" nil))
   (compile-load-files '("blocks") *atre-path*))
-
-
-
-
-
-
-
-
