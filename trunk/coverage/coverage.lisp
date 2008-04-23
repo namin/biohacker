@@ -48,3 +48,14 @@
 			      (find universal-node (env-assumptions env)))
 			    envs))
   (mapcar #'nutrients envs))
+
+(defun closed-environment-of (nutrients disabled-reactions &rest extra-forms &aux not-disabled-reactions)
+  (setq nutrients (mapcar #'(lambda (nutrient) `(nutrient ,nutrient)) nutrients))
+  (setq not-disabled-reactions (remove-if #'(lambda (form)
+						  (find (cadadr form) disabled-reactions)) 
+					 (fetch '(not (disabled-reaction ?r)))))
+  (environment-of (append extra-forms nutrients not-disabled-reactions)))
+
+(defun direct-outcome (nutrients disabled-reactions &aux env)
+  (setq env (closed-environment-of nutrients disabled-reactions '(UNIVERSAL)))
+  (if (in? '(GROWTH) env) 'GROWTH 'NO-GROWTH))
