@@ -29,9 +29,19 @@
 (rule :INTERN ((reaction ?name ?reactants . ?products))
       (dolist (?compound (append ?reactants ?products))
 	(rassume! (nutrient ?compound) :POTENTIAL-NUTRIENT))
-      (rassume! (assume-reaction ?name) :POTENTIAL-REACTION)
-      (rassert! (enabled-reaction ?name) (:ADD (assume-reaction ?name)))
-      (rassert! (enabled-reaction ?name) (:BELIEF (UNIVERSAL))))
+      (rassume! (assumed-reaction ?name) :POTENTIAL-REACTION)
+      (rassume! (disabled-reaction ?name) :DISABLED-REACTION)
+      (rassume! (not (disabled-reaction ?name)) :DEFAULT-REACTION)
+      (rassert! (enabled-reaction ?name) (:ADD (assumed-reaction ?name)))
+      (rassert! (enabled-reaction ?name) (:BELIEF (UNIVERSAL) (not (disabled-reaction ?name)))))
+
+
+(rule :INTERN ((disabled-reaction ?name) :var ?def)
+      (rnogood! :NEG (not ?def) ?def)
+      (rnogood! :ANTI (assumed-reaction ?name) ?def))
+
+(rule :INTERN ((assumed-reaction ?name) :var ?def)
+      (rnogood! :REDUNDANT ?def (UNIVERSAL)))
 
 (defmacro reaction (name reactants &rest products)
   `(assert! '(reaction ,name ,reactants ,@products) '(:IS-ENABLED (enabled-reaction ,name))))
@@ -89,10 +99,10 @@
 
 (consistent-with? 
  '(NO-GROWTH) 
- (environment-of '((ASSUME-REACTION R1) (ASSUME-REACTION R2) (ASSUME-REACTION R3) (NUTRIENT A) (NUTRIENT B))))
+ (environment-of '((ASSUMED-REACTION R1) (ASSUMED-REACTION R2) (ASSUMED-REACTION R3) (NUTRIENT A) (NUTRIENT B))))
 ; NIL
 
 (consistent-with? 
  '(NO-GROWTH) 
- (environment-of '((ASSUME-REACTION R1) (ASSUME-REACTION R2) (NUTRIENT A) (NUTRIENT B))))
+ (environment-of '((ASSUMED-REACTION R1) (ASSUMED-REACTION R2) (NUTRIENT A) (NUTRIENT B))))
 ; T
