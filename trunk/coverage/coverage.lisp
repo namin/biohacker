@@ -26,22 +26,21 @@
 (rule :INTERN ((growth))
       (rnogood! :OUTCOME (growth) (no-growth)))
 
-(defmacro reaction (name reactants &rest products &aux statements)
-  (dolist (compound (append reactants products))
-    (push `(assume! '(nutrient ,compound) :POTENTIAL-NUTRIENT) statements))
-  (push `(assert! '(reaction ,name ,reactants ,@products) '(:IS-ENABLED (enabled-reaction ,name))) statements)
-  (push `(assert! '(enabled-reaction ,name) '(:BELIEF (UNIVERSAL))) statements)
-  (push `(assert! '(enabled-reaction ,name) '(:ADD (assume-reaction ,name))) statements)
-  (push `(assume! '(assume-reaction ,name) :POTENTIAL-REACTION) statements)
-  (push 'progn statements)
-  statements)
+(rule :INTERN ((reaction ?name ?reactants . ?products))
+      (dolist (?compound (append ?reactants ?products))
+	(rassume! (nutrient ?compound) :POTENTIAL-NUTRIENT))
+      (rassume! (assume-reaction ?name) :POTENTIAL-REACTION)
+      (rassert! (enabled-reaction ?name) (:ADD (assume-reaction ?name)))
+      (rassert! (enabled-reaction ?name) (:BELIEF (UNIVERSAL))))
+
+(defmacro reaction (name reactants &rest products)
+  `(assert! '(reaction ,name ,reactants ,@products) '(:IS-ENABLED (enabled-reaction ,name))))
 
 (defmacro growth (&rest compounds)
   `(assert! '(growth)
 	    '(:SUFFICIENT-FOR-GROWTH ,@ (mapcar #'(lambda (compound)
 						    `(compound ,compound))
 						compounds))))
-
 
 (defun env-forms (env)
   (mapcar #'(lambda (node)
@@ -58,8 +57,6 @@
   (sort nutrients (lambda (a b)
 		    (string-lessp (string a)
 				  (string b)))))
-
-
 
 (defun nutrients-sufficient-for-growth (&aux universal-node envs)
   (setq universal-node (get-tms-node '(UNIVERSAL)))
@@ -99,4 +96,3 @@
  '(NO-GROWTH) 
  (environment-of '((ASSUME-REACTION R1) (ASSUME-REACTION R2) (NUTRIENT A) (NUTRIENT B))))
 ; T
-

@@ -49,6 +49,9 @@
 (defmacro rassert! (fact just)
   `(assert! ,(quotize fact) ,(quotize just)))
 
+(defmacro rassume! (fact reason)
+  `(assume! ,(quotize fact) ,(quotize reason)))
+
 (defun contradiction (fact &optional (*atre* *atre*))
   (make-contradiction (datum-tms-node (referent fact t))))
 
