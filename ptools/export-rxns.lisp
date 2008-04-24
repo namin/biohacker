@@ -1,0 +1,49 @@
+(in-package :ecocyc)
+
+(defun collect-rxns (filter-p)
+  (loop for rxn in (all-rxns :smm)
+     when (funcall filter-p rxn)
+     collect (translate-to-tms rxn)))
+
+(defun translate-to-tms (rxn)
+  `(,(get-frame-name rxn) ,(get-slot-values rxn 'left) ,@(get-slot-values rxn 'right)))
+
+(defun substrate-not-frame-p (rxn)
+  (loop for substrate in (substrates-of-reaction rxn)
+       if (not (coercible-to-frame-p substrate))
+       return substrate))
+
+(defun balanced-rxn-p (rxn)
+  (and (coercible-to-frame-p rxn)
+       (not (substrate-not-frame-p rxn))
+       (atomic-balanced-p rxn 'C)
+       (atomic-balanced-p rxn 'N)
+       (atomic-balanced-p rxn 'S)
+       (atomic-balanced-p rxn 'P)))
+
+(defun get-stoichiometry (rxn side participant)
+  (let ((coeff (get-value-annot rxn side participant 'coefficient)))
+    (if coeff
+	coeff
+	1)))
+
+(defun get-atom-number (molecule the-atom)
+  (or (loop for (atom num) in (get-slot-values molecule 'chemical-formula)
+	 when (eq atom the-atom)
+	 return num)
+      0))
+
+(defun get-num-atoms-on-side (rxn side the-atom)
+  (loop for participant in (get-slot-values rxn side)
+     sum (* (get-stoichiometry rxn side participant) 
+	    (get-atom-number participant the-atom))))
+
+(defun atomic-balanced-p (rxn the-atom)
+  (let ((reactant-atoms 
+	 (get-num-atoms-on-side rxn 'left the-atom))
+	(product-atoms
+	 (get-num-atoms-on-side rxn 'right the-atom)))
+    (= 0 (- reactant-atoms product-atoms))))
+    
+	
+	      
