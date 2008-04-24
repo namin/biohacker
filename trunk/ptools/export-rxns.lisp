@@ -1,12 +1,34 @@
 (in-package :ecocyc)
 
-(defun collect-rxns (filter-p)
-  (loop for rxn in (all-rxns :smm)
+(defun collect-rxns (rxn-list filter-p)
+  (loop for rxn in rxn-list
      when (funcall filter-p rxn)
-     collect (translate-to-tms rxn)))
+     collect (translate-rxn-to-tms rxn)))
 
-(defun translate-to-tms (rxn)
-  `(,(get-frame-name rxn) ,(get-slot-values rxn 'left) ,@(get-slot-values rxn 'right)))
+(defun collect-catalyses (rxn-list filter-p)
+  (loop for rxn in rxn-list
+       when (funcall filter-p rxn)
+       collect (translate-catalysis-to-tms rxn)))
+
+(defun collect-enzymes (rxn-list filter-p)
+  (loop for enzyme in (remove-duplicates 
+		       (loop for rxn in rxn-list
+			  when (funcall filter-p rxn)
+			  append (enzymes-of-reaction rxn)))
+     collect (translate-enzyme-to-tms enzyme)))
+
+(defun translate-catalysis-to-tms (rxn)
+  `(catalyze ,(get-frame-name rxn)
+	     ,@(enzymes-of-reaction rxn)))
+
+(defun translate-enzyme-to-tms (enzyme)
+  `(enzyme ,(get-frame-name enzyme)
+	   ,@(genes-of-protein enzyme)))
+
+
+
+(defun translate-rxn-to-tms (rxn)
+  `(reaction ,(get-frame-name rxn) ,(get-slot-values rxn 'left) ,@(get-slot-values rxn 'right)))
 
 (defun substrate-not-frame-p (rxn)
   (loop for substrate in (substrates-of-reaction rxn)
