@@ -21,6 +21,9 @@
 
 (run-rules)
 
+(nutrients-sufficient-for-growth)
+;((A B F) (A E))
+
 (experiment 
  growth 
  :nutrients (a b))
