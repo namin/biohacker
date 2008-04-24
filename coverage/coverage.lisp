@@ -69,18 +69,38 @@
 	    (in-node? (get-tms-node rec) le))
 	recs))))
 
-(defun growth->no-growth (env &aux les recs recs-of-env)
+(defun growth->no-growth (nutrients disabled-reactions extra-forms &aux env les recs recs-of-env)
+  (setq env (closed-environment-of nutrients disabled-reactions '(UNIVERSAL)))
   (setq les (remove-if-not #'(lambda (le) (subset-env? le env))
 			   (tms-node-label (get-tms-node '(GROWTH)))))
   (setq recs (fetch '(enabled-reaction ?r)))
   (remove-duplicates (mapcar (recs-of-env recs) les) :test #'equal))
 
+(defun just-nutrients (env)
+  (mapcar #'cadr
+   (remove-if-not
+    #'(lambda (form)
+	(eq (car form) 'nutrient))
+    (mapcar #'(lambda (node)
+	       (datum-lisp-form (tms-node-datum node))) 
+	    (env-assumptions env)))))
+
 (defun no-growth->growth (nutrients disabled-reactions extra-forms &aux env les)
-  (setq nutrients (mapcar #'(lambda (nutrient) `(nutrient ,nutrient)) nutrients))
-  (setq env (environment-of (append nutrients extra-forms)))
+  (setq env (environment-of extra-forms))
   (unless (consistent-with? '(GROWTH) env)
     (return-from no-growth->growth nil))
-  (setq les (remove-if-not #'(lambda (le) (subset-env? env le))
+  (setq les (remove-if-not #'(lambda (le)
+			       (and (subset-env? env le)
+				    (subsetp (just-nutrients le) nutrients)))
 			   (tms-node-label (get-tms-node '(GROWTH)))))
   (setq recs (mapcar #'(lambda (rec) `(enabled-reaction ,rec)) disabled-reactions))
   (remove-duplicates (mapcar (recs-of-env recs) les) :test #'equal))
+
+(defun flip-outcome (nutrients disabled-reactions &aux outcome)
+  (setq outcome (direct-outcome nutrients disabled-reactions))
+  (cond ((eq outcome 'growth)
+	 (format t "Outcome is growth.~% For no-growth, disable ONE reaction from EACH set:")
+	 (growth->no-growth nutrients disabled-reactions '((UNIVERSAL))))
+	(t
+	 (format t "Outcome is no-growth.~% For growth, enable EACH reaction from ONE set:")
+	 (no-growth->growth nutrients disabled-reactions '((UNIVERSAL))))))
