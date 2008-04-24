@@ -74,7 +74,7 @@
 	    (in-node? (get-tms-node form) env))
 	forms))))
 
-(defun unique-env-sets (les forms)
+(defun unique-env-form-sets (les forms)
   (remove-duplicates (mapcar (forms->env->env-forms forms) les) :test #'equal))
 
 (defun growth->no-growth (nutrients disabled-reactions &rest extra-forms &aux env les recs recs-of-env)
@@ -82,7 +82,7 @@
   (setq les (remove-if-not #'(lambda (le) (subset-env? le env))
 			   (tms-node-label (get-tms-node '(GROWTH)))))
   (setq recs (fetch '(enabled-reaction ?r)))
-  (unique-env-sets les recs))
+  (unique-env-form-sets les recs))
 
 (defun no-growth->growth (nutrients disabled-reactions &rest extra-forms &aux env les)
   (setq env (environment-of extra-forms))
@@ -93,7 +93,7 @@
 				    (subsetp (env-nutrients le) nutrients)))
 			   (tms-node-label (get-tms-node '(GROWTH)))))
   (setq recs (mapcar #'(lambda (rec) `(enabled-reaction ,rec)) disabled-reactions))
-  (unique-env-sets les recs))
+  (unique-env-form-sets les recs))
 
 (defun flip-outcome (nutrients disabled-reactions &key (organism nil) &aux outcome)
   (setq outcome (direct-outcome nutrients disabled-reactions :organism organism))
