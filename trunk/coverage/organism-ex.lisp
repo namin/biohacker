@@ -26,6 +26,10 @@
 ; Enable EACH reaction from ONE set: 
 ; ((R3))
 
+(ensure-experiment-coherent 'no-growth '(a b f) '(g1))
+;Experiment is not coherent. Expected outcome NO-GROWTH from experiment but calculated outcome GROWTH.
+; Disable ONE reaction from EACH set: 
+; ((R4))
 
-
-
+(why-reaction 'r4)
+;  Each set of genes is sufficient for reaction R4: ((G4))
