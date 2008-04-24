@@ -1,8 +1,5 @@
 (create-coverage-problem :debugging t)
 
-(assume! '(UNIVERSAL) :UNIVERSAL)
-(assume! '(NO-GROWTH) :NO-GROWTH)
-
 (reaction R1 (A B) C G)
 (reaction R2 (B C) D)
 (reaction R3 (D G) E)

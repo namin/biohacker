@@ -22,10 +22,16 @@
       (rassert! (enabled-reaction ?name) (:ADD (assumed-reaction ?name)))
       (rassert! (enabled-reaction ?name) (:BELIEF (UNIVERSAL) (not (disabled-reaction ?name)))))
 
-
 (rule :INTERN ((disabled-reaction ?name) :var ?def)
       (rnogood! :NEG (not ?def) ?def)
       (rnogood! :ANTI (assumed-reaction ?name) ?def))
 
 (rule :INTERN ((assumed-reaction ?name) :var ?def)
       (rnogood! :REDUNDANT ?def (UNIVERSAL)))
+
+(rule :INTERN ((gene ?g))
+      (rassume! (off ?g) :GENE-STATE)
+      (rassume! (not (off ?g)) :GENE-STATE))
+
+(rule :INTERN ((off ?g) :var ?def)
+      (rnogood! :NEG (not ?def) ?def))
