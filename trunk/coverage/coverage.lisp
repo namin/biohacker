@@ -95,13 +95,15 @@
   (setq recs (mapcar #'(lambda (rec) `(enabled-reaction ,rec)) disabled-reactions))
   (unique-env-form-sets les recs))
 
-(defun flip-outcome (nutrients disabled-reactions &key (organism nil) &aux outcome)
+(defun flip-outcome (nutrients disabled-reactions &key (organism nil) &aux outcome sets)
   (setq outcome (direct-outcome nutrients disabled-reactions :organism organism))
   (cond ((eq outcome 'growth)
-	 (debugging-coverage "Outcome is growth.~% For no-growth, disable ONE reaction from EACH set:")
-	 (values (growth->no-growth nutrients disabled-reactions (organism-assumption organism))
+	 (setq sets (growth->no-growth nutrients disabled-reactions (organism-assumption organism)))
+	 (debugging-coverage "Outcome is growth.~% For no-growth, disable ONE reaction from EACH set:~% ~A" sets)
+	 (values sets
 		 outcome))
 	(t
-	 (debugging-coverage "Outcome is no-growth.~% For growth, enable EACH reaction from ONE set:")
-	 (values (no-growth->growth nutrients disabled-reactions (organism-assumption organism))
+	 (setq sets (no-growth->growth nutrients disabled-reactions (organism-assumption organism)))
+	 (debugging-coverage "Outcome is no-growth.~% For growth, enable EACH reaction from ONE set:~% ~A" sets)
+	 (values sets
 		 outcome))))
