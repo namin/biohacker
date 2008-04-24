@@ -91,12 +91,12 @@
       `(organism ,organism)
     '(UNIVERSAL)))
 
-(defun nutrients-sufficient-for-growth (&key (organism *organism*) &aux node envs)
-  (setq node (get-tms-node (organism-assumption organism)))
-  (setq envs (assumptions-of '(GROWTH)))
-  (setq envs (remove-if-not #'(lambda (env)
-				(find node (env-assumptions env)))
-			    envs))
+(defun nutrients-sufficient-for-growth (&key (organism *organism*) &aux organism-env envs)
+  (setq organism-env (cons-env (get-tms-node (organism-assumption organism))
+			       (just-not-disabled-reactions-environment)))
+  (setq envs (remove-if #'(lambda (env)
+			    (env-nogood? (union-env env organism-env)))
+			(assumptions-of '(GROWTH))))
   (mapcar #'env-nutrients envs))
 
 (defun negative-forms-except (lst class)
@@ -108,9 +108,13 @@
   (setq nutrients (mapcar #'(lambda (nutrient) `(nutrient ,nutrient)) nutrients))
   (environment-of nutrients))
 
-(defun closed-reaction-environment-of (nutrients disabled-reactions &rest extra-forms &aux not-disabled-reactions)
-  (setq not-disabled-reactions (negative-forms-except disabled-reactions 'disabled-reaction))
-  (union-env (just-nutrients-environment-of nutrients) (environment-of (append extra-forms not-disabled-reactions))))
+(defun just-not-disabled-reactions-environment (&optional disabled-reactions)
+  (environment-of (negative-forms-except disabled-reactions 'disabled-reaction)))
+
+(defun closed-reaction-environment-of (nutrients disabled-reactions &rest extra-forms)
+  (union-env (environment-of extra-forms) 
+	     (union-env (just-nutrients-environment-of nutrients) 
+			(just-not-disabled-reactions-environment disabled-reactions))))
 
 (defun env-outcome (env)
   (if (in? '(GROWTH) env) 'GROWTH 'NO-GROWTH))
@@ -174,7 +178,6 @@
 
 (defun closed-genetic-environment-of (nutrients off-genes &rest extra-forms &aux env)
   (setq env (apply #'closed-reaction-environment-of `(,nutrients ,nil ,@extra-forms)))
-  (setq not-off-genes (negative-forms-except off-genes 'off))
   (union-env env (just-genetic-environment-of off-genes)))
 
 (defun experiment-outcome (nutrients off-genes &key (organism *organism*))
@@ -214,8 +217,8 @@
 
 (defun why-reaction (reaction &key (organism *organism*) &aux reaction-node env les sets)
   (setq reaction-node (get-tms-node `(enabled-reaction ,reaction)))
-  (setq env (environment-of (cons (organism-assumption organism) 
-				  (negative-forms-except nil 'disabled-reaction))))
+  (setq env (cons-env (get-tms-node (organism-assumption organism)) 
+		      (just-not-disabled-reactions-environment)))
   (setq les
        (remove-if #'(lambda (le)
 		      (env-nogood? (union-env le env)))
