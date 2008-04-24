@@ -60,6 +60,18 @@
 	      (datum-lisp-form (tms-node-datum node)))
 	  (env-assumptions env)))
 
+(defun env-not-bits (env class &aux forms bits)
+  (setq forms (env-forms env))
+  (setq bits (remove-if-not #'(lambda (form)
+				(and (not (null (cdr form))) (listp (cadr form)) 
+				     (eq (caadr form)
+					 class)))
+				 forms))
+  (setq bits (mapcar #'cadadr bits))
+  (sort bits (lambda (a b)
+		    (string-lessp (string a)
+				  (string b)))))
+
 (defun env-bits (env class &aux forms bits)
   (setq forms (env-forms env))
   (setq bits (remove-if-not #'(lambda (form)
@@ -177,8 +189,6 @@
 
 (defun experiment-no-growth->growth (nutrients off-genes env &key (organism *organism*) &aux organism-env off-genes-env sets)
   ;; see if we can get growth by assuming some reactions
-  ;; for now, just make sure we're in an environment consistent with turning the given genes off
-  ;; later, might use the off genes for more meangingful mining
   (setq off-genes-env (just-genetic-environment-of off-genes))
   (setq organism-env (organism-environment organism))
   (setq les (remove-if-not #'(lambda (le)
@@ -194,8 +204,25 @@
   (debugging-coverage "~% Enable EACH reaction from ONE set: ~% ~A" sets)
   sets)
 
-(defun experiment-growth->no-growth (nutrients off-genes env &key (organism *organism*))
-  )
+(defun experiment-growth->no-growth (nutrients off-genes env &key (organism *organism*) &aux les recs sets)
+  (setq les (remove-if-not #'(lambda (le) (subset-env? le env))
+			   (tms-node-label (get-tms-node '(GROWTH)))))
+  (setq recs (fetch '(enabled-reaction ?r)))
+  (setq sets (unique-env-form-sets les recs))
+  (debugging-coverage "~% Disable ONE reaction from EACH set: ~% ~A" sets)
+  sets)
+
+(defun why-reaction (reaction &key (organism *organism*) &aux reaction-node env les sets)
+  (setq reaction-node (get-tms-node `(enabled-reaction ,reaction)))
+  (setq env (environment-of (cons (organism-assumption organism) 
+				  (negative-forms-except nil 'disabled-reaction))))
+  (setq les
+       (remove-if #'(lambda (le)
+		      (env-nogood? (union-env le env)))
+	(tms-node-label reaction-node)))
+  (setq sets (mapcar #'(lambda (le) (env-not-bits le 'off)) les))
+  (debugging-coverage "~% Each set of genes is sufficient for reaction ~A: ~A" reaction sets)
+  sets)
 
 (defun	fix-organism-network-from-experiment (nutrients off-genes actual-outcome calculated-outcome env &key (organism *organism*))
   (if (eq actual-outcome 'growth)

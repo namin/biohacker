@@ -37,6 +37,9 @@
 (rule :INTERN ((off ?g) :var ?def)
       (rnogood! :NEG (not ?def) ?def))
 
-(rule :INTERN ((organism ?g) :var ?def)
+(rule :INTERN ((organism ?g1) :var ?def)
+      (dolist (?def2 (fetch '(organism ?g2)))
+	(unless (eq ?g1 (cadr ?def2))
+	  (rnogood! :ANTI ?def2 ?def)))
       (rnogood! :ANTI (UNIVERSAL) ?def))
 
