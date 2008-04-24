@@ -21,11 +21,11 @@
 
 (run-rules)
 
-(direct-outcome '(a b) nil)
-;NO-GROWTH
+(ensure-experiment-coherent 'growth '(a b) nil)
+;Experiment is not coherent. Expected outcome GROWTH from experiment but calculated outcome NO-GROWTH.
+; Enable EACH reaction from ONE set: 
+; ((R3))
 
-;; this is not useful
-(flip-outcome '(a b) nil)
-;Outcome is no-growth.
-; For growth, enable EACH reaction from ONE set:
-; (NIL)
+
+
+

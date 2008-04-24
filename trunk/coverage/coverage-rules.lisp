@@ -24,7 +24,8 @@
 
 (rule :INTERN ((disabled-reaction ?name) :var ?def)
       (rnogood! :NEG (not ?def) ?def)
-      (rnogood! :ANTI (assumed-reaction ?name) ?def))
+      (rnogood! :ANTI (assumed-reaction ?name) ?def)
+      (rnogood! :ANTI (assumed-reaction ?name) (not ?def)))
 
 (rule :INTERN ((assumed-reaction ?name) :var ?def)
       (rnogood! :REDUNDANT ?def (UNIVERSAL)))
@@ -35,3 +36,7 @@
 
 (rule :INTERN ((off ?g) :var ?def)
       (rnogood! :NEG (not ?def) ?def))
+
+(rule :INTERN ((organism ?g) :var ?def)
+      (rnogood! :ANTI (UNIVERSAL) ?def))
+
