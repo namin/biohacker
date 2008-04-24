@@ -32,7 +32,6 @@
 						    `(compound ,compound))
 						compounds))))
 
-
 (defmacro organism (name)
   `(progn
     (setq *organism* ',name)
@@ -61,16 +60,19 @@
 	      (datum-lisp-form (tms-node-datum node)))
 	  (env-assumptions env)))
 
-(defun env-nutrients (env &aux forms nutrients)
+(defun env-bits (env class &aux forms bits)
   (setq forms (env-forms env))
-  (setq nutrients (remove-if-not #'(lambda (form)
-				     (eq (car form)
-					 'NUTRIENT))
+  (setq bits (remove-if-not #'(lambda (form)
+				(eq (car form)
+				    class))
 				 forms))
-  (setq nutrients (mapcar #'cadr nutrients))
-  (sort nutrients (lambda (a b)
+  (setq bits (mapcar #'cadr bits))
+  (sort bits (lambda (a b)
 		    (string-lessp (string a)
 				  (string b)))))
+
+(defun env-nutrients (env &aux forms nutrients)
+  (env-bits env 'nutrient))
 
 (defun organism-assumption (organism)
   (if organism
@@ -81,20 +83,29 @@
   (setq node (get-tms-node (organism-assumption organism)))
   (setq envs (assumptions-of '(GROWTH)))
   (setq envs (remove-if-not #'(lambda (env)
-			      (find node (env-assumptions env)))
+				(find node (env-assumptions env)))
 			    envs))
   (mapcar #'env-nutrients envs))
 
-(defun closed-environment-of (nutrients disabled-reactions &rest extra-forms &aux not-disabled-reactions)
+(defun negative-forms-except (lst class)
+  (remove-if #'(lambda (form)
+		 (find (cadadr form) lst)) 
+	     (fetch `(not (,class ?x)))))
+
+(defun just-nutrients-environment-of (nutrients)
   (setq nutrients (mapcar #'(lambda (nutrient) `(nutrient ,nutrient)) nutrients))
-  (setq not-disabled-reactions (remove-if #'(lambda (form)
-						  (find (cadadr form) disabled-reactions)) 
-					 (fetch '(not (disabled-reaction ?r)))))
-  (environment-of (append extra-forms nutrients not-disabled-reactions)))
+  (environment-of nutrients))
+
+(defun closed-reaction-environment-of (nutrients disabled-reactions &rest extra-forms &aux not-disabled-reactions)
+  (setq not-disabled-reactions (negative-forms-except disabled-reactions 'disabled-reaction))
+  (union-env (just-nutrients-environment-of nutrients) (environment-of (append extra-forms not-disabled-reactions))))
+
+(defun env-outcome (env)
+  (if (in? '(GROWTH) env) 'GROWTH 'NO-GROWTH))
 
 (defun direct-outcome (nutrients disabled-reactions &key (organism *organism*) &aux env)
-  (setq env (closed-environment-of nutrients disabled-reactions (organism-assumption organism)))
-  (if (in? '(GROWTH) env) 'GROWTH 'NO-GROWTH))
+  (setq env (closed-reaction-environment-of nutrients disabled-reactions (organism-assumption organism)))
+  (env-outcome env))
 
 (defun forms->env->env-forms (forms)
   #'(lambda (env) 
@@ -105,18 +116,24 @@
 	    (in-node? (get-tms-node form) env))
 	forms))))
 
+(defun unique-sets (sets)
+  (remove-duplicates sets :test #'equal))
+
 (defun unique-env-form-sets (les forms)
-  (remove-duplicates (mapcar (forms->env->env-forms forms) les) :test #'equal))
+  (unique-sets (mapcar (forms->env->env-forms forms) les)))
 
 (defun growth->no-growth (nutrients disabled-reactions &key (organism *organism*) &aux env les recs recs-of-env)
-  (setq env (closed-environment-of nutrients disabled-reactions (organism-assumption organism)))
+  (setq env (closed-reaction-environment-of nutrients disabled-reactions (organism-assumption organism)))
   (setq les (remove-if-not #'(lambda (le) (subset-env? le env))
 			   (tms-node-label (get-tms-node '(GROWTH)))))
   (setq recs (fetch '(enabled-reaction ?r)))
   (unique-env-form-sets les recs))
 
+(defun organism-environment (organism)
+  (environment-of (list (organism-assumption organism))))
+
 (defun no-growth->growth (nutrients disabled-reactions &key (organism *organism*) &aux env les)
-  (setq env (environment-of (list (organism-assumption organism))))
+  (setq env (organism-environment organism))
   (unless (consistent-with? '(GROWTH) env)
     (return-from no-growth->growth nil))
   (setq les (remove-if-not #'(lambda (le)
@@ -138,3 +155,64 @@
 	 (debugging-coverage "~%Outcome is no-growth.~% For growth, enable EACH reaction from ONE set:~% ~A" sets)
 	 (values sets
 		 outcome))))
+
+(defun just-genetic-environment-of (off-genes &aux not-off-genes)
+  (setq not-off-genes (negative-forms-except off-genes 'off))
+  (environment-of not-off-genes))
+
+(defun closed-genetic-environment-of (nutrients off-genes &rest extra-forms &aux env)
+  (setq env (apply #'closed-reaction-environment-of `(,nutrients ,nil ,@extra-forms)))
+  (setq not-off-genes (negative-forms-except off-genes 'off))
+  (union-env env (just-genetic-environment-of off-genes)))
+
+(defun experiment-outcome (nutrients off-genes &key (organism *organism*))
+  (env-outcome (closed-genetic-environment-of nutrients off-genes (organism-assumption organism))))
+
+(defun remove-reactions-enabled-in (env)
+  #'(lambda (set) 
+    (remove-if
+    #'(lambda (name)
+	(in-node? (get-tms-node `(enabled-reaction ,name)) env))
+    set)))
+
+(defun experiment-no-growth->growth (nutrients off-genes env &key (organism *organism*) &aux organism-env off-genes-env sets)
+  ;; see if we can get growth by assuming some reactions
+  ;; for now, just make sure we're in an environment consistent with turning the given genes off
+  ;; later, might use the off genes for more meangingful mining
+  (setq off-genes-env (just-genetic-environment-of off-genes))
+  (setq organism-env (organism-environment organism))
+  (setq les (remove-if-not #'(lambda (le)
+			       (and (not (env-nogood? (union-env le off-genes-env))) 
+				    (subset-env? organism-env le)
+				    (subsetp (env-nutrients le) nutrients)
+				    ))
+			   (tms-node-label (get-tms-node '(GROWTH)))))
+  (setq sets (mapcar #'(lambda (le) (env-bits le 'assumed-reaction)) les))
+  (setq sets (mapcar (remove-reactions-enabled-in env) sets))
+  (setq sets (remove nil sets))
+  (setq sets (unique-sets sets))
+  (debugging-coverage "~% Enable EACH reaction from ONE set: ~% ~A" sets)
+  sets)
+
+(defun experiment-growth->no-growth (nutrients off-genes env &key (organism *organism*))
+  )
+
+(defun	fix-organism-network-from-experiment (nutrients off-genes actual-outcome calculated-outcome env &key (organism *organism*))
+  (if (eq actual-outcome 'growth)
+      (experiment-no-growth->growth nutrients off-genes env :organism organism)
+    (experiment-growth->no-growth nutrients off-genes env :organism organism)))
+
+(defun ensure-experiment-coherent (actual-outcome nutrients off-genes &key (organism *organism*) &aux calculated-outcome env)
+  (setq env (closed-genetic-environment-of nutrients off-genes (organism-assumption organism)))
+  (setq calculated-outcome (env-outcome env))
+  (cond ((eq actual-outcome calculated-outcome)
+	 (debugging-coverage "~%Experiment is coherent. Expected and calculated outcome ~A." actual-outcome)
+	 t)
+	(t
+	 (debugging-coverage "~%Experiment is not coherent. Expected outcome ~A from experiment but calculated outcome ~A." actual-outcome calculated-outcome)
+	 (fix-organism-network-from-experiment nutrients off-genes
+					       actual-outcome calculated-outcome
+					       env
+					       :organism organism))))
+
+(defun experiment-support (outcome nutrients off-genes (&key (organism *organism*))))
