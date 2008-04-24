@@ -242,7 +242,7 @@
 					       env
 					       :organism organism))))
 
-(defun experiment-support (outcome nutrients off-genes (&key (organism *organism*)))
+(defun experiment-support (outcome nutrients off-genes &key (organism *organism*))
   (ensure-experiment-coherent outcome nutrients off-genes))
 
 (defmacro experiment (outcome &key (nutrients nil) (off nil))
