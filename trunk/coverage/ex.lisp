@@ -1,3 +1,5 @@
+(create-coverage-problem :debugging t)
+
 ;; Over all Organisms
 
 ;; Universal Beliefs
@@ -12,28 +14,29 @@
 (reaction R4 (B F) E)
 
 ;; Per Organism
-;; (eventually, this will need to specify the organism, 
-;;  supposing only one organism for now)
+(organism the-bug)
 
 ;; Organism's Assumptions
 
 (enzyme E1 G1)
 (enzyme E2 G2 G2p)
-;(enzyme E3 G3)
+;missing (enzyme E3 G3)
 (enzyme E4 G4)
 
 (catalyze R1 E1)
 (catalyze R2 E2)
-;(catalyze R3 E3)
+;missing (catalyze R3 E3)
 (catalyze R4 E4)
 
 ;; Organism's Beliefs
-(essential-for-growth A E)
+(growth A E)
+
+(run-rules)
 
 (experiment 
  growth
- (nutrients A B)
- (off G4))
+ :nutrients (A B)
+ :off (G4))
 
 ;; contradiction with experiment:
 ;; no growth because no essential compound E
@@ -42,8 +45,8 @@
 
 (experiment
  no-growth
- (nutrients A B F)
- (off G1))
+ :nutrients (A B F)
+ :off (G1))
 
 ;; contradiction with experiment:
 ;; growth because essential compounds A & E
