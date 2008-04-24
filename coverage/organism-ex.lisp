@@ -11,22 +11,27 @@
 
 (enzyme E1 G1)
 (enzyme E2 G2 G2p)
-;(enzyme E3 G3)
+;missing (enzyme E3 G3)
 (enzyme E4 G4)
 
 (catalyze R1 E1)
 (catalyze R2 E2)
-;(catalyze R3 E3)
+;missing (catalyze R3 E3)
 (catalyze R4 E4)
 
 (run-rules)
 
-(ensure-experiment-coherent 'growth '(a b) nil)
+(experiment 
+ growth 
+ :nutrients (a b))
 ;Experiment is not coherent. Expected outcome GROWTH from experiment but calculated outcome NO-GROWTH.
 ; Enable EACH reaction from ONE set: 
 ; ((R3))
 
-(ensure-experiment-coherent 'no-growth '(a b f) '(g1))
+(experiment 
+ no-growth 
+ :nutrients (a b f) 
+ :off (g1))
 ;Experiment is not coherent. Expected outcome NO-GROWTH from experiment but calculated outcome GROWTH.
 ; Disable ONE reaction from EACH set: 
 ; ((R4))
