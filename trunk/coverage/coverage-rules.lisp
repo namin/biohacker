@@ -38,8 +38,10 @@
       (rnogood! :NEG (not ?def) ?def))
 
 (rule :INTERN ((organism ?g1) :var ?def)
-      (dolist (?def2 (fetch '(organism ?g2)))
-	(unless (eq ?g1 (cadr ?def2))
-	  (rnogood! :ANTI ?def2 ?def)))
-      (rnogood! :ANTI (UNIVERSAL) ?def))
+      (rnogood! :ORGANISM-XOR-UNIVERSAL (UNIVERSAL) ?def))
+
+(rule :INTERN ((organism ?g1) :var ?def1
+	       (organism ?g2) :var ?def2
+	       :TEST (not (equal ?g1 ?g2)))
+      (rnogood! :UNIQUE-ORGANISM ?def1 ?def2))
 
