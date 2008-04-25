@@ -92,8 +92,8 @@
     '(UNIVERSAL)))
 
 (defun nutrients-sufficient-for-growth (&key (organism *organism*) &aux organism-env envs)
-  (setq organism-env (cons-env (get-tms-node (organism-assumption organism))
-			       (just-not-disabled-reactions-environment)))
+  (setq organism-env (environment-cons (organism-assumption organism)
+				       (just-not-disabled-reactions-environment)))
   (setq envs (remove-if #'(lambda (env)
 			    (env-nogood? (union-env env organism-env)))
 			(assumptions-of '(GROWTH))))
@@ -217,8 +217,8 @@
 
 (defun why-reaction (reaction &key (organism *organism*) &aux reaction-node env les sets)
   (setq reaction-node (get-tms-node `(enabled-reaction ,reaction)))
-  (setq env (cons-env (get-tms-node (organism-assumption organism)) 
-		      (just-not-disabled-reactions-environment)))
+  (setq env (environment-cons (organism-assumption organism) 
+			      (just-not-disabled-reactions-environment)))
   (setq les
        (remove-if #'(lambda (le)
 		      (env-nogood? (union-env le env)))
