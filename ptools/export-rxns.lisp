@@ -1,5 +1,28 @@
 (in-package :ecocyc)
 
+(defun make-growth  (essential-compounds)
+    `(growth ,@essential-compounds))
+
+(setq *amino-acids*
+  '(ALA ARG ASN ASP CYS GLN GLT GLY HIS ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL))
+
+(setq *dna-and-rna*
+  '(DATP DTTP DGTP DCTP ATP UTP GTP CTP))
+
+(setq *cytoplasmic-membrane*
+  '(L-1-PHOSPHATIDYL-ETHANOLAMINE CARDIOLIPIN L-1-PHOSPHATIDYL-GLYCEROL))
+
+(setq *outer-membrane* '(C6))
+(setq *cell-wall*
+  '(BISOHMYR-GLC ADP-L-GLYCERO-D-MANNO-HEPTOSE KDO UDP-GLUCOSE UDP-GALACTOSE DTDP-RHAMNOSE GDP-MANNOSE N-ACETYL-D-GLUCOSAMINE))
+
+(setq *M63-growth-medium* '(GLC K PROTON |Pi| AMMONIUM SULFATE MG+2 WATER FE+2 MN+2 CU+2 CO+2 CA+2 ZN+2 CD+2 NI+2))
+
+(defun make-experiment (nutrients ko &key (growth-p t))
+  `(experiment ,(if growth-p 'growth 'no-growth)
+	       (nutrients ,@nutrients)
+	       (off ,@ko)))
+
 (defun collect-pwys (pwy-list filter-p)
   (loop for pwy in pwy-list
        when (funcall filter-p pwy)
