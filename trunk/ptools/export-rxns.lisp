@@ -1,5 +1,26 @@
 (in-package :ecocyc)
 
+(defun collect-pwys (pwy-list filter-p)
+  (loop for pwy in pwy-list
+       when (funcall filter-p pwy)
+       collect (translate-pwy-to-tms pwy)))
+
+(defun collect-pwy-catalyses (pwy-list filter-p)
+  (loop for pwy in pwy-list
+       when (funcall filter-p pwy)
+       collect (translate-pwy-catalysis-to-tms pwy)))
+
+(defun collect-pwy-enzymes (pwy-list filter-p)
+  (loop for enzyme in (remove-duplicates
+		       (loop for pwy in pwy-list
+			    when (funcall filter-p pwy)
+			    append (enzymes-of-pathway pwy)))
+       collect (translate-enzyme-to-tms enzyme)))
+
+(defun balanced-pwy-p (pwy)
+  (and (coercible-to-frame-p pwy)
+       (substrates-of-pwy-are-frames-p pwy)))
+
 (defun collect-rxns (rxn-list filter-p)
   (loop for rxn in rxn-list
      when (funcall filter-p rxn)
@@ -16,6 +37,18 @@
 			  when (funcall filter-p rxn)
 			  append (enzymes-of-reaction rxn)))
      collect (translate-enzyme-to-tms enzyme)))
+
+(defun translate-pwy-to-tms (pwy)
+  (multiple-value-bind 
+	(all-reactants proper-reactants all-products proper-products)
+      (substrates-of-pathway pwy)
+    `(pwy ,(get-frame-name pwy)
+	,proper-reactants
+	,@all-products)))
+
+(defun translate-pwy-catalysis-to-tms (pwy)
+  `(pwy-catalyze ,(get-frame-name pwy)
+		 ,@(enzymes-of-pathway pwy)))
 
 (defun translate-catalysis-to-tms (rxn)
   `(catalyze ,(get-frame-name rxn)
@@ -42,6 +75,11 @@
        (atomic-balanced-p rxn 'N)
        (atomic-balanced-p rxn 'S)
        (atomic-balanced-p rxn 'P)))
+
+(defun substrates-of-pwy-are-frames-p (pwy)
+  (not (loop for substrate in (compounds-of-pathway pwy)
+	  if (not (coercible-to-frame-p substrate))
+	  return substrate)))
 
 (defun get-stoichiometry (rxn side participant)
   (let ((coeff (get-value-annot rxn side participant 'coefficient)))
