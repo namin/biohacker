@@ -4,7 +4,7 @@
 (reaction R2 (B C) D)
 (reaction R3 (D G) E)
 (reaction R4 (B F) E)
-(growth E)
+;(growth E)
 
 (organism the-bug)
 (growth A E)
@@ -21,7 +21,7 @@
 
 (run-rules)
 
-(nutrients-sufficient-for-growth)
+;(nutrients-sufficient-for-growth)
 ;((A B F) (A E))
 
 (experiment 
@@ -39,5 +39,5 @@
 ; Disable ONE reaction from EACH set: 
 ; ((R4))
 
-(why-reaction 'r4)
+;(why-reaction 'r4)
 ;  Each set of genes is sufficient for reaction R4: ((G4))
