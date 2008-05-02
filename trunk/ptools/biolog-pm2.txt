@@ -1,0 +1,18 @@
+Biolog Plate PM2	 [ Carbon Source ]		[ succ(e) ]	[ nh4(e) ]	[ o2(e) ]	[ co2(e) ]	[ pi(e) ]	[ so4(e) ]	[ h(e) ]	[ h2o(e) ]
+OD600 growth on Butyric Acid	but(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D,L-Carnitine	crn(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Dihydroxy Acetone	dha(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on g-Amino Butyric Acid	4abut(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Glycine	gly(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Arginine	arg-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Histidine	his-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Isoleucine	ile-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Leucine	leu-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Lysine	lys-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Methionine	met-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Ornithine	orn(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Phenylalanine	phe-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Tartaric Acid	tartr-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Valine	val-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on N-Acetyl-Neuraminic Acid	acnam(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Putrescine	ptrc(e)	10	0	10	10	15	15	10	10	55

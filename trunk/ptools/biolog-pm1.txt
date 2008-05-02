@@ -1,0 +1,53 @@
+Biolog Plate PM1	 [ Carbon Source ]		[ succ(e) ]	[ nh4(e) ]	[ o2(e) ]	[ co2(e) ]	[ pi(e) ]	[ so4(e) ]	[ h(e) ]	[ h2o(e) ]
+OD600 growth on 1,2-Propanediol	12ppd-S(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on 2-Deoxy Adenosine	dad-2(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on a-D-Glucose	glc-D(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on a-D-Lactose	lcts(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on a-Keto-Glutaric Acid	akg(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Acetic Acid	ac(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Acetoacetic Acid	acac(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Adenosine	adn(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Citric Acid	cit(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D,L-Malic Acid	mal-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Alanine	ala-D(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Fructose	fru(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Galactose	gal(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Galacturonic Acid	galur(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Gluconic Acid	glcn(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Glucose-6-Phosphate	g6p(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Glucuronic Acid	glcur(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Mannitol	mnl(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Mannose	man(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Melibiose	melib(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Ribose	rib-D(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Serine	ser-D(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Sorbitol	sbt-D(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Trehalose	tre(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on D-Xylose	xyl-D(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Formic Acid	for(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Fumaric Acid	fum(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Glycerol	glyc(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Glycolic Acid	glyclt(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Inosine	ins(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Alanine	ala-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Arabinose	arab-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Asparagine	asn-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Aspartic Acid	asp-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Fucose	fuc-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Glutamic Acid	glu-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Glutamine	gln-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Lactic Acid	lac-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Malic Acid	mal-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Proline	pro-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Rhamnose	rmn(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Serine	ser-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on L-Threonine	thr-L(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Maltose	malt(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Maltotriose	malttr(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on N-Acetyl-b-D-Mannosamine	acmana(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on N-Acetyl-D-Glucosamine	acgam(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Pyruvic Acid	pyr(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Succinic Acid	succ(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Sucrose	sucr(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Thymidine	thymd(e)	10	0	10	10	15	15	10	10	55
+OD600 growth on Uridine	uri(e)	10	0	10	10	15	15	10	10	55
