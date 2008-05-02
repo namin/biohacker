@@ -1,0 +1,50 @@
+These compounds are absent from reactions:
+  ALA
+  ASP
+  DTTP
+
+These compounds are present only as reactants:
+  (None)
+
+These compounds are present only as products:
+  C6
+  CARDIOLIPIN
+  L-1-PHOSPHATIDYL-ETHANOLAMINE
+
+These compounds are present as both reactants and products:
+  ADP-L-GLYCERO-D-MANNO-HEPTOSE
+  ARG
+  ASN
+  ATP
+  BISOHMYR-GLC
+  CTP
+  CYS
+  DATP
+  DCTP
+  DGTP
+  DTDP-RHAMNOSE
+  GDP-MANNOSE
+  GLN
+  GLT
+  GLY
+  GTP
+  HIS
+  ILE
+  KDO
+  L-1-PHOSPHATIDYL-GLYCEROL
+  LEU
+  LYS
+  MET
+  N-ACETYL-D-GLUCOSAMINE
+  PHE
+  PRO
+  SER
+  THR
+  TRP
+  TYR
+  UDP-GALACTOSE
+  UDP-GLUCOSE
+  UTP
+  VAL
+
+All essential compounds covered.

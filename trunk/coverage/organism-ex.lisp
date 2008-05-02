@@ -6,6 +6,8 @@
 (reaction R4 (B F) E)
 ;(growth E)
 
+(run-rules)
+
 (organism the-bug)
 (growth A E)
 
