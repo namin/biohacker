@@ -1,0 +1,57 @@
+Biolog Plate PM3	 [ Nitrogen Source ]		[ succ(e) ]	[ nh4(e) ]	[ o2(e) ]	[ co2(e) ]	[ pi(e) ]	[ so4(e) ]	[ h(e) ]	[ h2o(e) ]
+OD600 growth on Adenine	ade(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Adenosine	adn(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Ala-Asp	ala-L(e); asp-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Ala-Gln	ala-L(e); gln-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Ala-Glu	ala-L(e); glu-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Ala-Gly	ala-L(e); gly(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Ala-His	ala-L(e); his-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Ala-Leu	ala-L(e); leu-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Ala-Thr	ala-L(e); thr-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Allantoin	alltn(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Ammonia	nh4(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Cytidine	cytd(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Cytosine	csn(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on D-Alanine	ala-D(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on D-Glucosamine	gam(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on D-Serine	ser-D(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Gly-Asn	gly(e); asn-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Gly-Gln	gly(e); gln-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Gly-Glu	gly(e); glu-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Gly-Met	gly(e); met-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Glycine	gly(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Guanine	gua(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Guanosine	gsn(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Inosine	ins(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Alanine	ala-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Arginine	arg-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Asparagine	asn-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Aspartic Acid	asp-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Cysteine	cys-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Glutamic Acid	glu-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Glutamine	gln-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Histidine	his-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Isoleucine	ile-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Leucine	leu-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Lysine	lys-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Methionine	met-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Ornithine	orn(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Phenylalanine	phe-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Proline	pro-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Serine	ser-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Threonine	thr-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Tryptophan	trp-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Tyrosine	tyr-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on L-Valine	val-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Met-Ala	met-L(e); ala-L(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on N-Acetyl-D-Glucosamine	acgam(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on N-Acetyl-D-Mannosamine	acmana(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Nitrate	no3(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Nitrite	no2(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Putrescine	ptrc(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Thymidine	thymd(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Uracil	ura(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Urea	urea(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Uridine	uri(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Xanthine	xan(e)	10	10	0	10	15	15	10	10	55
+OD600 growth on Xanthosine	xtsn(e)	10	10	0	10	15	15	10	10	55
