@@ -50,7 +50,7 @@
 
 (defmacro experiment (outcome &key (nutrients nil) (off nil))
   `(let ((exp-form '(experiment ,outcome ,nutrients ,@off)))
-     (assume! exp-form :EXPERIMENT)
+     (assume! exp-form '(:EXPERIMENT))
      (let ((env (environment-of (list exp-form))))
        (change-focus env)
        (run-rules)
