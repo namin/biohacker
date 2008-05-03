@@ -7,6 +7,9 @@
 (defvar *coverage-rules-file*
   (make-bps-source-file-name *coverage-path* "coverage2-rules"))
 
+(defvar *debug-rules-file*
+  (make-bps-source-file-name *coverage-path* "coverage2-debug-rules"))
+
 (defvar *debugging-coverage* t)
 
 (defvar *organism* nil)
@@ -55,3 +58,23 @@
        (change-focus env)
        (run-rules)
        (in? '(growth) env))))
+
+(defun load-debug-rules ()
+  (load *debug-rules-file*))
+
+(defun reactions-for-product (compound)
+  (mapcar #'(lambda (form) (caddr form)) 
+	  (fetch `(product ,compound ?r))))
+
+(defun reactants-for-reaction (reaction)
+  (mapcar #'(lambda (form) (cadr form)) 
+	  (fetch `(reactant ?r ,reaction))))
+
+(defun why-not? (compound &optional (env *env*))
+  (if (in? `(compound ,compound) env)
+      (format t "~%Compound ~A is produced." compound)
+    (dolist (reaction (reactions-for-product compound))
+      (format t "~% Reaction ~A missing reactants ~A" 
+	      reaction 
+	      (remove-if #'(lambda (reactant) (in? `(compound ,reactant) env)) 
+			 (reactants-for-reaction reaction))))))
