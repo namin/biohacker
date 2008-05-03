@@ -49,4 +49,9 @@
   `(assert! '(reaction-enabled ,reaction) '(:CATALYZED-BY ,@enzyme-forms)))
 
 (defmacro experiment (outcome &key (nutrients nil) (off nil))
-  `(assume! '(experiment ,outcome ,nutrients ,@off) :EXPERIMENT))
+  `(let ((exp-form '(experiment ,outcome ,nutrients ,@off)))
+     (assume! exp-form :EXPERIMENT)
+     (let ((env (environment-of (list exp-form))))
+       (change-focus env)
+       (run-rules)
+       (in? '(growth) env))))
