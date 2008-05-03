@@ -61,6 +61,13 @@
 			  append (enzymes-of-reaction rxn)))
      collect (translate-enzyme-to-tms enzyme)))
 
+(defun make-rich-media (pwy-list filter-p)
+  `(experiment growth (nutrients ,@(remove-duplicates (loop for pwy in pwy-list
+							 when (funcall filter-p pwy)
+							 append (multiple-value-bind
+								      (all-reactants proper-reactants all-products proper-products)
+								    (substrates-of-pathway pwy)
+								  proper-reactants)))) (OFF)))
 (defun translate-pwy-to-tms (pwy)
   (multiple-value-bind 
 	(all-reactants proper-reactants all-products proper-products)
