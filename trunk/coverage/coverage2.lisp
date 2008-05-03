@@ -71,16 +71,26 @@
   (mapcar #'(lambda (form) (cadr form)) 
 	  (fetch `(reactant ?r ,reaction))))
 
+(defun sort-symbols (symbols)
+  (sort symbols 
+	#'(lambda (x y) (string-lessp (string x) (string y)))))
+
 (defun why-not? (compound &optional (env *env*) &aux or-and-list)
   (if (in? `(compound ,compound) env)
       (progn
 	(format t "~%Compound ~A is produced." compound)
 	t)
-    (dolist (reaction (reactions-for-product compound) or-and-list)
+    (progn
+      (dolist (reaction (reactions-for-product compound))
       (let ((missing-reactants 
-	     (remove-if #'(lambda (reactant) (in? `(compound ,reactant) env)) 
-			(reactants-for-reaction reaction))))
-	(format t "~% Reaction ~A missing reactants ~A" 
+	     (sort-symbols
+	      (remove-if 
+	       #'(lambda (reactant) (in? `(compound ,reactant) env)) 
+	       (reactants-for-reaction reaction)))))
+	(format t "~%Reaction ~A missing reactants ~A." 
 		reaction 
 		missing-reactants)
-	(push (cons reaction missing-reactants) or-and-list)))))
+	(push (cons reaction missing-reactants) or-and-list)))
+    (unless or-and-list
+      (format t "~%Compound ~A is not a product." compound))
+    or-and-list)))
