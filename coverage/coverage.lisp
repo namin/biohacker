@@ -1,6 +1,3 @@
-;; must load ../BPS/utils/init.lisp
-;; must load ../BPS/atms/atre.lisp & evaluate (compie-atre)
-
 (defvar *coverage-path*
   (make-path *trunk-home* "coverage"))
 
