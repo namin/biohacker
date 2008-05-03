@@ -7,3 +7,5 @@
 
 ; essential compounds not produced
 (remove-if #'(lambda (c) (in? `(compound ,c) *env*)) *gcs*)
+
+(load-debug-rules)
