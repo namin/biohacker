@@ -60,7 +60,8 @@
        (in? '(growth) env))))
 
 (defun load-debug-rules ()
-  (load *debug-rules-file*))
+  (load *debug-rules-file*)
+  (run-rules))
 
 (defun reactions-for-product (compound)
   (mapcar #'(lambda (form) (caddr form)) 
