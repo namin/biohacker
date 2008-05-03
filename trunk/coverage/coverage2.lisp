@@ -1,6 +1,3 @@
-;; must load ../BPS/utils/init.lisp
-;; must load ../BPS/atms/atre.lisp & evaluate (compie-atre)
-
 (defvar *coverage-path*
   (make-path *trunk-home* "coverage"))
 
@@ -53,7 +50,7 @@
 
 (defmacro experiment (outcome &key (nutrients nil) (off nil))
   `(let ((exp-form '(experiment ,outcome ,nutrients ,@off)))
-     (assume! exp-form '(:EXPERIMENT))
+     (assume! exp-form ':EXPERIMENT)
      (let ((env (environment-of (list exp-form))))
        (change-focus env)
        (run-rules)
@@ -87,7 +84,7 @@
 	      (remove-if 
 	       #'(lambda (reactant) (in? `(compound ,reactant) env)) 
 	       (reactants-for-reaction reaction)))))
-	(format t "~%Reaction ~A missing reactants ~A." 
+	(format t "~%Reaction ~A missing reactants ~A" 
 		reaction 
 		missing-reactants)
 	(push (cons reaction missing-reactants) or-and-list)))
