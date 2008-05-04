@@ -51,7 +51,7 @@
 
 (defun retract-all-experiments ()
   (dolist (form (fetch '(experiment . ?x)))
-    (when (known-node? (referent form))
+    (when (known? form)
       (retract! form ':EXPERIMENT))))
 
 (defmacro experiment (outcome &key (nutrients nil) (off nil))
