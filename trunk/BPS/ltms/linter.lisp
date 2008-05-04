@@ -43,11 +43,11 @@
 (defmacro debugging-ltre (msg &rest args)
   `(when (ltre-debugging *LTRE*) (format t ,msg  ,@args)))
 
-(defun create-ltre (title &key debugging)
+(defun create-ltre (title &key debugging cache-datums?)
    (let ((l (make-ltre :TITLE title 
                :LTMS (create-ltms (list :LTMS-OF title) 
                         :NODE-STRING 'make-node-string
-                        :CACHE-DATUMS? nil)
+                        :CACHE-DATUMS? cache-datums?)
 	   :DBCLASS-TABLE (make-hash-table)
 	   :DEBUGGING debugging)))
    (change-ltms (ltre-ltms l)
