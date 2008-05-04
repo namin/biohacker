@@ -373,8 +373,8 @@
 (defun insert-false-clause (cl node)
   (push cl (tms-node-false-clauses node)))
 
-(defun add-nogood (culprit sign assumptions &aux trues falses)
-  (dolist (a assumptions (add-clause trues falses 'NOGOOD))
+(defun add-nogood (culprit sign assumptions &optional (informant 'NOGOOD) &aux trues falses)
+  (dolist (a assumptions (add-clause trues falses informant))
     (ecase (if (eq a culprit) sign (tms-node-label a))
       (:TRUE (push a falses))
       (:FALSE (push a trues)))))
