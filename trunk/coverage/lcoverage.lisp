@@ -22,7 +22,7 @@
 	  (t (format nil "~A" form)))))
 
 (defun create-coverage-problem (&key (debugging nil))
-  (setq *ltre* (create-ltre "Coverage Problem" :debugging debugging :cache-datums? t))
+  (setq *ltre* (create-ltre "Coverage Problem" :debugging debugging))
   (change-ltms (ltre-ltms *ltre*) :node-string 'coverage-node-string)
   (setq *organism* nil)
   (load *coverage-rules-file*)

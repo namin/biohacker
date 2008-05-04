@@ -258,7 +258,16 @@
   (show-node-consequences (get-tms-node fact)))
 
 (defun explore (fact) (explore-network (get-tms-node fact)))
-
+
+(defun explain (fact)
+  (unless (unknown? fact)
+    (setq *line-count* 0)
+    (map-dbclass
+     #'(lambda (dbclass)
+	 (dolist (datum (dbclass-facts dbclass))
+	   (setf (tms-node-mark (datum-tms-node datum)) nil))))
+    (explain-1 (datum-tms-node (referent fact)))))
+
 ;;;; Global interrogatives
 
 (defun show-data (&optional (*LTRE* *LTRE*) (stream *standard-output*)
