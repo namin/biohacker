@@ -15,7 +15,7 @@
   `(when *debugging-coverage* (format t ,msg ,@ args)))
 
 (defun create-coverage-problem (&key (debugging nil))
-  (setq *jtre* (create-ltre "Coverage Problem" :debugging debugging))
+  (setq *jtre* (create-ltre "Coverage Problem" :debugging debugging :cache-datums? t))
   (setq *organism* nil)
   (load *coverage-rules-file*)
   *jtre*)
