@@ -14,11 +14,19 @@
 (defmacro debugging-coverage (msg &rest args)
   `(when *debugging-coverage* (format t ,msg ,@ args)))
 
+(defun coverage-node-string (node)
+  (let ((form (datum-lisp-form (tms-node-datum node))))
+    (cond ((and (listp form)
+		(eq (car form) 'experiment))
+	   "(experiment ...)")
+	  (t (format nil "~A" form)))))
+
 (defun create-coverage-problem (&key (debugging nil))
-  (setq *jtre* (create-ltre "Coverage Problem" :debugging debugging :cache-datums? t))
+  (setq *ltre* (create-ltre "Coverage Problem" :debugging debugging :cache-datums? t))
+  (change-ltms (ltre-ltms *ltre*) :node-string 'coverage-node-string)
   (setq *organism* nil)
   (load *coverage-rules-file*)
-  *jtre*)
+  *ltre*)
 
 (defmacro reaction (name reactants &rest products)
   `(assert! '(:IMPLIES (reaction-enabled ,name) (reaction ,name ,reactants ,@products)) ':REACTION))
