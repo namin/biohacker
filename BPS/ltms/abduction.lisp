@@ -55,20 +55,21 @@
       (label< (cdr x) (cdr y))
     (< cx cy)))
 
-(defun adjoin-to-all (el sets)
+(defun append-to-all (el sets)
   (if (null sets)
       nil
-    (cons (adjoin el (car sets))
-	  (adjoin-to-all el (cdr sets)))))
+    (cons (append el (car sets))
+	  (append-to-all el (cdr sets)))))
 
 (defun all-variations-on-set (literal-needs)
   (defun vary (set)
     (if (null set)
 	(list nil)
-      (let ((first-set (cdr (assoc (car set) literal-needs)))
+      (let ((first-sets (cdr (assoc (car set) literal-needs)))
 	    (rest-sets (vary (cdr set))))
-	(mapcan #'(lambda (el) (adjoin-to-all el rest-sets)) first-set))))
-  #'vary)
+	(mapcan #'(lambda (el) (append-to-all el rest-sets)) first-sets))))
+  #'(lambda (set) 
+      (mapcar #'remove-duplicates (vary set))))
 
 (defun remove-supersets (sets)
   (defun helper (keep todo sets &aux sub)
@@ -128,10 +129,14 @@
      sets
      literal-needs)))
 
+(defun literal->fact (literal &aux form)
+  (setq form (datum-lisp-form (tms-node-datum (car literal))))
+  (ecase (cdr literal)
+    (:TRUE form)
+    (:FALSE (list :NOT form))))
+
 (defun needs (fact label &aux)
   (when (setq node (get-tms-node-or-nil fact))
-    (node-needs node label)))
-
-
-
+    (mapcar #'(lambda (set) (mapcar #'literal->fact set)) 
+	    (node-needs node label))))
 
