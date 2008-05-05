@@ -124,6 +124,12 @@
    (mapcan (function-variations-on-set literal-needs)
 	   sets)))
 
+(defun add-literal-as-set-if (matching-patterns literal sets)
+  (if (or (null matching-patterns)
+	  (funcall matching-patterns (literal->fact literal)))
+      (cons (list literal) sets)
+    sets))
+
 (defun node-needs (node label &optional (matching-patterns nil) &key (nodes nil) &aux sets-1 sets new-nodes literals literal-needs)
   (when (and (setq new-nodes (cons node nodes))
 	     (setq sets-1 
@@ -135,30 +141,24 @@
     (setq literal-needs
 	  (mapcar #'(lambda (literal)
 		      (cons literal
-			    (cons (list literal) 
-				  (node-needs (car literal) (cdr literal) matching-patterns :nodes new-nodes))))
+			    (add-literal-as-set-if 
+			     matching-patterns 
+			     literal
+			     (node-needs (car literal) (cdr literal) matching-patterns :nodes new-nodes))))
 		  literals))
     (setq sets
 	  (all-variations-on-sets
 	   sets-1
 	   literal-needs))
-    (when matching-patterns
-      (setq sets
-	    (remove-if-not 
-	     #'(lambda (set)
-		 (funcall matching-patterns (literal-set->fact-set set)))
-	     sets)))
     sets))
 
 (defun function-matches (a)
   #'(lambda (b) (not (eq :FAIL (unify a b)))))
 
 (defun function-matching-patterns (patterns)
-  #'(lambda (set)
-      (every #'(lambda (form)
-		 (some (function-matches form)
-		       patterns))
-	     set)))
+  #'(lambda (form)
+      (some (function-matches form)
+	    patterns)))
 
 (defun needs (fact label &optional (patterns nil) &aux matching-patterns node sets)
   (setq node (get-tms-node fact))
