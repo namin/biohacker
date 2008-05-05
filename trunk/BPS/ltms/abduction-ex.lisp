@@ -13,7 +13,7 @@
       (rassert! (:IMPLIES ?def (related ?father ?son))) :FAMILY)
 
 (rule ((:INTERN (brothers ?a ?b) :var ?def))
-      (rassert! (:IMPLIES ?def (brothers ?b ?a)) :FAMILY)
+      (rassert! (:IMPLIES ?def (brothers ?b ?a)) :EQUIVALENCE)
       (rassert! (:IMPLIES ?def (related ?a ?b)) :FAMILY)
       (rassert! (:IMPLIES ?def (related ?b ?a)) :FAMILY))
 
@@ -21,7 +21,8 @@
       (rassert! (:IMPLIES ?def
 			  (:OR (brothers ?a ?b)
 			       (father ?a of ?b)
-			       (son ?a of ?b)))))
+			       (son ?a of ?b)))
+		:RELATED-SIMPLE-MINDED-GUESS))
 
 (setq patterns '((son ?son of ?father) (father ?father of ?son) (brothers ?a ?b)))
 
@@ -32,3 +33,5 @@
       '(((son ?son of ?father) . 20) 
 	((father ?father of ?son) . 10) 
 	((brothers ?a ?b) . 30)))
+
+(labduce '(related mohamed aadel) :TRUE pattern-cost-list)
