@@ -5,6 +5,7 @@
 
 ; essential compounds not produced
 (remove-if #'(lambda (c) (true? `(compound ,c))) *gcs*)
+;(C6 KDO GDP-MANNOSE)
 
 (load-debug-rules)
 
