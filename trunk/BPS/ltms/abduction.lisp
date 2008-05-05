@@ -33,9 +33,19 @@
 		(opposite-pairs (unknown-pairs clause node-list)))
 	    clauses)))
 
+
+(defun literal->fact (literal &aux form)
+  (setq form (datum-lisp-form (tms-node-datum (car literal))))
+  (ecase (cdr literal)
+    (:TRUE form)
+    (:FALSE (list :NOT form))))
+
+(defun literal-sets->fact-sets (sets)
+  (mapcar #'(lambda (set) (mapcar #'literal->fact set)) sets))
+
 (defun needs-1 (fact label &aux node)
   (setq node (get-tms-node fact))
-  (node-needs-1 node label))
+  (literal-sets->fact-sets (node-needs-1 node label)))
 
 (defun function-circular-need (nodes)
   #'(lambda (literals) 
@@ -134,12 +144,6 @@
      sets
      literal-needs)))
 
-(defun literal->fact (literal &aux form)
-  (setq form (datum-lisp-form (tms-node-datum (car literal))))
-  (ecase (cdr literal)
-    (:TRUE form)
-    (:FALSE (list :NOT form))))
-
 (defun function-matches (a)
   #'(lambda (b) (not (eq :FAIL (unify a b)))))
 
@@ -153,9 +157,9 @@
 (defun needs (fact label &optional (patterns nil) &aux node sets)
   (setq node (get-tms-node fact))
   (run-rules)
-  (setq sets
-	(mapcar #'(lambda (set) (mapcar #'literal->fact set)) 
-		(node-needs node label)))
+  (setq sets 
+	(literal-sets->fact-sets
+	 (node-needs node label)))
   (when patterns
     (setq sets
 	  (remove-if-not (function-matching-patterns patterns)
