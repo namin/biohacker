@@ -28,16 +28,18 @@ hairiness
    -- solvable semantic pattern matching
 
 To solve the Xenobiotic metabolism problem, we use a rule-based
-system, where we match a substructure pattern against a list of
-possible substrates.  When we find a match, then we instantiate a
-template transformation.
+system, where we match a substrate pattern against a list of
+substrate atom-bond graphs.  When we find a match, we apply a biotransformation rule
+to instantiate the appropriate product.
 
 * Gamma_s = substrate atom-bond graph:  A adjacency list where atoms are indexed typed nodes and bonds are typed edges. 
+  example: (adj-list 'etoh)
 * \delta^- = substrate pattern: A rule trigger pattern 
 * \delta^+ = product template:  What we use to replace the pattern that we matched.
 * Gamma_p = product atom-bond graph. A representation of product chemical structure as an adjacency list where atoms are indexed types and bonds are typed edges
 
 * substrate match bindings:  A set of mappings from substrate pattern to the substrate atom-bond graph represented as an array of atom correspondences.
+  -
 * biotransformation bindings: A set of mappings from substrate pattern to product template
 * product instantiation: A set of mappings from biotransformation bindings and substrate match bindings to product atom-bond graph
 
