@@ -24,7 +24,7 @@
 (defun node-needs-1 (node label &aux node-list clauses)
   (when (unknown-node? node)
     (setq clauses 
-	  (remove-if #'(lambda (clause) (satisfied-clause? clause))
+	  (remove-if #'satisfied-clause?
 	   (funcall
 	    (ecase label (:TRUE #'tms-node-true-clauses) (:FALSE #'tms-node-false-clauses))
 	    node)))

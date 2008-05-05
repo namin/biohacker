@@ -88,7 +88,11 @@
 (defun default-node-string (n)
   (format nil "~A" (tms-node-datum n)))
 
-(defmacro satisfied-clause? (clause) `(> (clause-sats ,clause) 0))
+(defun satisfied-clause? (clause)
+  (some #'(lambda (literal)
+	    (eq (tms-node-label (car literal))
+		(cdr literal)))
+	(clause-literals clause)))
 
 (defmacro violated-clause? (clause) `(= (clause-pvs ,clause) 0))
 
