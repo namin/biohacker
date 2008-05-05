@@ -24,9 +24,10 @@
 (defun node-needs-1 (node label &aux node-list clauses)
   (when (unknown-node? node)
     (setq clauses 
-	  (funcall
-	   (ecase label (:TRUE #'tms-node-true-clauses) (:FALSE #'tms-node-false-clauses))
-	   node))
+	  (remove-if #'(lambda (clause) (satisfied-clause? clause))
+	   (funcall
+	    (ecase label (:TRUE #'tms-node-true-clauses) (:FALSE #'tms-node-false-clauses))
+	    node)))
     (setq node-list (list node))
     (mapcar #'(lambda (clause)
 		(opposite-pairs (unknown-pairs clause node-list)))
