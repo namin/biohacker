@@ -1,6 +1,6 @@
 (make-growth (append *amino-acids* *dna-and-rna* *cytoplasmic-membrane* *outer-membrane* *cell-wall*))
 (make-experiment *M63-growth-medium* '() :growth-p t)
-(setq *rich-media* (make-rich-media (all-pathways :small-molecule) #'balanced-pwy-p))
+(setq *rich-media* (make-rich-media (all-pathways :smm) #'balanced-pwy-p))
 
 (EXPERIMENT GROWTH
  (NUTRIENTS GLUCONATE GLYCERATE HYDROGEN-MOLECULE |Menaquinones|
