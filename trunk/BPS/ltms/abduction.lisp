@@ -1,9 +1,5 @@
 ;; Ex 3, Chapter 10
 
-(defun get-tms-node-or-nil (fact &optional (*LTRE* *LTRE*) &aux datum)
-  (when (setq datum (referent fact nil)) 
-    (datum-tms-node datum)))
-
 (defun unknown-pairs (clause &optional except-nodes)
   (remove-if
    #'(lambda (term-pair) 
@@ -32,10 +28,10 @@
 	    clauses)))
 
 (defun needs-1 (fact label &aux node)
-  (when (setq node (get-tms-node-or-nil fact))
-    (node-needs-1 node label)))
+  (setq node (get-tms-node fact))
+  (node-needs-1 node label))
 
-(defun circular-need (nodes)
+(defun function-circular-need (nodes)
   #'(lambda (literals) 
     (dolist (literal literals nil)
       (when (find (car literal) nodes)
@@ -61,60 +57,64 @@
     (cons (append el (car sets))
 	  (append-to-all el (cdr sets)))))
 
-(defun all-variations-on-set (literal-needs)
-  (defun vary (set)
-    (if (null set)
-	(list nil)
-      (let ((first-sets (cdr (assoc (car set) literal-needs)))
-	    (rest-sets (vary (cdr set))))
-	(mapcan #'(lambda (el) (append-to-all el rest-sets)) first-sets))))
-  #'(lambda (set) 
-      (mapcar #'remove-duplicates (vary set))))
+(defun all-variations-on-set (set literal-needs)
+  (if (null set)
+      (list nil)
+    (let ((first-sets (cdr (assoc (car set) literal-needs)))
+	  (rest-sets (all-variations-on-set (cdr set) literal-needs)))
+      (mapcan #'(lambda (el) (append-to-all el rest-sets)) first-sets))))
 
-(defun remove-supersets (sets)
-  (defun helper (keep todo sets)
-    (cond ((and (null sets) (null todo))
-	   keep)
-	  ((null sets)
-	   (if (null (car todo))
-	       nil
-	     (helper (cons (car todo) keep)
-		     (cdr todo)
-		     sets)))
-	  ((null todo)
-	   (helper keep
-		   (cons (car sets) todo)
-		   (cdr sets)))
-	  ((null (car todo))
-	   nil)
-	  ((some #'(lambda (set) (subsetp set (car sets)))
-		 todo)
-	   (helper keep
-		   todo
-		   (cdr sets)))
-	  ((some #'(lambda (set) (subsetp (car sets) set))
-		 todo)
-	   (helper keep
-		   (cons (car sets) 
-			 (remove-if #'(lambda (set) (subsetp (car sets) set))
-				    todo))
-		   (cdr sets)))
-	  (t
-	   (helper keep
-		   (cons (car sets) todo)
-		   (cdr sets)))))
-  (helper nil nil sets))
+(defun function-variations-on-set (literal-needs)
+  #'(lambda (set) 
+      (mapcar #'remove-duplicates (all-variations-on-set set literal-needs))))
+
+(defun remove-supersets (sets &optional keep todo)
+  (cond ((and (null sets) (null todo))
+	 keep)
+	((null sets)
+	 (if (null (car todo))
+	     nil
+	   (remove-supersets 
+	    sets
+	    (cons (car todo) keep)
+	    (cdr todo))))
+	((null todo)
+	 (remove-supersets
+	  (cdr sets)
+	  keep
+	  (cons (car sets) todo)))
+	((null (car todo))
+	 nil)
+	((some #'(lambda (set) (subsetp set (car sets)))
+	       todo)
+	 (remove-supersets
+	  (cdr sets)
+	  keep
+	  todo))
+	((some #'(lambda (set) (subsetp (car sets) set))
+	       todo)
+	 (remove-supersets
+	  (cdr sets)
+	  keep
+	  (cons (car sets) 
+		(remove-if #'(lambda (set) (subsetp (car sets) set))
+			   todo))))
+	(t
+	 (remove-supersets
+	  (cdr sets)
+	  keep
+	  (cons (car sets) todo)))))
 
 (defun all-variations-on-sets (sets literal-needs)
   (remove-supersets
-   (mapcan (all-variations-on-set literal-needs)
+   (mapcan (function-variations-on-set literal-needs)
 	   sets)))
 
 (defun node-needs (node label &key (nodes nil) &aux sets new-nodes literals literal-needs)
   (when (and (setq new-nodes (cons node nodes))
 	     (setq sets 
 		   (remove-if 
-		    (circular-need nodes) 
+		    (function-circular-need nodes) 
 		    (node-needs-1 node label))))
     (setq literals
 	  (remove-duplicates (apply #'append sets)))
@@ -134,8 +134,9 @@
     (:TRUE form)
     (:FALSE (list :NOT form))))
 
-(defun needs (fact label &aux)
-  (when (setq node (get-tms-node-or-nil fact))
-    (mapcar #'(lambda (set) (mapcar #'literal->fact set)) 
-	    (node-needs node label))))
+(defun needs (fact label &optional (patterns nil) &aux node)
+  (setq node (get-tms-node fact))
+  (run-rules)
+  (mapcar #'(lambda (set) (mapcar #'literal->fact set)) 
+	  (node-needs node label)))
 
