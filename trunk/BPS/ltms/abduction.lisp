@@ -190,3 +190,15 @@
 	       min-cost)
 	(setq min-cost-exp set)
 	(setq min-cost cost)))))
+
+(defun alphalessp (x y)
+  (string-lessp
+   (format nil "~A" x)
+   (format nil "~A" y)))
+
+(defun sort-fact-sets (sets)
+  (sort
+   (mapcar #'(lambda (set)
+	      (sort set #'alphalessp))
+	   sets)
+   #'alphalessp))
