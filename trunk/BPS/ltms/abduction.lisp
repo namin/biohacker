@@ -72,7 +72,7 @@
       (mapcar #'remove-duplicates (vary set))))
 
 (defun remove-supersets (sets)
-  (defun helper (keep todo sets &aux sub)
+  (defun helper (keep todo sets)
     (cond ((and (null sets) (null todo))
 	   keep)
 	  ((null sets)
@@ -87,18 +87,17 @@
 		   (cdr sets)))
 	  ((null (car todo))
 	   nil)
-	  ((some #'(lambda (set)
-		     (subsetp set (car sets)))
+	  ((some #'(lambda (set) (subsetp set (car sets)))
 		 todo)
 	   (helper keep
 		   todo
 		   (cdr sets)))
-	  ((setq sub
-		 (find-if #'(lambda (set)
-			      (subsetp (car sets) set))
-			  todo))
+	  ((some #'(lambda (set) (subsetp (car sets) set))
+		 todo)
 	   (helper keep
-		   (cons (car sets) (remove sub todo))
+		   (cons (car sets) 
+			 (remove-if #'(lambda (set) (subsetp (car sets) set))
+				    todo))
 		   (cdr sets)))
 	  (t
 	   (helper keep
@@ -107,7 +106,7 @@
   (helper nil nil sets))
 
 (defun all-variations-on-sets (sets literal-needs)
-  (remove-supersets 
+  (remove-supersets
    (mapcan (all-variations-on-set literal-needs)
 	   sets)))
 
