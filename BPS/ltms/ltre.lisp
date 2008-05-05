@@ -30,7 +30,9 @@
     "funify"    ;; Open-coding of unification
     "laccept"   ;; shakedown tests for ltre
     "cwa"       ;; Closed-world assumption mechanism
-    "dds"))     ;; Dependency-directed search facility
+    "dds"       ;; Dependency-directed search facility
+    "abduction" ;; Abduction mechanism (Ex 3 Ch 10)
+    ))     
 
 (defparameter *set-rule-file* "setrule")
 
