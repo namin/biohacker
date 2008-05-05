@@ -55,7 +55,7 @@
 
 (defmacro catalyze (reaction &rest enzymes &aux enzyme-forms)
   (setq enzyme-forms (mapcar #'(lambda (enzyme) `(enzyme ,enzyme)) enzymes))
-  `(assert! '(:IMPLIES (:AND ,@enzyme-forms) (reaction-enabled ,reaction)) ':CATALYZE))
+  `(assert! '(:IMPLIES (:AND ,@enzyme-forms) (reaction-catalyzed ,reaction)) ':CATALYZE))
 
 (defun retract-all-experiments ()
   (dolist (form (fetch '(experiment . ?x)))
@@ -65,6 +65,7 @@
 (defmacro experiment (outcome &key (nutrients nil) (off nil))
   `(progn
      (retract-all-experiments)
+     (assume! 'no-reaction-disabled :NO-REACTION-DISABLED)
      (let ((exp-form '(experiment ,outcome ,nutrients ,@off)))
        (assume! exp-form ':EXPERIMENT)
        (run-rules)

@@ -19,3 +19,14 @@
 	      (rassert! (:IMPLIES ?def (gene-on ?gene))
 			:EXPERIMENT-SETUP))))
 
+(rule ((:INTERN (reaction-enabled ?name) :var ?def))
+      (rassert! (:IMPLIES (:AND (reaction-catalyzed ?name)
+				(:NOT (reaction-disabled ?name)))
+			  (reaction-enabled ?name))
+		:REACTION-ENABLED))
+
+(rule ((:TRUE no-reaction-disabled :var ?def)
+       (:INTERN (reaction-enabled ?name)))
+      (rassert! (:IMPLIES ?def (:NOT (reaction-disabled ?name)))))
+
+
