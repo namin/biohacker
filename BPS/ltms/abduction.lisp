@@ -1,5 +1,10 @@
 ;; Ex 3, Chapter 10
 
+(defvar *unify-file*
+  (make-bps-source-file-name *ltre-path* "unify"))
+
+(load *unify-file*)
+
 (defun unknown-pairs (clause &optional except-nodes)
   (remove-if
    #'(lambda (term-pair) 
@@ -134,9 +139,23 @@
     (:TRUE form)
     (:FALSE (list :NOT form))))
 
-(defun needs (fact label &optional (patterns nil) &aux node)
+(defun function-matching-patterns (patterns)
+  #'(lambda (set)
+      (every #'(lambda (form)
+		 (some #'(lambda (pattern)
+			   (not (eq :FAIL (unify pattern form))))
+		       patterns))
+	     set)))
+
+(defun needs (fact label &optional (patterns nil) &aux node sets)
   (setq node (get-tms-node fact))
   (run-rules)
-  (mapcar #'(lambda (set) (mapcar #'literal->fact set)) 
-	  (node-needs node label)))
+  (setq sets
+	(mapcar #'(lambda (set) (mapcar #'literal->fact set)) 
+		(node-needs node label)))
+  (when patterns
+    (setq sets
+	  (remove-if-not (function-matching-patterns patterns)
+			 sets)))
+  sets)
 

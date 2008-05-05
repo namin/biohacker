@@ -17,10 +17,13 @@
       (rassert! (:IMPLIES ?def (related ?a ?b)) :FAMILY)
       (rassert! (:IMPLIES ?def (related ?b ?a)) :FAMILY))
 
-;(rule ((:INTERN (related ?a ?b) :var ?def))
-;(rassert! (:IMPLIES ?def
-;(:OR (brothers ?a ?b)
-;(father ?a of ?b)
-;(son ?a of ?b)))))
+(rule ((:INTERN (related ?a ?b) :var ?def))
+      (rassert! (:IMPLIES ?def
+			  (:OR (brothers ?a ?b)
+			       (father ?a of ?b)
+			       (son ?a of ?b)))))
 
-(needs '(father mohamed of aadel) :TRUE)
+(setq patterns '((son ?son of ?father) (father ?father of ?son) (brothers ?a ?b)))
+
+(needs '(father mohamed of aadel) :TRUE patterns)
+(needs '(related mohamed aadel) :TRUE patterns)
