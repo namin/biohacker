@@ -41,21 +41,20 @@
 (defmacro organism (name))
 
 (defmacro enzyme (enzyme &rest genes &aux gene-forms statements)
-  (setq gene-forms
-	(mapcar #'(lambda (gene)
-		   (let ((gene-form `(gene ,gene))) 
-		     (push `(assert! '(:IMPLIES (gene-on ,gene) ,gene-form) ':GENE) statements)
-		     gene-form))
-		genes))
-  (push `(assert! '(:IMPLIES (:AND ,@gene-forms) (enzyme ,enzyme))
-		  ':ENZYME)
-	statements)
-  (push 'progn statements)
-  statements)
+  `(assert! '(sufficient-for-enzyme 
+	      ,enzyme 
+	      ,@(mapcar #'(lambda (gene)
+			    `(gene-on ,gene)) 
+			genes))
+	    :ENZYME))
 
 (defmacro catalyze (reaction &rest enzymes &aux enzyme-forms)
-  (setq enzyme-forms (mapcar #'(lambda (enzyme) `(enzyme ,enzyme)) enzymes))
-  `(assert! '(:IMPLIES (:AND ,@enzyme-forms) (reaction-catalyzed ,reaction)) ':CATALYZE))
+  `(assert! '(sufficient-for-reaction 
+	      ,reaction 
+	      ,@(mapcar #'(lambda (enzyme)
+			    `(enzyme ,enzyme)) 
+			enzymes))
+	    :CATALYZE))
 
 (defun retract-all-experiments ()
   (dolist (form (fetch '(experiment . ?x)))
@@ -64,8 +63,8 @@
 
 (defmacro experiment (outcome &key (nutrients nil) (off nil))
   `(progn
+     (stop-investigating-experiment)
      (retract-all-experiments)
-     (assume! 'no-reaction-disabled :NO-REACTION-DISABLED)
      (let ((exp-form '(experiment ,outcome ,nutrients ,@off)))
        (assume! exp-form ':EXPERIMENT)
        (run-rules)
@@ -106,3 +105,19 @@
     (unless or-and-list
       (format t "~%Compound ~A is not a product." compound))
     or-and-list)))
+
+(defun start-investigating-experiment ()
+  (assume! 'cwa :CWA)
+  (run-rules)
+  (when (false? 'investigating-experiment)
+    (retract! '(:NOT investigating-experiment) :CHECK))
+  (when (unknown? 'investigating-experiment)
+    (assume! 'investigating-experiment :CHECK)))
+
+(defun stop-investigating-experiment ()
+  (when (true? 'cwa) 
+    (retract! 'cwa :CWA))
+  (when (true? 'investigating-experiment)
+    (retract! 'investigating-experiment :CHECK))
+  (when (unknown? 'investigating-experiment)
+    (assume! '(:NOT investigating-experiment) :CHECK)))

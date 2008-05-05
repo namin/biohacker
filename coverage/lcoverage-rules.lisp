@@ -20,35 +20,44 @@
 	(rassert! (:IMPLIES ?def (product ?product ?reaction))
 		  :PRODUCT-OF-REACTION)))
 
+(rule ((:TRUE (sufficient-for-enzyme ?enzyme . ?conditions) :var ?def))
+      (assert! `(:IMPLIES (:AND ,@?conditions)
+			  (enzyme ,?enzyme))
+	       ':ENZYME))
+
+(rule ((:TRUE (sufficient-for-reaction ?reaction . ?conditions) :var ?def))
+      (assert! `(:IMPLIES (:AND ,@?conditions)
+			  (reaction-enabled ,?reaction))
+	       :CATALYZE))
+
 (rule ((:TRUE (experiment ?outcome ?nutrients . ?genes-off) :var ?def))
       (dolist (?nutrient ?nutrients)
 	(rassert! (:IMPLIES ?def (nutrient ?nutrient))
 		 :EXPERIMENT-SETUP))
-      (unless (eq ?outcome 'growth)
-	(rule ((:INTERN (mentioned-compound ?compound)))
-	      (unless (find ?compound ?nutrients)
-		(rassert! (:IMPLIES ?def (:NOT (nutrient ?compound)))
-			  :NO-GROWTH-EXPERIMENT-SETUP)))
-	(dolist (?gene ?genes-off)
-	  (rassert! (:IMPLIES ?def (not (gene-on ?gene)))
-		    :NO-GROWTH-EXPERIMENT-SETUP)))
-      (rule ((:INTERN (gene ?gene)))
-	    (unless (find ?gene ?genes-off)
-	      (rassert! (:IMPLIES ?def (gene-on ?gene))
-			:EXPERIMENT-SETUP))))
-
-(rule ((:INTERN (reaction-enabled ?name) :var ?def))
-      (rassert! (:IMPLIES (:AND (reaction-catalyzed ?name)
-				(:NOT (reaction-disabled ?name)))
-			  (reaction-enabled ?name))
-		:REACTION-ENABLED)
-      (rassert! (:IMPLIES (reaction-disabled ?name)
-			  (:NOT (reaction-enabled ?name)))
-		:REACTION-DISABLED))
-
-(rule ((:TRUE no-reaction-disabled :var ?def)
-       (:INTERN (reaction-enabled ?name)))
-      (rassert! (:IMPLIES ?def (:NOT (reaction-disabled ?name)))))
+      (ecase ?outcome
+	('no-growth
+	 (rule ((:INTERN (mentioned-compound ?compound)))
+	       (unless (find ?compound ?nutrients)
+		 (rassert! (:IMPLIES ?def (:NOT (nutrient ?compound)))
+			   :NO-GROWTH-EXPERIMENT-SETUP)))
+	 (rule ((:INTERN (gene-on ?gene) :var ?gene-on-def))
+	       (if (find ?gene ?genes-off)
+		   (rassert! (:IMPLIES ?def 
+				       (:NOT (gene-on ?gene)))
+			     :NO-GROWTH-EXPERIMENT-SETUP)
+		 (rassert! (:IMPLIES (:AND ?def 
+					   (:NOT investigating-experiment)) 
+				     ?gene-on-def)
+			   :NO-GROWTH-EXPERIMENT-SETUP))))
+	('growth
+	 (rule ((:INTERN (gene-on ?gene) :var ?gene-on-def))
+	       (if (find ?gene ?genes-off)
+		   (rassert! (:IMPLIES (:AND ?def (:NOT investigating-experiment)) 
+				       (:NOT (gene-on ?gene)))
+			     :GROWTH-EXPERIMENT-SETUP)
+		 (rassert! (:IMPLIES ?def 
+				     ?gene-on-def)
+			   :GROWTH-EXPERIMENT-SETUP))))))
 
 (rule ((:TRUE (sufficient-for-growth . ?conditions) :var ?def))
       (assert! `(:IMPLIES (:AND ,@?conditions) ; don't include def to allow needs for growth
@@ -59,10 +68,23 @@
       (let* ((sufficient-for-growth-forms (fetch `(sufficient-for-growth . ?conditions)))
 	     (condition-set-forms (mapcar #'(lambda (form) `(:AND ,@(cdr form))) sufficient-for-growth-forms)))
 	(assert! `(:IMPLIES (:AND ,?def
-				  (:NOT (:OR ,@condition-set-forms)))
+				  (:NOT (:AND ,@condition-set-forms)))
 			    (:NOT growth))
 		 :CWA))
+      (rule ((:INTERN (enzyme ?enzyme) :var ?enzyme-def))      
+	    (let* ((sufficient-for-enzyme-forms (fetch `(sufficient-for-enzyme ,?enzyme . ?conditions)))
+		   (condition-set-forms (mapcar #'(lambda (form) `(:AND ,@(cddr form))) sufficient-for-enzyme-forms)))
+	      (assert! `(:IMPLIES (:AND ,?def
+					(:NOT (:AND ,@condition-set-forms)))
+				  (:NOT ,?enzyme-def))
+		       :CWA)))
       (rule ((:INTERN (reaction-enabled ?reaction) :var ?reaction-enabled-def))
+	    (let* ((sufficient-for-reaction-forms (fetch `(sufficient-for-reaction ,?reaction . ?conditions)))
+		   (condition-set-forms (mapcar #'(lambda (form) `(:AND ,@(cddr form))) sufficient-for-reaction-forms)))
+	      (assert! `(:IMPLIES (:AND ,?def
+					(:NOT (:AND ,@condition-set-forms)))
+				  (:NOT ,?reaction-enabled-def))
+		       :CWA))
 	    (rassert! (:IMPLIES (:AND ?def 
 				      (:NOT ?reaction-enabled-def))
 				(:NOT (reaction-active ?reaction)))

@@ -10,26 +10,19 @@
 ;T ;; NOT COHERENT!
 
 ;; It's tricky to correct no-growth experiments
-(retract! 'no-reaction-disabled :NO-REACTION-DISABLED)
-(assume! 'cwa :CWA)
-(run-rules)
-(needs 'growth :FALSE '((reaction-disabled ?r)))
-;(((REACTION-DISABLED R4) (REACTION-DISABLED R1))
-; ((REACTION-DISABLED R4) (REACTION-DISABLED R2))
-; ((REACTION-DISABLED R4) (REACTION-DISABLED R3)))
-
+(start-investigating-experiment)
+(needs 'growth :FALSE '((:NOT (gene-on ?g))))
+;(((:NOT (GENE-ON G4))))
 ;; Checking if that works...
-(assume! '(reaction-disabled R4) :USER)
-(assume! '(reaction-disabled R1) :USER)
+(assume! '(:NOT (GENE-ON G4)) :USER)
 (known? 'growth)
 ;T
 (false? 'growth)
 ;T
 ;; ... indeed
-;; cleaning up
-(retract! '(reaction-disabled R4) :USER)
-(retract! '(reaction-disabled R1) :USER)
-(retract! 'cwa :CWA)
+;; ... cleaning up
+(retract! '(:NOT (GENE-ON G4)) :USER)
+(stop-investigating-experiment)
 
 ;; GROWTH EXPERIMENT
 (experiment 
@@ -40,7 +33,9 @@
 ;T ;; NOT COHERENT -- because growth wasn't derived
 
 ;; It's much easier to correct growth experiments.
+(start-investigating-experiment)
 (needs 'growth :TRUE '((reaction-enabled ?r) (nutrient ?c)))
 ;(((NUTRIENT E)) 
 ; ((REACTION-ENABLED R3)) 
 ; ((NUTRIENT F)))
+(stop-investigating-experiment)
