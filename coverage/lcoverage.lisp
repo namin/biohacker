@@ -32,11 +32,11 @@
   `(assert! '(:IMPLIES (reaction-enabled ,name) (reaction ,name ,reactants ,@products)) ':REACTION))
 
 (defmacro growth (&rest compounds)
-  `(assert! '(:IMPLIES (:AND ,@ (mapcar #'(lambda (compound)
-					    `(compound ,compound))
-					compounds)) 
-		       growth)
-	    ':SUFFICIENT-FOR-GROWTH))
+  `(assert! '(sufficient-for-growth
+	      ,@ (mapcar #'(lambda (compound)
+			     `(compound ,compound))
+			 compounds))
+	    :GROWTH))
 
 (defmacro organism (name))
 
