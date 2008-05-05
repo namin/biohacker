@@ -27,3 +27,8 @@
 
 (needs '(father mohamed of aadel) :TRUE patterns)
 (needs '(related mohamed aadel) :TRUE patterns)
+
+(setq pattern-cost-list
+      '(((son ?son of ?father) . 20) 
+	((father ?father of ?son) . 10) 
+	((brothers ?a ?b) . 30)))
