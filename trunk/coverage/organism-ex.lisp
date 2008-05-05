@@ -43,3 +43,15 @@
 
 ;(why-reaction 'r4)
 ;  Each set of genes is sufficient for reaction R4: ((G4))
+
+;; these should be coherent
+(experiment 
+ no-growth 
+ :nutrients (a b f) 
+ :off (g1 g4))
+
+(experiment 
+ growth 
+ :nutrients (a b f) 
+ :off (g1))
+
