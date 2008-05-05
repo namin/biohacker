@@ -139,11 +139,13 @@
     (:TRUE form)
     (:FALSE (list :NOT form))))
 
+(defun function-matches (a)
+  #'(lambda (b) (not (eq :FAIL (unify a b)))))
+
 (defun function-matching-patterns (patterns)
   #'(lambda (set)
       (every #'(lambda (form)
-		 (some #'(lambda (pattern)
-			   (not (eq :FAIL (unify pattern form))))
+		 (some (function-matches form)
 		       patterns))
 	     set)))
 
@@ -159,3 +161,22 @@
 			 sets)))
   sets)
 
+(defun form-cost (form pattern-cost-list)
+  (cdr (assoc-if (function-matches form) pattern-cost-list)))
+
+(defun explanation-cost (exp pattern-cost-list)
+  (apply #'+
+	 (mapcar #'(lambda (form) (form-cost form pattern-cost-list))
+		 exp)))
+
+(defun labduce (fact label pattern-cost-list &aux patterns sets min-cost-exp min-cost cost)
+  (setq patterns (mapcar #'car pattern-cost-list))
+  (setq sets (needs fact label patterns))
+  (when sets
+    (setq min-cost-exp (car sets))
+    (setq min-cost (explanation-cost min-cost-exp pattern-cost-list))
+    (dolist (set (cdr sets) (cons min-cost-exp min-cost))
+      (when (< (setq cost (explanation-cost set pattern-cost-list)) 
+	       min-cost)
+	(setq min-cost-exp set)
+	(setq min-cost cost)))))
