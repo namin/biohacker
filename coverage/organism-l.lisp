@@ -11,7 +11,9 @@
 
 ;; It's tricky to correct no-growth experiments
 (start-investigating-experiment)
-(needs 'growth :FALSE '((:NOT (gene-on ?g))))
+(setq correction-no-growth 
+      (sort-fact-sets
+       (needs 'growth :FALSE '((:NOT (gene-on ?g))))))
 ;(((:NOT (GENE-ON G4))))
 ;; Checking if that works...
 (assume! '(:NOT (GENE-ON G4)) :USER)
@@ -34,8 +36,10 @@
 
 ;; It's much easier to correct growth experiments.
 (start-investigating-experiment)
-(needs 'growth :TRUE '((reaction-enabled ?r) (nutrient ?c)))
-;(((NUTRIENT E)) 
-; ((REACTION-ENABLED R3)) 
-; ((NUTRIENT F)))
+(setq correction-growth
+      (sort-fact-sets
+       (needs 'growth :TRUE '((reaction-enabled ?r) (nutrient ?c)))))
+; (((NUTRIENT E)) 
+;  ((NUTRIENT F)) 
+;  ((REACTION-ENABLED R3)))
 (stop-investigating-experiment)
