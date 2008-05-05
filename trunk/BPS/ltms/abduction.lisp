@@ -1,10 +1,5 @@
 ;; Ex 3, Chapter 10
 
-(defvar *unify-file*
-  (make-bps-source-file-name *ltre-path* "unify"))
-
-(load *unify-file*)
-
 (defun unknown-pairs (clause &optional except-nodes)
   (remove-if
    #'(lambda (term-pair) 
