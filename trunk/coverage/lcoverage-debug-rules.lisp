@@ -1,7 +1,0 @@
-(rule ((:INTERN (reaction ?reaction ?reactants . ?products) :var ?def))
-      (dolist (?reactant ?reactants)
-	(rassert! (:IMPLIES ?def (reactant ?reactant ?reaction))
-		  :REACTANT-OF-REACTION))
-      (dolist (?product ?products)
-	(rassert! (:IMPLIES ?def (product ?product ?reaction))
-		  :PRODUCT-OF-REACTION)))
