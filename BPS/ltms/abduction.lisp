@@ -202,3 +202,10 @@
 	      (sort set #'alphalessp))
 	   sets)
    #'alphalessp))
+
+(defun pp-sets (sets)
+  (dolist (set sets)
+    (format t "(")
+    (dolist (fact set)
+      (format t " ~A " fact))
+    (format t ")~%")))
