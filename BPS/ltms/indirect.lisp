@@ -88,8 +88,7 @@
 				      (:FALSE the-node))))
 		(add-nogood the-node status
 			    assumptions
-			    (list :IMPLIED-BY formula 'INDIRECT-PROOF))
-)))))
+			    (list :IMPLIED-BY formula 'INDIRECT-PROOF)))))))
       ;; Assume the negation
        (assuming `((:NOT ,fact)) *LTRE*
 		 (run-rules)))
@@ -105,3 +104,5 @@
   (known? 'r)
   (try-indirect-proof-better 'r)
   (known? 'r))
+
+

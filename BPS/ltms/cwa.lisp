@@ -59,7 +59,7 @@
        (let ((answer (catch cwa ,@ body)))
 	 (cond ((eq answer :LOST-CWA) (values nil nil))
 	       (t (values t members)))))))
-
+
 ;;;; 2nd-level procedures -- can be called by experts 
 
 (defun find-cwa-for-set (m-s)
