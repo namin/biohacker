@@ -40,8 +40,11 @@
     (:TRUE form)
     (:FALSE (list :NOT form))))
 
+(defun literal-set->fact-set (set)
+  (mapcar #'literal->fact set))
+
 (defun literal-sets->fact-sets (sets)
-  (mapcar #'(lambda (set) (mapcar #'literal->fact set)) sets))
+  (mapcar #'literal-set->fact-set sets))
 
 (defun needs-1 (fact label &aux node)
   (setq node (get-tms-node fact))
@@ -126,23 +129,31 @@
    (mapcan (function-variations-on-set literal-needs)
 	   sets)))
 
-(defun node-needs (node label &key (nodes nil) &aux sets new-nodes literals literal-needs)
+(defun node-needs (node label &optional (matching-patterns nil) &key (nodes nil) &aux sets-1 sets new-nodes literals literal-needs)
   (when (and (setq new-nodes (cons node nodes))
-	     (setq sets 
+	     (setq sets-1 
 		   (remove-if 
 		    (function-circular-need nodes) 
 		    (node-needs-1 node label))))
     (setq literals
-	  (remove-duplicates (apply #'append sets)))
+	  (remove-duplicates (apply #'append sets-1)))
     (setq literal-needs
 	  (mapcar #'(lambda (literal)
 		      (cons literal
 			    (cons (list literal) 
-				  (node-needs (car literal) (cdr literal) :nodes new-nodes))))
+				  (node-needs (car literal) (cdr literal) matching-patterns :nodes new-nodes))))
 		  literals))
-    (all-variations-on-sets
-     sets
-     literal-needs)))
+    (setq sets
+	  (all-variations-on-sets
+	   sets-1
+	   literal-needs))
+    (when matching-patterns
+      (setq sets
+	    (remove-if-not 
+	     #'(lambda (set)
+		 (funcall matching-patterns (literal-set->fact-set set)))
+	     sets)))
+    sets))
 
 (defun function-matches (a)
   #'(lambda (b) (not (eq :FAIL (unify a b)))))
@@ -154,16 +165,15 @@
 		       patterns))
 	     set)))
 
-(defun needs (fact label &optional (patterns nil) &aux node sets)
+(defun needs (fact label &optional (patterns nil) &aux matching-patterns node sets)
   (setq node (get-tms-node fact))
   (run-rules)
+  (setq matching-patterns
+	(when patterns
+	  (function-matching-patterns patterns)))
   (setq sets 
 	(literal-sets->fact-sets
-	 (node-needs node label)))
-  (when patterns
-    (setq sets
-	  (remove-if-not (function-matching-patterns patterns)
-			 sets)))
+	 (node-needs node label matching-patterns)))
   sets)
 
 (defun form-cost (form pattern-cost-list)
