@@ -42,7 +42,7 @@ Documentation
 Files
 -----
 
-- bionet.lisp
-- bionet-rules.lisp
+- nd.lisp
+- nd-rules.lisp
 - loader.lisp
 - utils.lisp

@@ -1,0 +1,17 @@
+#/bin/bash
+
+cd ..
+trunk="`pwd`/"
+cd BPS
+bps="`pwd`/"
+cd ..
+cd network-debugger
+nd="`pwd`/"
+
+echo "; Network Debugger" >network-debugger.lisp
+echo "(load (concatenate 'string \"$bps\" \"utils/init.lisp\"))" >>network-debugger.lisp
+echo "(defvar *nd-path* \"$nd\")" >>network-debugger.lisp
+echo "(load (concatenate 'string \"$nd\" \"loader.lisp\"))" >>network-debugger.lisp
+echo "(ready-nd)" >>network-debugger.lisp
+
+echo "created network-debugger.lisp"
