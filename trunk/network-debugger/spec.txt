@@ -6,17 +6,17 @@ Place the following form in biohacker/trunk/ptools/data/*-experiments.lisp
  	    :growth? <T or nil>
 	    :knock-outs <list of genes asserted to be off>
 	    :knock-ins  <list of genes asserted to be on>
-	    :toxins     <list of compounds that if produced cause no-growth experimental outcomes>
+	    :toxins     <list of compounds that if produced cause no-growth experimental outcomes (disjunctive)>
 	    :bootstrap-compounds   <list of compounds that are asserted to exist, but not nutrients>
-	    :essential-compounds <list of compounds that must be produced in order to achieve growth>)
+	    :essential-compounds <list of compounds that must be produced in order to achieve growth (conjunctive)>)
 
 Place the following forms in biohacker/trunk/ptools/data/*-network.lisp
 
 (reaction <name>
 	  :reactants <list of reactants>
-	  :products <list of prouducts>
+	  :products <list of products>
 	  :reversible? <t or nil, :UNKNOWN by default>
-	  :enzymes  <list of enzymes>)
+	  :enzymes  <list of enzymes (conjunctive)>)
 
 (enzyme <enzyme-name> . <genes>)
 	
