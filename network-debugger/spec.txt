@@ -15,7 +15,7 @@ Place the following forms in biohacker/trunk/ptools/data/*-network.lisp
 (reaction <name>
 	  :reactants <list of reactants>
 	  :products <list of prouducts>
-	  :reversible? <t/nil/:UNKNOWN <--default>
+	  :reversible? <t or nil, :UNKNOWN by default>
 	  :enzymes  <list of enzymes>)
 
 (enzyme <enzyme-name> . <genes>)
