@@ -138,9 +138,10 @@
 		    (node-needs-1 node label))))
     (setq literals
 	  (remove-duplicates (apply #'append sets-1)))
+    ; association list of (literal . needs)
     (setq literal-needs
 	  (mapcar #'(lambda (literal)
-		      (cons literal
+		      (cons literal 
 			    (add-literal-as-set-if 
 			     matching-patterns 
 			     literal
