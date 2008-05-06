@@ -78,3 +78,6 @@
 
 (setq *nutrients* (mapcar #'cadr (remove-duplicates (apply #'append correction))))
 (tofile "nutrient-list.txt" (loop for cpd in *nutrients* do (format t "~A	10~%" cpd)))
+
+; data column 1
+; click generate a table of individual pathways exceeding 1
