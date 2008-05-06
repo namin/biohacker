@@ -1,0 +1,22 @@
+To run the model, the following forms will be helpful.
+
+Place the following form in biohacker/trunk/ptools/data/*-experiments.lisp 
+
+(experiment <name>  <nutrient-list>
+ 	    :growth? <T or nil>
+	    :knock-outs <list of genes asserted to be off>
+	    :knock-ins  <list of genes asserted to be on>
+	    :toxins     <list of compounds that if produced cause no-growth experimental outcomes>
+	    :bootstrap-compounds   <list of compounds that are asserted to exist, but not nutrients>
+	    :essential-compounds <list of compounds that must be produced in order to achieve growth>)
+
+Place the following forms in biohacker/trunk/ptools/data/*-network.lisp
+
+(reaction <name>
+	  :reactants <list of reactants>
+	  :products <list of prouducts>
+	  :reversible? <t/nil/:UNKNOWN <--default>
+	  :enzymes  <list of enzymes>)
+
+(enzyme <enzyme-name> . <genes>)
+	
