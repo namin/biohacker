@@ -3,7 +3,8 @@
 ;; * load the BPS/utils/init
 
 (defparameter *nd-files*
-  '("nd"        ;; Network Debugger
+  '("nd-inter"  ;; Network Debugger Basic Interface
+    "nd"        ;; Main Network Debugger
     ))
 
 (defparameter *nd-rules-file* 
@@ -14,5 +15,6 @@
 
 (defun ready-nd ()
   (load (make-bps-source-file-name (make-bps-path "ltms") "ltre"))
+  (compile-ltre)
   (compile-nd))
 

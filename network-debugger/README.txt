@@ -38,11 +38,3 @@ Documentation
 - API.txt
   query interface
 
------
-Files
------
-
-- nd.lisp
-- nd-rules.lisp
-- loader.lisp
-- utils.lisp
