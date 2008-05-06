@@ -55,3 +55,19 @@
  :nutrients (a b f) 
  :off (g1))
 
+(explain 'growth)
+#|
+  1 (experiment ...)             ()   Assumption
+  2    (NUTRIENT A)             (1)  (:OR (NUTRIENT A) (:NOT (experiment ...)))
+  3    (COMPOUND A)             (2)  (:OR (COMPOUND A) (:NOT (NUTRIENT A)))
+  4    (NUTRIENT F)             (1)  (:OR (NUTRIENT F) (:NOT (experiment ...)))
+  5    (COMPOUND F)             (4)  (:OR (COMPOUND F) (:NOT (NUTRIENT F)))
+  6    (NUTRIENT B)             (1)  (:OR (NUTRIENT B) (:NOT (experiment ...)))
+  7    (COMPOUND B)             (6)  (:OR (COMPOUND B) (:NOT (NUTRIENT B)))
+  8    (GENE-ON G4)             (1)  (:OR (GENE-ON G4) (:NOT (experiment ...)))
+  9     (ENZYME E4)             (8)  (:OR (ENZYME E4) (:NOT (GENE-ON G4)))
+ 10 (REACTION-ENABLED R4)             (9)  (:OR (REACTION-ENABLED R4) (:NOT (ENZYME E4)))
+ 11 (REACTION R4 (B F) E)            (10)  (:OR (:NOT (REACTION-ENABLED R4)) (REACTION R4 (B F) E))
+ 12    (COMPOUND E)        (5 7 11)  (:OR (:NOT (REACTION R4 (B F) E)) (:NOT (COMPOUND B)) (:NOT (COMPOUND F)) (COMPOUND E))
+ 13          GROWTH          (3 12)  (:OR (:NOT (COMPOUND E)) (:NOT (COMPOUND A)) GROWTH)
+|#
