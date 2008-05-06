@@ -101,25 +101,50 @@ class Biolog_PM_parser:
     def parse_influx( self, column ):
         return int( column )
 
+    
 class Experiment:
-    def __init__( self, experiment_name, media, genes, growth_p, model ):
-        self.experiment_name = experiment_name
-        self.media = media
-        self.genes = genes
-        self.growth_p = growth_p
-        self.model = model
+    def toSexp( self, pylist ):
+        if pylist:
+            return "( %s )" % ' '.join( pylist )
+        else:
+            return "Nil"
+
+    def toBoolean( self, pybool ):
+        if pybool:
+            return "T"
+        else:
+            return "Nil"
+
+    def __init__( self, experiment_name, nutrients, growth_p, essential_compounds, ko,  ki=[], toxins=[], bootstrap_compounds=[]  ):
+        self.experiment = {}
+        self.experiment['name'] = experiment_name
+        self.experiment['nutrients'] = self.toSexp( nutrients )
+        self.experiment['growth?'] = self.toBoolean( growth_p )
+        self.experiment['ko'] = self.toSexp( ko )
+        self.experiment['ki'] = self.toSexp( ki )
+        self.experiment['toxins'] = self.toSexp( toxins )
+        self.experiment['bootstrap-compounds'] = self.toSexp( bootstrap_compounds )
+        self.experiment['essential-compounds'] = self.toSexp( essential_compounds )
+
 
     def write( self, stream ):
-        if self.growth_p:
-            stream.write( '(experiment %s (nutrients %s) (off %s))\n' % ('growth' , ' '.join( self.media ), ' '.join( self.genes)))
-        else:
-            stream.write( '(experiment %s (nutrients %s) (off %s))\n' % ('nogrowth' , ' '.join( self.media ), ' '.join( self.genes)))
+        #print self.experiment
+        stream.write( """
+(experiment %(name)s %(nutrients)s
+   :growth?  %(growth?)s
+   :essential-compounds %(essential-compounds)s
+   :knock-outs %(ko)s
+   :knock-ins %(ki)s
+   :toxins %(toxins)s
+   :bootstrap-compounds %(bootstrap-compounds)s)\n"""   % self.experiment)
+
 class ExperimentMaker:
-    def __init__( self, biolog, pm, compounds, gene_names ):
+    def __init__( self, biolog, pm, compounds, gene_names, essential_compounds ):
         self.biolog = biolog
         self.pm = pm
         self.compounds = compounds
         self.gene_names = gene_names
+        self.essential_compounds = essential_compounds
 
     def convert_nutrients( self, nutrient_set ):
         ecocyc_nutrients = []
@@ -167,7 +192,7 @@ class ExperimentMaker:
         return mutant_growth
     
     def make_experiment_name( self, media, mutant, model ):
-        return model + mutant + '_'.join( media )
+        return model.replace(" ", "_") + "_" +  mutant + "_" + '_'.join( media )
     def make_experiments(self, model):
         experiments = []
         for nutrient_condition in self.biolog:
@@ -175,8 +200,8 @@ class ExperimentMaker:
                 media = self.get_nutrient_media( nutrient_condition['Data Definition'], nutrient_condition['Medium'] )
                 mutant_growth = self.get_mutant_growth( nutrient_condition, model)
                 for mutant in mutant_growth:
-                    experiment_name = self.make_experiment_name( media, mutant, model )
-                    experiments.append( Experiment( experiment_name, media, [mutant], mutant_growth[mutant], model ) )
+                    experiment_name = self.make_experiment_name( nutrient_condition['Medium'], mutant, model )
+                    experiments.append( Experiment( experiment_name, media, mutant_growth[mutant], self.essential_compounds, [mutant] ) )
             else: 
                 sys.stderr.write('ko %s is not the correct format\n' % nutrient_condition )
         return experiments
@@ -221,11 +246,14 @@ if __name__ == '__main__':
     pm_parser = Biolog_PM_parser()
     for i in range(3):
         pm.append( pm_parser.parse( pm_filename % (i+1) ) )
+        
+    essential_compounds = ['ALA','ARG','ASN','ASP','CYS','GLN','GLT','GLY','HIS','ILE','LEU','LYS','MET','PHE','PRO','SER','THR','TRP','TYR','VAL','DATP','DTTP','DGTP','DCTP','ATP','UTP','GTP','CTP','L-1-PHOSPHATIDYL-ETHANOLAMINE','CARDIOLIPIN','L-1-PHOSPHATIDYL-GLYCEROL','C6','BISOHMYR-GLC','ADP-L-GLYCERO-D-MANNO-HEPTOSE','KDO','UDP-GLUCOSE','UDP-GALACTOSE','DTDP-RHAMNOSE','GDP-MANNOSE','N-ACETYL-D-GLUCOSAMINE',]
 
     gene_names = parse_gene_names( 'gene-blattner.txt' )
     compounds = parse_compound_mappings( 'iAF1260-ecocyc-cpd-mappings.txt' )
-    em = ExperimentMaker( biolog, pm, compounds, gene_names )
+    em = ExperimentMaker( biolog, pm, compounds, gene_names, essential_compounds )
     experiments = em.make_experiments( 'in vivo' )
-    experiment_file = 'biolog-experiments.lisp'
+    experiment_file = 'data/biolog-experiments.lisp'
     write_experiments( experiment_file, experiments )
+    
     
