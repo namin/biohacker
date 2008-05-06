@@ -16,7 +16,7 @@ Place the following forms in biohacker/trunk/ptools/data/*-network.lisp
 	  :reactants <list of reactants>
 	  :products <list of products>
 	  :reversible? <t / nil / :UNKNOWN > ; by default, :UNKNOWN for reactions and nil for pathways
-	  :enzymes  <list of enzymes (conjunctive)>
+	  :enzymes  <list of enzymes (conjunctive for reactions)>
 	  :reactions <list of all reactions in the pathway> ; pathways only
 	  )
 
