@@ -68,3 +68,13 @@
  ((NUTRIENT KDO-8P) (NUTRIENT MANNOSE-1P) (NUTRIENT UDP-N-ACETYLMURAMATE))
  ((NUTRIENT KDO-8P) (NUTRIENT MANNOSE-1P) (NUTRIENT UDP-AA-GLUTAMATE)))
 |#
+
+(defmacro tofile (filename &body body)
+  `(with-open-file (file ,filename
+		    :direction :output
+		    :if-exists :supersede)
+     (let ((*standard-output* file))
+       ,@body) ))
+
+(setq *nutrients* (mapcar #'cadr (remove-duplicates (apply #'append correction))))
+(tofile "nutrient-list.txt" (loop for cpd in *nutrients* do (format t "~A	10~%" cpd)))
