@@ -12,11 +12,11 @@ Place the following form in biohacker/trunk/ptools/data/*-experiments.lisp
 
 Place the following forms in biohacker/trunk/ptools/data/*-network.lisp
 
-(reaction <name>
+(reaction/pathway <name>
 	  :reactants <list of reactants>
 	  :products <list of products>
-	  :reversible? <t or nil, :UNKNOWN by default>
+	  :reversible? <t / nil / :UNKNOWN > ; by default, :UNKNOWN for reactions and nil for pathways
 	  :enzymes  <list of enzymes (conjunctive)>)
 
-(enzyme <enzyme-name> . <genes>)
+(enzyme <name> . <genes>)
 	
