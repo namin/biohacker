@@ -1,5 +1,14 @@
 (in-package :ecocyc)
 
+
+(defun export-rxns (filename)
+  (tofile filename
+    (format t "~A~%~A~%~A~%" 
+	    (collect-rxns (all-rxns :smm) #'balanced-rxn-p)
+	    (collect-enzymes (all-rxns :smm) #'balanced-rxn-p)
+	    (collect-pwys (all-pathways :small-molecule) #'balanced-pwy-p))))
+	    
+    
 (defun make-growth  (essential-compounds)
     `(growth ,@essential-compounds))
 
@@ -18,10 +27,14 @@
 
 (setq *M63-growth-medium* '(GLC K PROTON |Pi| AMMONIUM SULFATE MG+2 WATER FE+2 MN+2 CU+2 CO+2 CA+2 ZN+2 CD+2 NI+2))
 
-(defun make-experiment (nutrients ko &key (growth-p t))
-  `(experiment ,(if growth-p 'growth 'no-growth)
-	       (nutrients ,@nutrients)
-	       (off ,@ko)))
+(defun make-experiment (exp-name nutrients &key (growth-p t) ko ki toxins bootstrap-compounds essential-compounds)
+  `(experiment ,exp-name ,nutrients
+	       :growth? ,growth-p
+	       :knock-outs ,ko
+	       :knock-ins ,ki
+	       :toxins ,toxins
+	       :bootstap-compounds ,bootstrap-compounds
+	       :essential-compounds ,essential-compounds))
 
 (defun collect-pwys (pwy-list filter-p)
   (loop for pwy in pwy-list
@@ -31,7 +44,7 @@
 (defun collect-pwy-catalyses (pwy-list filter-p)
   (loop for pwy in pwy-list
        when (funcall filter-p pwy)
-       collect (translate-pwy-catalysis-to-tms pwy)))
+       collect (enzymes-of-pathway pwy)))
 
 (defun collect-pwy-enzymes (pwy-list filter-p)
   (loop for enzyme in (remove-duplicates
@@ -68,13 +81,24 @@
 								      (all-reactants proper-reactants all-products proper-products)
 								    (substrates-of-pathway pwy)
 								  proper-reactants)))) (OFF)))
+
 (defun translate-pwy-to-tms (pwy)
   (multiple-value-bind 
 	(all-reactants proper-reactants all-products proper-products)
       (substrates-of-pathway pwy)
-    `(pwy ,(get-frame-name pwy)
-	,proper-reactants
-	,@all-products)))
+    `(pathway ,(get-frame-name pwy)
+	      :reactants ,proper-reactants
+	      :products ,all-products
+	      :reversible? nil
+	      :enzymes ,(enzymes-of-pathway pwy)
+	      :reactions ,(reactions-of-pathway pwy))))
+
+(defun reactions-of-pathway (pwy)
+  (remove-duplicates
+   (loop for sub-pwy in (get-slot-values pwy 'reaction-list)
+	if (instance-all-instance-of-p sub-pwy '|Pathways|)
+	append (reactions-of-pathway sub-pwy)
+	else collect (get-frame-name sub-pwy))))
 
 (defun translate-pwy-catalysis-to-tms (pwy)
   `(pwy-catalyze ,(get-frame-name pwy)
@@ -91,7 +115,21 @@
 
 
 (defun translate-rxn-to-tms (rxn)
-  `(reaction ,(get-frame-name rxn) ,(get-slot-values rxn 'left) ,@(get-slot-values rxn 'right)))
+  (let ((rxn-direction (get-rxn-direction rxn))
+	(enzymes (enzymes-of-reaction rxn)))
+    (let ((reactants (if (eq rxn-direction :r2l)
+			 (get-slot-values rxn 'right)
+			 (get-slot-values rxn 'left)))
+	  (products (if (eq rxn-direction :r2l)
+			(get-slot-values rxn 'left)
+			(get-slot-values rxn 'right)))
+	  (reversible? (or (eq rxn-direction nil) 
+			   (eq rxn-direction :both))))
+      `(reaction ,(get-frame-name rxn) 
+		 :reactants ,reactants
+		 :products ,products
+		 :reversible? ,reversible?
+		 :enzymes ,enzymes))))
 
 (defun substrate-not-frame-p (rxn)
   (loop for substrate in (substrates-of-reaction rxn)
@@ -113,7 +151,7 @@
 
 (defun get-stoichiometry (rxn side participant)
   (let ((coeff (get-value-annot rxn side participant 'coefficient)))
-    (if coeff
+    (if (and coeff (numberp coeff))
 	coeff
 	1)))
 
