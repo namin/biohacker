@@ -4,6 +4,8 @@
 			    (network-file? t) 
 			    (experiment-file? t))
   `(let ((nd (create-nd ',name :debugging ,debugging)))
+     (debugging-nd
+      "~%Network Debugger ~A" ',name)
      ;; TODO: maybe load network and experiment files
      nd))
 
@@ -47,7 +49,8 @@
 			  ,nutrients ,essential-compounds
 			  ,bootstrap-compounds ,toxins
 			  ,knock-ins ,knock-outs)
-	     :EXPERIMENTS)))
+	     :EXPERIMENTS)
+    (investigate-experiment ',name)))
 
 (defmacro ensure-network-open (demander &rest forms)
   `(if (true? 'network-closed)
@@ -57,6 +60,40 @@
 (defmacro ensure-network-closed (demander &rest forms)
   `(progn
      (when (unknown? 'network-closed)
-       (debugging-nd "Closing network for ~A." ',demander)
+       (debugging-nd "~%Closing network for ~A." ',demander)
        (run-assert! 'network-closed :ENSURE))
      ,@forms))
+
+(defun retract-focus ()
+  (dolist (fact (fetch '(focus-experiment ?e)))
+    (when (already-assumed? fact)
+      (retract! fact :INVESTIGATION)
+      (debugging-nd
+       "~%Retracting focus on experiment ~A." (cadr fact)))))
+
+(defun change-focus-experiment (name)
+  (retract-focus)
+  (assume! `(focus-experiment ,name) :INVESTIGATION)
+  (debugging-nd
+   "~%Focusing on experiment ~A." name))
+
+(defun investigate-experiment (name &aux result)
+  (when (unknown? 'simplify-investigations) 
+    (debugging-nd
+     "~%Assuming simplify-investigations.")
+    (assume! 'simplify-investigations :INVESTIGATION))
+  (change-focus-experiment name)
+  (setq result
+	(cond ((true? 'experiment-coherent)
+	       :COHERENT)
+	      ((true? 'experiment-growth)
+	       (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r))))
+	      ((false? 'experiment-growth)
+	       (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
+	      ((t (error "Experiment outcome is unknown!")))))
+  (when (nd-debugging *nd*)
+    (if (eq :COHERENT result) 
+	(format t " Experiment ~A is coherent." name)
+      (progn 
+	(format t " Experiment ~A is not coherent. Needs:" name)
+	(pp-sets result t)))))
