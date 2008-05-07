@@ -1,14 +1,20 @@
+(defun list-of (name els)
+  (mapcar
+   #'(lambda (el)
+     (list name el))
+   els))
+
 (rule ((:INTERN (enzyme ?enzyme . ?genes)))
       (dolist (?gene ?genes)
 	(rassert! (gene ?gene) :NETWORK))
       (assert! `(:IMPLIES
-		 (:AND 
-		  ,@(mapcar
-		     (lambda (?gene)
-		       `(gene-on ,?gene))
-		     ?genes))
+		 (:AND ,@(list-of 'gene-on ?genes))
 		 (enzyme-present ,?enzyme))
-	       :ENZYME-FORMATION))
+	       :ENZYME-FORMED)
+      (assert! `(:IMPLIES 
+		 (:NOT (:OR ,@(list-of 'gene-on ?genes)))
+		 (:NOT (enzyme-present ,?enzyme)))
+	       :ENZYME-NOT-FORMED))
 
 ;; ignoring reversible? for now
 ;; ignoring unknown enzyme for now
@@ -23,68 +29,58 @@
 	     (rassert! (reaction-enabled ?reaction) :REACTION-SPONTANEOUS))
 	    (t
 	     (assert! `(:IMPLIES 
-			(:OR 
-			 ,@(mapcar 
-			    (lambda (?enzyme) `(enzyme-present ,?enzyme))
-			    ?enzymes))
+			(:OR ,@(list-of 'enzyme-present ?enzymes))
 			(reaction-enabled ,?reaction))
-		       :REACTION-CATALYZED)))
+		       :REACTION-CATALYZED)
+	     (assert! `(:IMPLIES 
+			(:NOT (:OR ,@(list-of 'enzyme-present ?enzymes)))
+			(:NOT (reaction-enabled ,?reaction)))
+		       :REACTION-NOT-CATALYZED)))
       (assert! `(:IMPLIES
 		 (:AND (reaction-enabled ,?reaction)
-		       ,@(mapcar 
-			  (lambda (?reactant)
-			    `(compound-present ,?reactant))
-			  ?reactants))
+		       ,@(list-of 'compound-present ?reactants))
 		 (:AND (reaction-fired ,?reaction)
-		       ,@(mapcar
-			  (lambda (?product)
-			    `(compound-present ,?product))
-			  ?products)))
-	       :REACTION-FIRED))
+		       ,@(list-of 'compound-present ?products)))
+	       :REACTION-FIRED)
+      (assert! `(:IMPLIES
+		 (:NOT (:OR ,@(list-of 'compound-present ?reactants)))
+		 (:NOT (reaction-fired ,?reaction)))
+	       :REACTION-NOT-FIRED))
 
 (rule ((:INTERN (nutrient ?nutrient) :var ?def))
       (rassert! (:IMPLIES ?def (compound-present ?nutrient))
 		:NUTRIENT-PRESENT))
 
-(defun compound-present-list (compounds)
-  (mapcar 
-   (lambda (?compound)
-     `(compound-present ,?compound)) 
-   compounds))
-
 (rule ((:INTERN (experiment ?experiment ?growth? ?nutrients ?essential-compounds ?bootstrap-compounds ?toxins ?knock-ins ?knock-outs)))
       (assert! `(:IMPLIES 
 		 (experiment-in-focus ,?experiment)
-		 (:AND ,@(mapcar 
-			  (lambda (?nutrient) 
-			    `(nutrient ,?nutrient))
-			  ?nutrients)
-		       ,@(mapcar
-			  (lambda (?gene)
-			    `(gene-on ,?gene))
-			  ?knock-ins)
-		       ,@(mapcar
-			  (lambda (?gene)
-			    `(:NOT (gene-on ,?gene)))
-			  ?knock-outs)))
+		 (:AND ,@(list-of 'nutrient ?nutrients)
+		       ,@(list-of 'gene-on ?knock-ins)
+		       (:NOT (:OR ,@(list-of 'gene-on ?knock-outs)))))
 	       :EXPERIMENT-SETUP)
       (let ((or-any-toxin-present
-	     `(:OR ,@(compound-present-list ?toxins)))) 
+	     `(:OR ,@(list-of 'compound-present ?toxins)))) 
 	(assert! `(:IMPLIES
 		   (:AND
 		    (experiment-in-focus ,?experiment)
 		    ,or-any-toxin-present)
 		  (:NOT growth))
-		:EXPERIMENT-GROWTH-PREDICTION)
+		:EXPERIMENT-TOXIC-PREDICTION)
 	(assert! `(:IMPLIES
 		   (:AND
 		    (experiment-in-focus ,?experiment)
 		    (:NOT ,or-any-toxin-present)
-		    ,@(compound-present-list ?essential-compounds))
+		    ,@(list-of 'compound-present ?essential-compounds))
 		   growth)
-		 :EXPERIMENT-NO-GROWTH-PREDICTION))
+		 :EXPERIMENT-GROWTH-PREDICTION))
+      	(assert! `(:IMPLIES
+		   (:AND
+		    (experiment-in-focus ,?experiment)
+		    (:NOT (:AND ,@(list-of 'compound-present ?essential-compounds))))
+		   (:NOT growth))
+		 :EXPERIMENT-NO-GROWTH-PREDICTION)
       (let ((and-all-bootstraps-present
-	     `(:AND ,@(compound-present-list ?bootstrap-compounds))))
+	     `(:AND ,@(list-of 'compound-present ?bootstrap-compounds))))
 	(assert! `(:IMPLIES
 		   (:AND
 		    (experiment-in-focus ,?experiment)
@@ -114,3 +110,14 @@
       (when (form< ?focus1 ?focus2)
 	(rassert! (:NOT (:AND ?focus1 ?focus2))
 		  :FOCUS-UNIQUENESS)))
+
+(rule ((:TRUE network-closed))
+      (rule ((:INTERN (compound ?compound)))
+	    (let* ((product-forms (fetch `(product ,?compound ?reaction)))
+		   (reaction-forms (mapcar #'(lambda (form) `(reaction-fired ,(caddr form))) product-forms)))
+	      (assert! `(:IMPLIES 
+			 (:AND 
+			  (:NOT (nutrient ,?compound))
+			  (:NOT (:OR ,@reaction-forms)))
+			 (:NOT (compound-present ,?compound)))
+		       :NETWORK-CLOSED))))
