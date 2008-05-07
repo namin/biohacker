@@ -27,9 +27,32 @@
 	      :LTRE (create-ltre (list :LTRE-OF title))
 	      :DEBUGGING debugging)))
      (setq *ND* nd)
+     (change-ltms 
+      (ltre-ltms (nd-ltre nd)) 
+      :node-string 'nd-node-string)
      (load *nd-rules-file*)
      nd))
 
 (defun change-nd (nd &key (debugging nil debugging?))
   (if debugging? (setf (nd-debugging nd) debugging)))
 
+(defun view-fact (fact)
+  (when (listp fact)
+    (setq 
+     fact
+     (cond ((eq 'experiment (car fact))
+	    `(experiment ,(cadr fact) ,(caddr fact)))
+	   ((find (car fact) '(reaction pathway))
+	    `(,(car fact) 
+	      ,(cadr fact) 
+	      ,(caddr fact)
+	      ,(ecase (cadr (cdddr fact))
+		 ((nil) '-->)
+		 ((t) '<->)
+		 ((:UNKNOWN) '?->))
+	      ,(cadddr fact)))
+	   (t fact))))
+  fact)
+
+(defun nd-node-string (node)
+  (format nil "~A" (view-fact (view-node node))))
