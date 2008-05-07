@@ -33,7 +33,10 @@
 			(reaction-enabled ,?reaction))
 		       :REACTION-CATALYZED)
 	     (assert! `(:IMPLIES 
-			(:NOT (:OR ,@(list-of 'enzyme-present ?enzymes)))
+			(:AND
+			 (:NOT (:OR ,@(list-of 'enzyme-present ?enzymes)))
+			 (:NOT experiment-growth) ; keep uncatalyzed reactions open for growth experiment abduction
+			 )
 			(:NOT (reaction-enabled ,?reaction)))
 		       :REACTION-NOT-CATALYZED)))
       (assert! `(:IMPLIES
@@ -60,7 +63,10 @@
 		 (experiment-in-focus ,?experiment)
 		 (:AND ,@(list-of 'nutrient ?nutrients)
 		       ,@(list-of 'gene-on ?knock-ins)
-		       (:NOT (:OR ,@(list-of 'gene-on ?knock-outs)))))
+		       (:NOT (:OR ,@(list-of 'gene-on ?knock-outs)))
+		       ,(ecase ?growth?
+			  ((t) 'experiment-growth)
+			  ((nil) '(:NOT experiment-growth)))))
 	       :EXPERIMENT-SETUP)
       (let ((or-any-toxin-present
 	     `(:OR ,@(list-of 'compound-present ?toxins)))) 
