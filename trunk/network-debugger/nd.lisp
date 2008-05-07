@@ -50,7 +50,8 @@
 			  ,bootstrap-compounds ,toxins
 			  ,knock-ins ,knock-outs)
 	     :EXPERIMENTS)
-    (investigate-experiment ',name)))
+    (when (nd-debugging *nd*) 
+      (investigate-experiment ',name))))
 
 (defmacro ensure-network-open (demander &rest forms)
   `(if (true? 'network-closed)
