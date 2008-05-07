@@ -12,7 +12,7 @@
 		 (enzyme-present ,?enzyme))
 	       :ENZYME-FORMED)
       (assert! `(:IMPLIES 
-		 (:NOT (:OR ,@(list-of 'gene-on ?genes)))
+		 (:NOT (:AND ,@(list-of 'gene-on ?genes)))
 		 (:NOT (enzyme-present ,?enzyme)))
 	       :ENZYME-NOT-FORMED))
 

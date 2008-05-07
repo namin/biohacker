@@ -1,4 +1,4 @@
-(network-debugger simple :network-file? nil :debugging t)
+(network-debugger simple nil :debugging t)
 
 ;; Network
 (reaction 
