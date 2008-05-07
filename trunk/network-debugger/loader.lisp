@@ -5,6 +5,7 @@
 (defparameter *nd-files*
   '("nd-inter"  ;; Network Debugger Basic Interface
     "nd"        ;; Main Network Debugger
+    "utils"     ;; Various utilities
     ))
 
 (defparameter *nd-rules-file* 
