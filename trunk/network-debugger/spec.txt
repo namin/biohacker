@@ -29,4 +29,5 @@ Place the following forms in biohacker/trunk/ptools/data/*-network.lisp
 	  )
 
 (enzyme <name> . <list of genes (conjunctive)>)
-	
+The list of genes may contain :UNKNOWN, meaning that the enzyme has
+some unknown gene contributing to its formation.
