@@ -13,12 +13,14 @@
 		    products
 		    (reversible? :UNKNOWN)
 		    (enzymes nil))
-  `(assert! '(reaction ,name ,reactants ,products ,reversible? ,enzymes)
-	    :NETWORK))
+  `(ensure-network-open reaction
+    (run-assert! '(reaction ,name ,reactants ,products ,reversible? ,enzymes)
+	     :NETWORK)))
 
 (defmacro enzyme (name &rest genes)
-  `(assert! '(enzyme ,name ,@genes)
-	    :NETWORK))
+  `(ensure-network-open enzyme
+    (run-assert! '(enzyme ,name ,@genes)
+	     :NETWORK)))
 
 (defmacro pathway (name
 		   &key
@@ -27,8 +29,9 @@
 		   (reversible? nil)
 		   (enzymes nil)
 		   reactions)
-  `(assert! '(pathway ,name ,reactants ,products ,reversible? ,enzymes ,reactions)
-	    :NETWORK))
+  `(ensure-network-open pathway
+    (run-assert! '(pathway ,name ,reactants ,products ,reversible? ,enzymes ,reactions)
+	     :NETWORK)))
 
 (defmacro experiment (name 
 		      nutrients
@@ -39,8 +42,21 @@
 		      (toxins nil)
 		      (bootstrap-compounds nil)
 		      essential-compounds)
-  `(assert! '(experiment ,name ,growth? 
-			 ,nutrients ,essential-compounds
-			 ,bootstrap-compounds ,toxins
-			 ,knock-ins ,knock-outs)
-	    :EXPERIMENTS))
+  `(ensure-network-closed experiment
+    (run-assert! '(experiment ,name ,growth? 
+			  ,nutrients ,essential-compounds
+			  ,bootstrap-compounds ,toxins
+			  ,knock-ins ,knock-outs)
+	     :EXPERIMENTS)))
+
+(defmacro ensure-network-open (demander &rest forms)
+  `(if (true? 'network-closed)
+     (error (format nil "Cannot add ~A as network closed." ',demander))
+     (progn ,@forms)))
+
+(defmacro ensure-network-closed (demander &rest forms)
+  `(progn
+     (when (unknown? 'network-closed)
+       (debugging-nd "Closing network for ~A." ',demander)
+       (run-assert! 'network-closed :ENSURE))
+     ,@forms))

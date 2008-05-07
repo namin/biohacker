@@ -56,3 +56,8 @@
 
 (defun nd-node-string (node)
   (format nil "~A" (view-fact (view-node node))))
+
+(defmacro run-assert! (fact just)
+  `(progn
+     (assert! ,fact ,just)
+     (run-rules)))
