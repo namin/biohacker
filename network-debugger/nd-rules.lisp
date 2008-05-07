@@ -1,9 +1,3 @@
-(defun list-of (name els)
-  (mapcar
-   #'(lambda (el)
-     (list name el))
-   els))
-
 (rule ((:INTERN (enzyme ?enzyme . ?genes)))
       (dolist (?gene ?genes)
 	(rassert! (gene ?gene) :NETWORK))
