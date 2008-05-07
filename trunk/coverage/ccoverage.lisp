@@ -39,8 +39,8 @@
 		    (enzymes nil))
   `(progn
      (reaction-old ,name ,reactants ,@products)
-     (dolist (enzyme ',enzymes)
-       (catalyze-old ,name enzyme))))
+     ,@(dolist (enzyme enzymes)
+	 `(catalyze-old ,name ,enzyme))))
 
 (defmacro reaction-old (name reactants &rest products)
   `(assert! '(:IMPLIES (reaction-enabled ,name) (reaction ,name ,reactants ,@products)) ':REACTION))
