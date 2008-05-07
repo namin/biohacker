@@ -43,9 +43,13 @@
 		       ,@(list-of 'compound-present ?products)))
 	       :REACTION-FIRED)
       (assert! `(:IMPLIES
-		 (:NOT (:OR ,@(list-of 'compound-present ?reactants)))
+		 (:NOT (:AND ,@(list-of 'compound-present ?reactants)))
 		 (:NOT (reaction-fired ,?reaction)))
-	       :REACTION-NOT-FIRED))
+	       :REACTION-NOT-FIRED)
+      (rassert! (:IMPLIES
+		 (:NOT (reaction-enabled ?reaction))
+		 (:NOT (reaction-fired ?reaction)))
+		:INCLUSION))
 
 (rule ((:INTERN (nutrient ?nutrient) :var ?def))
       (rassert! (:IMPLIES ?def (compound-present ?nutrient))
@@ -103,7 +107,23 @@
 		     ((nil) 'growth)
 		     ((t) '(:NOT growth))))
 		 (:NOT experiment-coherent))
-	       :EXPERIMENT-PREDICTION-WRONG-OUTCOME))
+	       :EXPERIMENT-PREDICTION-WRONG-OUTCOME)
+      (when (not ?growth?)
+	(rule ((:INTERN (compound ?compound)))
+	      (unless (find ?compound ?nutrients) 
+		(rassert! (:IMPLIES
+			   (:AND (experiment-in-focus ?experiment)
+				 simplify-needs)
+			   (:NOT (nutrient ?compound)))
+			  :NO-GROWTH-EXPERIMENT-SIMPLIFICATION))))
+      (when ?growth?
+	(rule ((:INTERN (gene ?gene)))
+	      (unless (or (find ?gene ?knock-outs) (find ?gene ?knock-ins)) 
+		(rassert! (:IMPLIES 
+			   (:AND (experiment-in-focus ?experiment)
+				 simplify-needs)
+			   (gene-on ?gene))
+			  :GROWTH-EXPERIMENT-SIMPLIFICATION)))))
 
 (rule ((:INTERN (experiment-in-focus ?e1) :var ?focus1)
        (:INTERN (experiment-in-focus ?e2) :var ?focus2))
@@ -121,3 +141,4 @@
 			  (:NOT (:OR ,@reaction-forms)))
 			 (:NOT (compound-present ,?compound)))
 		       :NETWORK-CLOSED))))
+

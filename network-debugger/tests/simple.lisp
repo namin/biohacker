@@ -45,7 +45,6 @@
  :essential-compounds (a e)
  :knock-outs (g1))
 
-
 (experiment
  positive
  (a b d)
