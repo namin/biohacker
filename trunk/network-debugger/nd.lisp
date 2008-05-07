@@ -1,12 +1,9 @@
 (defmacro network-debugger (name
 			    &key 
-			    (debugging nil)
-			    (network-file? t) 
-			    (experiment-file? t))
+			    (debugging nil))
   `(let ((nd (create-nd ',name :debugging ,debugging)))
      (debugging-nd
       "~%Network Debugger ~A" ',name)
-     ;; TODO: maybe load network and experiment files
      nd))
 
 (defmacro reaction (name
@@ -16,13 +13,17 @@
 		    (reversible? :UNKNOWN)
 		    (enzymes nil))
   `(ensure-network-open reaction
-    (run-assert! '(reaction ,name ,reactants ,products ,reversible? ,enzymes)
-	     :NETWORK)))
+    (assert! '(reaction ,name ,reactants ,products ,reversible? ,enzymes)
+	     :NETWORK)
+    (debugging-nd
+     "~%Adding reaction ~A." ',name)))
 
 (defmacro enzyme (name &rest genes)
   `(ensure-network-open enzyme
-    (run-assert! '(enzyme ,name ,@genes)
-	     :NETWORK)))
+    (assert! '(enzyme ,name ,@genes)
+	     :NETWORK)
+    (debugging-nd
+     "~%Adding enzyme ~A." ',name)))
 
 (defmacro pathway (name
 		   &key
@@ -32,8 +33,10 @@
 		   (enzymes nil)
 		   reactions)
   `(ensure-network-open pathway
-    (run-assert! '(pathway ,name ,reactants ,products ,reversible? ,enzymes ,reactions)
-	     :NETWORK)))
+    (assert! '(pathway ,name ,reactants ,products ,reversible? ,enzymes ,reactions)
+	     :NETWORK)
+    (debugging-nd
+     "~%Adding pathway ~A." ',name)))
 
 (defmacro experiment (name 
 		      nutrients
@@ -45,24 +48,30 @@
 		      (bootstrap-compounds nil)
 		      essential-compounds)
   `(ensure-network-closed experiment
-    (run-assert! '(experiment ,name ,growth? 
+    (assert! '(experiment ,name ,growth? 
 			  ,nutrients ,essential-compounds
 			  ,bootstrap-compounds ,toxins
 			  ,knock-ins ,knock-outs)
 	     :EXPERIMENTS)
-    (when (nd-debugging *nd*) 
+    (debugging-nd
+     "~%Adding experiment ~A" ',name)
+    (when (nd-debugging *nd*)
+      (run-rules)
       (investigate-experiment ',name))))
 
 (defmacro ensure-network-open (demander &rest forms)
-  `(if (true? 'network-closed)
-     (error (format nil "Cannot add ~A as network closed." ',demander))
+  `(if (nd-network-closed? *nd*)
+       (error (format nil "Cannot add ~A as network closed." ',demander))
      (progn ,@forms)))
 
 (defmacro ensure-network-closed (demander &rest forms)
   `(progn
-     (when (unknown? 'network-closed)
+     (when (not (nd-network-closed? *nd*))
        (debugging-nd "~%Closing network for ~A." ',demander)
-       (run-assert! 'network-closed :ENSURE))
+       (run-rules)
+       (assert! 'network-closed :ENSURE)
+       (setf (nd-network-closed? *nd*) t)
+       (run-rules))
      ,@forms))
 
 (defun retract-focus ()
@@ -91,7 +100,7 @@
 	       (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r))))
 	      ((false? 'experiment-growth)
 	       (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
-	      ((t (error "Experiment outcome is unknown!")))))
+	      (t (error "Experiment outcome is unknown!"))))
   (when (nd-debugging *nd*)
     (if (eq :COHERENT result) 
 	(format t " Experiment ~A is coherent." name)

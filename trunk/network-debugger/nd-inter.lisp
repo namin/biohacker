@@ -2,11 +2,12 @@
   title                   ; Pretty name
   ltre                    ; Pointer to its LTRE
   (debugging nil)         ; Show basic operations
+  (network-closed? nil)   ; Whether reactions, enzymes and pathways can still be added
 )
 
 (defun nd-print-procedure (nd st ignore)
   (declare (ignore ignore))
-  (format st "<network-debugger: ~A>" (nd-title nd)))
+  (format st "<network-debugger: ~A (~A)>" (nd-title nd) (if (nd-network-closed? nd) 'closed 'open)))
 
 (defvar *ND* nil) ;; Default ND
 
