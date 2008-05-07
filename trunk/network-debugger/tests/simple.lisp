@@ -1,4 +1,4 @@
-(network-debugger simple nil :debugging t)
+(network-debugger simple :debugging t)
 
 ;; Network
 (reaction 
@@ -59,18 +59,29 @@
 
 #|
 Network Debugger SIMPLE
+Adding reaction R1.
+Adding reaction R2.
+Adding reaction R3.
+Adding reaction R4.
+Adding enzyme E1.
+Adding enzyme E3.
+Adding enzyme E4.
 Closing network for EXPERIMENT.
+Adding experiment FALSE-NEGATIVE
 Assuming simplify-investigations.
 Focusing on experiment FALSE-NEGATIVE. Experiment FALSE-NEGATIVE is not coherent. Needs:
 ( (NUTRIENT E) )
-( (NUTRIENT F) )
 ( (NUTRIENT D) )
 ( (REACTION-ENABLED R2) )
+( (NUTRIENT F) )
+Adding experiment FALSE-POSITIVE
 Retracting focus on experiment FALSE-NEGATIVE.
 Focusing on experiment FALSE-POSITIVE. Experiment FALSE-POSITIVE is not coherent. Needs:
 ( (NOT (GENE-ON G4)) )
+Adding experiment POSITIVE
 Retracting focus on experiment FALSE-POSITIVE.
 Focusing on experiment POSITIVE. Experiment POSITIVE is coherent.
+Adding experiment NEGATIVE
 Retracting focus on experiment POSITIVE.
 Focusing on experiment NEGATIVE. Experiment NEGATIVE is coherent.
 |#
