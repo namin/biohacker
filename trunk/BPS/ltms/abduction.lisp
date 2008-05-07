@@ -51,20 +51,6 @@
       (when (find (car literal) nodes)
 	(return t)))))
 
-(defun label< (x y)
-  (cond ((eq x y) nil)
-	((eq x :TRUE) t)
-	(t nil)))
-
-(defun literal< (x y &aux cx cy)
-  (defun counter (x)
-    (datum-counter (tms-node-datum (car x))))
-  (setq cx (counter x))
-  (setq cy (counter y))
-  (if (= cx cy)
-      (label< (cdr x) (cdr y))
-    (< cx cy)))
-
 (defun append-to-all (el sets)
   (if (null sets)
       nil
