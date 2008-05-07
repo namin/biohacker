@@ -57,4 +57,20 @@
  :growth? nil
  :essential-compounds (a e))
 
-
+#|
+Network Debugger SIMPLE
+Closing network for EXPERIMENT.
+Assuming simplify-investigations.
+Focusing on experiment FALSE-NEGATIVE. Experiment FALSE-NEGATIVE is not coherent. Needs:
+( (NUTRIENT E) )
+( (NUTRIENT F) )
+( (NUTRIENT D) )
+( (REACTION-ENABLED R2) )
+Retracting focus on experiment FALSE-NEGATIVE.
+Focusing on experiment FALSE-POSITIVE. Experiment FALSE-POSITIVE is not coherent. Needs:
+( (NOT (GENE-ON G4)) )
+Retracting focus on experiment FALSE-POSITIVE.
+Focusing on experiment POSITIVE. Experiment POSITIVE is coherent.
+Retracting focus on experiment POSITIVE.
+Focusing on experiment NEGATIVE. Experiment NEGATIVE is coherent.
+|#

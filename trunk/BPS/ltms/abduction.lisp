@@ -190,9 +190,9 @@
 	   sets)
    #'alphalessp))
 
-(defun pp-sets (sets)
+(defun pp-sets (sets &optional (st t))
   (dolist (set sets)
-    (format t "(")
+    (format st "~%(")
     (dolist (fact set)
-      (format t " ~A " fact))
-    (format t ")~%")))
+      (format st " ~A " fact))
+    (format st ")")))

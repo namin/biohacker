@@ -60,7 +60,7 @@
 
 (rule ((:INTERN (experiment ?experiment ?growth? ?nutrients ?essential-compounds ?bootstrap-compounds ?toxins ?knock-ins ?knock-outs)))
       (assert! `(:IMPLIES 
-		 (experiment-in-focus ,?experiment)
+		 (focus-experiment ,?experiment)
 		 (:AND ,@(list-of 'nutrient ?nutrients)
 		       ,@(list-of 'gene-on ?knock-ins)
 		       (:NOT (:OR ,@(list-of 'gene-on ?knock-outs)))
@@ -72,20 +72,20 @@
 	     `(:OR ,@(list-of 'compound-present ?toxins)))) 
 	(assert! `(:IMPLIES
 		   (:AND
-		    (experiment-in-focus ,?experiment)
+		    (focus-experiment ,?experiment)
 		    ,or-any-toxin-present)
 		  (:NOT growth))
 		:EXPERIMENT-TOXIC-PREDICTION)
 	(assert! `(:IMPLIES
 		   (:AND
-		    (experiment-in-focus ,?experiment)
+		    (focus-experiment ,?experiment)
 		    (:NOT ,or-any-toxin-present)
 		    ,@(list-of 'compound-present ?essential-compounds))
 		   growth)
 		 :EXPERIMENT-GROWTH-PREDICTION))
       	(assert! `(:IMPLIES
 		   (:AND
-		    (experiment-in-focus ,?experiment)
+		    (focus-experiment ,?experiment)
 		    (:NOT (:AND ,@(list-of 'compound-present ?essential-compounds))))
 		   (:NOT growth))
 		 :EXPERIMENT-NO-GROWTH-PREDICTION)
@@ -93,13 +93,13 @@
 	     `(:AND ,@(list-of 'compound-present ?bootstrap-compounds))))
 	(assert! `(:IMPLIES
 		   (:AND
-		    (experiment-in-focus ,?experiment)
+		    (focus-experiment ,?experiment)
 		    (:NOT ,and-all-bootstraps-present))
 		   (:NOT experiment-coherent))
 		 :EXPERIMENT-PREDICTION-MISSING-BOOTSTRAP-COMPOUND)
 	(assert! `(:IMPLIES
 		   (:AND
-		    (experiment-in-focus ,?experiment)
+		    (focus-experiment ,?experiment)
 		    ,and-all-bootstraps-present
 		    ,(ecase ?growth?
 		       ((t) 'growth)
@@ -108,7 +108,7 @@
 		 :EXPERIMENT-PREDICTION-OK))
       (assert! `(:IMPLIES
 		 (:AND
-		  (experiment-in-focus ,?experiment)
+		  (focus-experiment ,?experiment)
 		  ,(ecase ?growth?
 		     ((nil) 'growth)
 		     ((t) '(:NOT growth))))
@@ -118,33 +118,33 @@
 	(rule ((:INTERN (compound ?compound)))
 	      (unless (find ?compound ?nutrients) 
 		(rassert! (:IMPLIES
-			   (:AND (experiment-in-focus ?experiment)
-				 simplify-needs)
+			   (:AND (focus-experiment ?experiment)
+				 simplify-investigations)
 			   (:NOT (nutrient ?compound)))
 			  :NO-GROWTH-EXPERIMENT-SIMPLIFICATION))))
       (when ?growth?
 	(rule ((:INTERN (gene ?gene)))
 	      (unless (or (find ?gene ?knock-outs) (find ?gene ?knock-ins)) 
 		(rassert! (:IMPLIES 
-			   (:AND (experiment-in-focus ?experiment)
-				 simplify-needs)
+			   (:AND (focus-experiment ?experiment)
+				 simplify-investigations)
 			   (gene-on ?gene))
 			  :GROWTH-EXPERIMENT-SIMPLIFICATION)))))
 
-(rule ((:INTERN (experiment-in-focus ?e1) :var ?focus1)
-       (:INTERN (experiment-in-focus ?e2) :var ?focus2))
+(rule ((:INTERN (focus-experiment ?e1) :var ?focus1)
+       (:INTERN (focus-experiment ?e2) :var ?focus2))
       (when (form< ?focus1 ?focus2)
 	(rassert! (:NOT (:AND ?focus1 ?focus2))
 		  :FOCUS-UNIQUENESS)))
 
 (rule ((:TRUE network-closed))
       (rule ((:INTERN (compound ?compound)))
-	    (let* ((product-forms (fetch `(product ,?compound ?reaction)))
-		   (reaction-forms (mapcar #'(lambda (form) `(reaction-fired ,(caddr form))) product-forms)))
+	    (let* ((product-facts (fetch `(product ,?compound ?reaction)))
+		   (reaction-fired-facts (mapcar #'(lambda (fact) `(reaction-fired ,(caddr fact))) product-facts)))
 	      (assert! `(:IMPLIES 
 			 (:AND 
 			  (:NOT (nutrient ,?compound))
-			  (:NOT (:OR ,@reaction-forms)))
+			  (:NOT (:OR ,@reaction-fired-facts)))
 			 (:NOT (compound-present ,?compound)))
 		       :NETWORK-CLOSED))))
 
