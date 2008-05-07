@@ -26,7 +26,9 @@
 	      :TITLE title 
 	      :LTRE (create-ltre (list :LTRE-OF title))
 	      :DEBUGGING debugging)))
-   (setq *ND* nd)))
+     (setq *ND* nd)
+     (load *nd-rules-file*)
+     nd))
 
 (defun change-nd (nd &key (debugging nil debugging?))
   (if debugging? (setf (nd-debugging nd) debugging)))
