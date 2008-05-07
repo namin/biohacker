@@ -22,8 +22,8 @@ Place the following forms in biohacker/trunk/ptools/data/*-network.lisp
                       i.e. this reaction will never be fired 
                            but might play a role in abduction
                     - :SPONTANEOUS, instead of a list, means that no enzymes are needed
-                    - (unknown) means that some unknown enzyme is needed
-                      unknown can be part of any enzyme list & will be treated specially
+                    - (:UNKNOWN) means that some unknown enzyme is needed
+                      :UNKNOWN can be part of any enzyme list & will be treated specially
                     >
 	  :reactions <list of all reactions in the pathway> ; pathways only
 	  )
