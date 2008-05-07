@@ -96,4 +96,5 @@
 	(format t " Experiment ~A is coherent." name)
       (progn 
 	(format t " Experiment ~A is not coherent. Needs:" name)
-	(pp-sets result t)))))
+	(pp-sets result t))))
+  result)
