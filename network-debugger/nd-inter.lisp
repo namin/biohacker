@@ -2,6 +2,7 @@
   title                   ; Pretty name
   ltre                    ; Pointer to its LTRE
   (debugging nil)         ; Show basic operations
+  (log nil)               ; File to log progress and results.
   (extended? nil)         ; Whether to use extended rules (with support for :unknown genes and reversible reactions) or basic rules
   (network-closed? nil)   ; Whether reactions, enzymes and pathways can still be added
   (findings nil)          ; An association list of (experiment-name . investigation-result)
@@ -24,11 +25,36 @@
 (defmacro debugging-nd (msg &rest args)
   `(when (nd-debugging *ND*) (format t ,msg  ,@args)))
 
-(defun create-nd (title &key debugging extended?)
+(defmacro when-logging-nd (&body body)
+  `(when (nd-log *ND*)
+     (tolog
+      (nd-log *ND*)
+      ,@body)))
+
+(defmacro debugging-or-logging-nd (msg &rest args)
+  `(progn
+     (debugging-nd
+       ,msg ,@args)
+     (logging-nd
+       ,msg ,@args)))
+
+(defmacro logging-nd (msg &rest args)
+  `(when-logging-nd
+    (format t ,msg ,@args)))
+
+(defmacro when-debugging-or-logging-nd (&body body)
+  `(progn
+     (when (nd-debugging *nd*)
+       ,@body)
+     (when-logging-nd
+      ,@body)))
+
+(defun create-nd (title &key debugging log extended?)
    (let ((nd (make-nd
 	      :TITLE title 
 	      :LTRE (create-ltre (list :LTRE-OF title))
 	      :DEBUGGING debugging
+	      :LOG log
 	      :EXTENDED? extended?)))
      (setq *ND* nd)
      (change-ltms 
@@ -66,4 +92,14 @@
 (defmacro run-assert! (fact just)
   `(progn
      (assert! ,fact ,just)
-     (run-rules)))
+     (run-rules-logging)))
+
+(defun n-rules-run ()
+  (ltre-rules-run (nd-ltre *nd*)))
+
+(defun run-rules-logging (&aux n-before n-after)
+  (setq n-before (n-rules-run))
+  (run-rules)
+  (setq n-after (n-rules-run))
+  (logging-nd
+   "~%~A rules run." (- n-after n-before)))

@@ -71,21 +71,25 @@ Adding enzyme E4.
 Closing network for EXPERIMENT.
 Adding experiment FALSE-NEGATIVE
 Assuming simplify-investigations.
-Focusing on experiment FALSE-NEGATIVE. Experiment FALSE-NEGATIVE is not coherent. Needs:
+Focusing on experiment FALSE-NEGATIVE.
+Experiment FALSE-NEGATIVE is not coherent. Needs:
 ( (NUTRIENT E) )
 ( (NUTRIENT D) )
 ( (REACTION-ENABLED R2) )
 ( (NUTRIENT F) )
 Adding experiment FALSE-POSITIVE
 Retracting focus on experiment FALSE-NEGATIVE.
-Focusing on experiment FALSE-POSITIVE. Experiment FALSE-POSITIVE is not coherent. Needs:
+Focusing on experiment FALSE-POSITIVE.
+Experiment FALSE-POSITIVE is not coherent. Needs:
 ( (NOT (GENE-ON G4)) )
 Adding experiment POSITIVE
 Retracting focus on experiment FALSE-POSITIVE.
-Focusing on experiment POSITIVE. Experiment POSITIVE is coherent.
+Focusing on experiment POSITIVE.
+Experiment POSITIVE is coherent.
 Adding experiment NEGATIVE
 Retracting focus on experiment POSITIVE.
-Focusing on experiment NEGATIVE. Experiment NEGATIVE is coherent.
+Focusing on experiment NEGATIVE.
+Experiment NEGATIVE is coherent.
 1 positive findings: (POSITIVE)
 1 negative findings: (NEGATIVE)
 1 false-negative findings: (FALSE-NEGATIVE)

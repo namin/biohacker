@@ -68,13 +68,16 @@ Closing network for EXPERIMENT.
 Adding experiment GROWTH-DUE-TO-UNKNOWN
 Assuming simplify-investigations.
 Assuming unknown genes and reaction reversibilities as convenient.
-Focusing on experiment GROWTH-DUE-TO-UNKNOWN. Experiment GROWTH-DUE-TO-UNKNOWN is coherent.
+Focusing on experiment GROWTH-DUE-TO-UNKNOWN.
+Experiment GROWTH-DUE-TO-UNKNOWN is coherent.
 Adding experiment NO-GROWTH-DUE-TO-UNKNOWN
 Retracting focus on experiment GROWTH-DUE-TO-UNKNOWN.
-Focusing on experiment NO-GROWTH-DUE-TO-UNKNOWN. Experiment NO-GROWTH-DUE-TO-UNKNOWN is coherent.
+Focusing on experiment NO-GROWTH-DUE-TO-UNKNOWN.
+Experiment NO-GROWTH-DUE-TO-UNKNOWN is coherent.
 Adding experiment NO-GROWTH-INDEPENDENT-OF-UNKNOWNS
 Retracting focus on experiment NO-GROWTH-DUE-TO-UNKNOWN.
-Focusing on experiment NO-GROWTH-INDEPENDENT-OF-UNKNOWNS. Experiment NO-GROWTH-INDEPENDENT-OF-UNKNOWNS is coherent.
+Focusing on experiment NO-GROWTH-INDEPENDENT-OF-UNKNOWNS.
+Experiment NO-GROWTH-INDEPENDENT-OF-UNKNOWNS is coherent.
 1 positive findings: (GROWTH-DUE-TO-UNKNOWN)
 2 negative findings: (NO-GROWTH-INDEPENDENT-OF-UNKNOWNS NO-GROWTH-DUE-TO-UNKNOWN)
 0 false-negative findings: NIL
