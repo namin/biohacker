@@ -1,9 +1,10 @@
 (defmacro network-debugger (name
 			    &key 
 			    (debugging nil)
-			    (extended? nil))
-  `(let ((nd (create-nd ',name :debugging ,debugging :extended? ,extended?)))
-     (debugging-nd
+			    (extended? nil)
+			    (log nil))
+  `(let ((nd (create-nd ',name :log ,log :debugging ,debugging :extended? ,extended?)))
+     (debugging-or-logging-nd
       "~%Network Debugger ~A" ',name)
      nd))
 
@@ -56,9 +57,9 @@
 	       ,bootstrap-compounds ,toxins
 	       ,knock-ins ,knock-outs)
 	     :EXPERIMENTS)
-    (debugging-nd
+    (debugging-or-logging-nd
      "~%Adding experiment ~A" ',name)
-    (run-rules)
+    (run-rules-logging)
     (investigate-experiment ',name)))
 
 (defmacro ensure-network-open (demander &rest forms)
@@ -69,11 +70,11 @@
 (defmacro ensure-network-closed (demander &rest forms)
   `(progn
      (when (not (nd-network-closed? *nd*))
-       (debugging-nd "~%Closing network for ~A." ',demander)
-       (run-rules)
+       (debugging-or-logging-nd "~%Closing network for ~A." ',demander)
+       (run-rules-logging)
        (assert! 'network-closed :ENSURE)
        (setf (nd-network-closed? *nd*) t)
-       (run-rules))
+       (run-rules-logging))
      ,@forms))
 
 (defun retract-focus ()
@@ -90,6 +91,8 @@
    "~%Focusing on experiment ~A." name))
 
 (defun investigate-experiment (name &aux result cache)
+  (when-logging-nd
+   "Investigating experiment ~A." name)
   (when (unknown? 'simplify-investigations) 
     (debugging-nd
      "~%Assuming simplify-investigations.")
@@ -113,15 +116,15 @@
 		 (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
 		(t (error "Experiment outcome is unknown!"))))
     (setf (nd-findings *nd*) (acons name result (nd-findings *nd*))))
-  (when (nd-debugging *nd*)
+  (when-debugging-or-logging-nd
     (print-investigation name result))
   result)
 
 (defun print-investigation (name result)
   (if (eq :COHERENT result) 
-      (format t " Experiment ~A is coherent." name)
+      (format t "~%Experiment ~A is coherent." name)
     (progn 
-      (format t " Experiment ~A is not coherent. Needs:" name)
+      (format t "~%Experiment ~A is not coherent. Needs:" name)
       (pp-sets result t))))
 
 (defun filter-findings-by-growth (growth? &optional (findings (nd-findings *nd*)))
@@ -147,7 +150,7 @@
   (setq false-negative (filter-findings-by-coherence nil growth))
   (setq false-positive (filter-findings-by-coherence nil no-growth))
   (setq summary (list positive negative false-negative false-positive))
-  (when (nd-debugging *nd*)
+  (when-debugging-or-logging-nd
     (print-summary summary))
   summary)
 

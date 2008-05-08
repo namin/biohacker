@@ -76,17 +76,21 @@ Adding enzyme E4.
 Closing network for EXPERIMENT.
 Adding experiment POSITIVE
 Assuming simplify-investigations.
-Focusing on experiment POSITIVE. Experiment POSITIVE is coherent.
+Focusing on experiment POSITIVE.
+Experiment POSITIVE is coherent.
 Adding experiment KNOCK-OUT-POSITIVE
 Retracting focus on experiment POSITIVE.
-Focusing on experiment KNOCK-OUT-POSITIVE. Experiment KNOCK-OUT-POSITIVE is coherent.
+Focusing on experiment KNOCK-OUT-POSITIVE.
+Experiment KNOCK-OUT-POSITIVE is coherent.
 Adding experiment KNOCK-OUT-FALSE-POSITIVE
 Retracting focus on experiment KNOCK-OUT-POSITIVE.
-Focusing on experiment KNOCK-OUT-FALSE-POSITIVE. Experiment KNOCK-OUT-FALSE-POSITIVE is not coherent. Needs:
+Focusing on experiment KNOCK-OUT-FALSE-POSITIVE.
+Experiment KNOCK-OUT-FALSE-POSITIVE is not coherent. Needs:
 ( (NOT (GENE-ON G4)) )
 Adding experiment KNOCK-OUT-FALSE-NEGATIVE
 Retracting focus on experiment KNOCK-OUT-FALSE-POSITIVE.
-Focusing on experiment KNOCK-OUT-FALSE-NEGATIVE. Experiment KNOCK-OUT-FALSE-NEGATIVE is not coherent. Needs:
+Focusing on experiment KNOCK-OUT-FALSE-NEGATIVE.
+Experiment KNOCK-OUT-FALSE-NEGATIVE is not coherent. Needs:
 ( (NUTRIENT E) )
 ( (REACTION-ENABLED R3) )
 ( (REACTION-ENABLED R4)  (NUTRIENT F) )

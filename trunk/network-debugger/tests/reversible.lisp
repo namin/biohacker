@@ -61,10 +61,12 @@ Closing network for EXPERIMENT.
 Adding experiment GROWTH-IF-R1-REVERSIBLE
 Assuming simplify-investigations.
 Assuming unknown genes and reaction reversibilities as convenient.
-Focusing on experiment GROWTH-IF-R1-REVERSIBLE. Experiment GROWTH-IF-R1-REVERSIBLE is coherent.
+Focusing on experiment GROWTH-IF-R1-REVERSIBLE.
+Experiment GROWTH-IF-R1-REVERSIBLE is coherent.
 Adding experiment NO-GROWTH-IF-R4-NOT-REVERSIBLE
 Retracting focus on experiment GROWTH-IF-R1-REVERSIBLE.
-Focusing on experiment NO-GROWTH-IF-R4-NOT-REVERSIBLE. Experiment NO-GROWTH-IF-R4-NOT-REVERSIBLE is coherent.
+Focusing on experiment NO-GROWTH-IF-R4-NOT-REVERSIBLE.
+Experiment NO-GROWTH-IF-R4-NOT-REVERSIBLE is coherent.
 1 positive findings: (GROWTH-IF-R1-REVERSIBLE)
 1 negative findings: (NO-GROWTH-IF-R4-NOT-REVERSIBLE)
 0 false-negative findings: NIL
