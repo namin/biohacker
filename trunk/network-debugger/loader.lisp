@@ -11,6 +11,9 @@
 (defparameter *nd-rules-file* 
   (make-bps-source-file-name *nd-path* "nd-rules"))
 
+(defparameter *nd-extended-rules-file* 
+  (make-bps-source-file-name *nd-path* "nd-extended-rules"))
+
 (defun compile-nd ()
   (compile-load-files *nd-files* *nd-path*))
 

@@ -2,6 +2,7 @@
   title                   ; Pretty name
   ltre                    ; Pointer to its LTRE
   (debugging nil)         ; Show basic operations
+  (extended? nil)         ; Whether to use extended rules (with support for :unknown genes and reversible reactions) or basic rules
   (network-closed? nil)   ; Whether reactions, enzymes and pathways can still be added
 )
 
@@ -22,16 +23,19 @@
 (defmacro debugging-nd (msg &rest args)
   `(when (nd-debugging *ND*) (format t ,msg  ,@args)))
 
-(defun create-nd (title &key debugging)
+(defun create-nd (title &key debugging extended?)
    (let ((nd (make-nd
 	      :TITLE title 
 	      :LTRE (create-ltre (list :LTRE-OF title))
-	      :DEBUGGING debugging)))
+	      :DEBUGGING debugging
+	      :EXTENDED? extended?)))
      (setq *ND* nd)
      (change-ltms 
       (ltre-ltms (nd-ltre nd)) 
       :node-string 'nd-node-string)
-     (load *nd-rules-file*)
+     (if extended?
+	 (load *nd-extended-rules-file*)
+       (load *nd-rules-file*))
      nd))
 
 (defun change-nd (nd &key (debugging nil debugging?))

@@ -1,7 +1,8 @@
 (defmacro network-debugger (name
 			    &key 
-			    (debugging nil))
-  `(let ((nd (create-nd ',name :debugging ,debugging)))
+			    (debugging nil)
+			    (extended? nil))
+  `(let ((nd (create-nd ',name :debugging ,debugging :extended? ,extended?)))
      (debugging-nd
       "~%Network Debugger ~A" ',name)
      nd))
