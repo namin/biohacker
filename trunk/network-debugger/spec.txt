@@ -18,8 +18,8 @@ Place the following forms in biohacker/trunk/ptools/data/*-network.lisp
 	  :reversible? <t / nil / :UNKNOWN > ; by default, :UNKNOWN for reactions and nil for pathways
 	  :enzymes  <list of enzymes
                      (disjunctive for reactions, unspecified logic for pathways)
-                    - nil means that NO enzymes catalyze this reaction
-                      i.e. this reaction will never be fired 
+                    - nil for a reaction means that NO enzymes catalyze it
+                      i.e. the reaction will never be fired 
                            but might play a role in abduction
                     - :SPONTANEOUS, instead of a list, means that no enzymes are needed
                     - (:UNKNOWN) means that some unknown enzyme is needed
