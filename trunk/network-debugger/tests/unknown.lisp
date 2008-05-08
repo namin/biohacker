@@ -1,4 +1,4 @@
-(network-debugger unknown :debugging t :extended? t)
+(network-debugger unknown :debugging t :rules :extended-reactions)
 
 ;; Network
 (reaction 

@@ -1,4 +1,4 @@
-(network-debugger reversible :debugging t :extended? t)
+(network-debugger reversible :debugging t :rules :extended-reactions)
 
 ;; Network
 (reaction 

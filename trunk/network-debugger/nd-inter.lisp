@@ -1,12 +1,15 @@
 (defstruct (nd (:PRINT-FUNCTION nd-print-procedure))
-  title                   ; Pretty name
-  ltre                    ; Pointer to its LTRE
-  (debugging nil)         ; Show basic operations
-  (log nil)               ; File to log progress and results.
-  (extended? nil)         ; Whether to use extended rules (with support for :unknown genes and reversible reactions) or basic rules
-  (network-closed? nil)   ; Whether reactions, enzymes and pathways can still be added
-  (findings nil)          ; An association list of (experiment-name . investigation-result)
-)
+  title				  ; Pretty name
+  ltre				  ; Pointer to its LTRE
+  (debugging nil)		  ; Show basic operations
+  (log nil)    		          ; File to log progress and results.
+  rules   		       	  ; Which rules to use:
+				  ; :just-reactions
+				  ; :extended-reactions (support for :unknown genes and reversible reactions)
+				  ; :just-pathways
+  (network-closed? nil)	          ; Whether reactions, enzymes and pathways can still be added
+  (findings nil)                  ; An association list of (experiment-name . investigation-result)
+  )
 
 (defun nd-print-procedure (nd st ignore)
   (declare (ignore ignore))
@@ -49,20 +52,24 @@
      (when-logging-nd
       ,@body)))
 
-(defun create-nd (title &key debugging log extended?)
+(defun create-nd (title &key debugging log rules)
+  (unless rules
+    (setq rules :just-reactions))
    (let ((nd (make-nd
 	      :TITLE title 
 	      :LTRE (create-ltre (list :LTRE-OF title))
 	      :DEBUGGING debugging
 	      :LOG log
-	      :EXTENDED? extended?)))
+	      :rules rules)))
      (setq *ND* nd)
      (change-ltms 
       (ltre-ltms (nd-ltre nd)) 
       :node-string 'nd-node-string)
-     (if extended?
-	 (load *nd-extended-rules-file*)
-       (load *nd-rules-file*))
+     (load
+      (ecase rules
+	((:just-reactions) *nd-rules-file*)
+	((:extended-reactions) *nd-extended-rules-file*)
+	((:just-pathways) *nd-pathway-rules-file*)))
      nd))
 
 (defun change-nd (nd &key (debugging nil debugging?))
