@@ -10,19 +10,19 @@
 	(if unknown?
 	    (progn
 	      (rassert! (unknown-gene-for ?enzyme) :NETWORK-EXTENSION)
-	      (assert!
-	       `(:IMPLIES
+	      (rassert!
+	       (:IMPLIES
 		 (:AND 
 		  assume-unknowns-as-convenient
 		  experiment-growth)
-		 (unknown-gene-on-for ,?enzyme))
+		 (unknown-gene-on-for ?enzyme))
 	       :GROWTH-EXPERIMENT-CONVENIENT-ASSUMPTION)
-	      (assert!
-	       `(:IMPLIES
+	      (rassert!
+	       (:IMPLIES
 		 (:AND 
 		  assume-unknowns-as-convenient
 		  (:NOT experiment-growth))
-		 (:NOT (unknown-gene-on-for ,?enzyme)))
+		 (:NOT (unknown-gene-on-for ?enzyme)))
 	       :NO-GROWTH-EXPERIMENT-CONVENIENT-ASSUMPTION))
 	  (rassert! (:NOT (unknown-gene-for ?enzyme)) :NETWORK-EXTENSION))
 	(assert! `(:IMPLIES
@@ -65,10 +65,47 @@
 		 (:NOT (:AND ,@(list-of 'compound-present ?reactants)))
 		 (:NOT (reaction-fired ,?reaction)))
 	       :REACTION-NOT-FIRED)
+      (assert! `(:IMPLIES
+		 (:AND (reaction-reversible ,?reaction) 
+		       (reaction-enabled ,?reaction)
+		       ,@(list-of 'compound-present ?products))
+		 (:AND (reverse-reaction-fired ,?reaction)
+		       ,@(list-of 'compound-present ?reactants)))
+	       :REVERSE-REACTION-FIRED)
+      (assert! `(:IMPLIES
+		 (:OR (:NOT (:AND ,@(list-of 'compound-present ?products)))
+		      (:NOT (reaction-reversible ,?reaction)))
+		 (:NOT (reverse-reaction-fired ,?reaction)))
+	       :REVERSE-REACTION-NOT-FIRED)
       (rassert! (:IMPLIES
 		 (:NOT (reaction-enabled ?reaction))
-		 (:NOT (reaction-fired ?reaction)))
-		:INCLUSION))
+		 (:AND (:NOT (reaction-fired ?reaction))
+		       (:NOT (reverse-reaction-fired ?reaction))))
+		:INCLUSION)
+      (rassert! (:IMPLIES
+		 (:NOT (reaction-reversible ?reaction))
+		 (:NOT (reverse-reaction-fired ?reaction)))
+		:INCLUSION)
+      (ecase ?reversible?
+	((t) 
+	 (rassert! (reaction-reversible ?reaction) :NETWORK-EXTENSION))
+	((nil) 
+	 (rassert! (:NOT (reaction-reversible ?reaction))) :NETWORK-EXTENSION)
+	((:UNKNOWN)
+	 (rassert!
+	  (:IMPLIES
+	   (:AND
+	    assume-unknowns-as-convenient
+	    (:NOT experiment-growth))
+	   (:NOT (reaction-reversible ?reaction)))
+	  :NO-GROWTH-EXPERIMENT-CONVENIENT-ASSUMPTION)
+	 (rassert!
+	  (:IMPLIES
+	   (:AND
+	    assume-unknowns-as-convenient
+	    experiment-growth)
+	   (reaction-reversible ?reaction))
+	  :GROWTH-EXPERIMENT-CONVENIENT-ASSUMPTION))))
 
 (rule ((:INTERN (nutrient ?nutrient) :var ?def))
       (rassert! (:IMPLIES ?def (compound-present ?nutrient))
@@ -156,11 +193,13 @@
 (rule ((:TRUE network-closed))
       (rule ((:INTERN (compound ?compound)))
 	    (let* ((product-facts (fetch `(product ,?compound ?reaction)))
-		   (reaction-fired-facts (mapcar #'(lambda (fact) `(reaction-fired ,(caddr fact))) product-facts)))
+		   (reactant-facts (fetch `(reactant ,?compound ?reaction)))
+		   (reaction-fired-facts (mapcar #'(lambda (fact) `(reaction-fired ,(caddr fact))) product-facts))
+		   (reverse-reaction-fired-facts (mapcar #'(lambda (fact) `(reverse-reaction-fired ,(caddr fact))) reactant-facts)))
 	      (assert! `(:IMPLIES 
 			 (:AND 
 			  (:NOT (nutrient ,?compound))
-			  (:NOT (:OR ,@reaction-fired-facts)))
+			  (:NOT (:OR ,@reaction-fired-facts ,@reverse-reaction-fired-facts)))
 			 (:NOT (compound-present ,?compound)))
 		       :NETWORK-CLOSED))))
 
