@@ -72,8 +72,9 @@
 	((:just-pathways) *nd-pathway-rules-file*)))
      nd))
 
-(defun change-nd (nd &key (debugging nil debugging?))
-  (if debugging? (setf (nd-debugging nd) debugging)))
+(defun change-nd (nd &key (debugging nil debugging?) (log nil log?))
+  (when debugging? (setf (nd-debugging nd) debugging))
+  (when log? (setf (nd-log nd) log)))
 
 (defun view-fact (fact)
   (when (listp fact)
