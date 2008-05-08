@@ -61,6 +61,8 @@
  :essential-compounds (a e)
  :knock-outs (g3 g4))
 
+(summarize-findings)
+
 #|
 Network Debugger KNOCK
 Adding reaction R1.
@@ -88,4 +90,8 @@ Focusing on experiment KNOCK-OUT-FALSE-NEGATIVE. Experiment KNOCK-OUT-FALSE-NEGA
 ( (NUTRIENT E) )
 ( (REACTION-ENABLED R3) )
 ( (REACTION-ENABLED R4)  (NUTRIENT F) )
+2 positive findings: (KNOCK-OUT-POSITIVE POSITIVE)
+0 negative findings: NIL
+1 false-negative findings: (KNOCK-OUT-FALSE-NEGATIVE)
+1 false-positive findings: (KNOCK-OUT-FALSE-POSITIVE)
 |#

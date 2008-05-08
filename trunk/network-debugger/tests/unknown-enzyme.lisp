@@ -39,6 +39,8 @@
  :essential-compounds (a e)
  :knock-outs (g1))
 
+(summarize-findings)
+
 #|
 Network Debugger UNKNOWN-ENZYME
 Adding reaction R1.
@@ -58,4 +60,8 @@ Focusing on experiment GROWTH-DUE-TO-UNKNOWN. Experiment GROWTH-DUE-TO-UNKNOWN i
 ( (REACTION-ENABLED R1) )
 ( (REACTION-ENABLED R4) )
 ( (ENZYME-PRESENT UNKNOWN) )
+0 positive findings: NIL
+0 negative findings: NIL
+1 false-negative findings: (GROWTH-DUE-TO-UNKNOWN)
+0 false-positive findings: NIL
 |#

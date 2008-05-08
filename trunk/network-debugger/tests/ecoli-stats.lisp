@@ -1,4 +1,4 @@
-(setq *log-file* "ecoli-stats-log.txt")
+(setq *log-file* "ecoli-stats-log4.txt")
 
 (tolog *log-file* (format t "~%creating network..."))
 
