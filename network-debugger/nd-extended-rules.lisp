@@ -1,17 +1,39 @@
 (rule ((:INTERN (enzyme ?enzyme . ?genes)))
-      (dolist (?gene ?genes)
-	(rassert! (gene ?gene) :NETWORK))
-      (assert! `(:IMPLIES
-		 (:AND ,@(list-of 'gene-on ?genes))
-		 (enzyme-present ,?enzyme))
-	       :ENZYME-FORMED)
-      (assert! `(:IMPLIES 
-		 (:NOT (:AND ,@(list-of 'gene-on ?genes)))
-		 (:NOT (enzyme-present ,?enzyme)))
-	       :ENZYME-NOT-FORMED))
+      (let* ((actual-genes (remove :UNKNOWN ?genes))
+	     (unknown? (find :UNKNOWN ?genes))
+	     (and-genes-on
+	      `(:AND 
+	       ,@(list-of 'gene-on actual-genes)
+	       (:OR (:NOT (unknown-gene-for ,?enzyme)) (unknown-gene-on-for ,?enzyme)))))
+	(dolist (?gene actual-genes)
+	  (rassert! (gene ?gene) :NETWORK))
+	(if unknown?
+	    (progn
+	      (rassert! (unknown-gene-for ?enzyme) :NETWORK-EXTENSION)
+	      (assert!
+	       `(:IMPLIES
+		 (:AND 
+		  assume-unknowns-as-convenient
+		  experiment-growth)
+		 (unknown-gene-on-for ,?enzyme))
+	       :GROWTH-EXPERIMENT-CONVENIENT-ASSUMPTION)
+	      (assert!
+	       `(:IMPLIES
+		 (:AND 
+		  assume-unknowns-as-convenient
+		  (:NOT experiment-growth))
+		 (:NOT (unknown-gene-on-for ,?enzyme)))
+	       :NO-GROWTH-EXPERIMENT-CONVENIENT-ASSUMPTION))
+	  (rassert! (:NOT (unknown-gene-for ?enzyme)) :NETWORK-EXTENSION))
+	(assert! `(:IMPLIES
+		   ,and-genes-on
+		   (enzyme-present ,?enzyme))
+		 :ENZYME-FORMED)
+	(assert! `(:IMPLIES 
+		   (:NOT ,and-genes-on)
+		   (:NOT (enzyme-present ,?enzyme)))
+		 :ENZYME-NOT-FORMED)))
 
-;; ignoring reversible? for now
-;; ignoring unknown enzyme for now
 (rule ((:INTERN (reaction ?reaction ?reactants ?products ?reversible? ?enzymes)))
       (dolist (?reactant ?reactants)
 	(rassert! (compound ?reactant) :COMPOUND-OF-REACTION)

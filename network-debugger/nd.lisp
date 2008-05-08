@@ -93,12 +93,16 @@
     (debugging-nd
      "~%Assuming simplify-investigations.")
     (assume! 'simplify-investigations :INVESTIGATION))
+  (when (and (nd-extended? *nd*) (unknown? 'assume-unknowns-as-convenient)) 
+    (debugging-nd
+     "~%Assuming unknown genes and reaction reversibilities as convenient.")
+    (assume! 'assume-unknowns-as-convenient :INVESTIGATION))  
   (change-focus-experiment name)
   (setq result
 	(cond ((true? 'experiment-coherent)
 	       :COHERENT)
 	      ((true? 'experiment-growth)
-	       (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r))))
+	       (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r) (enzyme-present ?x))))
 	      ((false? 'experiment-growth)
 	       (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
 	      (t (error "Experiment outcome is unknown!"))))

@@ -38,3 +38,24 @@
  :growth? t
  :essential-compounds (a e)
  :knock-outs (g1))
+
+#|
+Network Debugger UNKNOWN-ENZYME
+Adding reaction R1.
+Adding reaction R2.
+Adding reaction R3.
+Adding reaction R4.
+Adding enzyme E1.
+Adding enzyme E2.
+Adding enzyme E3.
+Closing network for EXPERIMENT.
+Adding experiment GROWTH-DUE-TO-UNKNOWN
+Assuming simplify-investigations.
+Focusing on experiment GROWTH-DUE-TO-UNKNOWN. Experiment GROWTH-DUE-TO-UNKNOWN is not coherent. Needs:
+( (NUTRIENT E) )
+( (NUTRIENT D)  (NUTRIENT G) )
+( (NUTRIENT C)  (NUTRIENT G) )
+( (REACTION-ENABLED R1) )
+( (REACTION-ENABLED R4) )
+( (ENZYME-PRESENT UNKNOWN) )
+|#
