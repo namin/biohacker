@@ -57,6 +57,8 @@
  :growth? nil
  :essential-compounds (a e))
 
+(summarize-findings)
+
 #|
 Network Debugger SIMPLE
 Adding reaction R1.
@@ -84,6 +86,10 @@ Focusing on experiment POSITIVE. Experiment POSITIVE is coherent.
 Adding experiment NEGATIVE
 Retracting focus on experiment POSITIVE.
 Focusing on experiment NEGATIVE. Experiment NEGATIVE is coherent.
+1 positive findings: (POSITIVE)
+1 negative findings: (NEGATIVE)
+1 false-negative findings: (FALSE-NEGATIVE)
+1 false-positive findings: (FALSE-POSITIVE)
 |#
 
 #|

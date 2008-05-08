@@ -4,6 +4,7 @@
   (debugging nil)         ; Show basic operations
   (extended? nil)         ; Whether to use extended rules (with support for :unknown genes and reversible reactions) or basic rules
   (network-closed? nil)   ; Whether reactions, enzymes and pathways can still be added
+  (findings nil)          ; An association list of (experiment-name . investigation-result)
 )
 
 (defun nd-print-procedure (nd st ignore)

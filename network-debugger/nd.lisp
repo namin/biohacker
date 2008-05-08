@@ -48,17 +48,18 @@
 		      (toxins nil)
 		      (bootstrap-compounds nil)
 		      essential-compounds)
-  `(ensure-network-closed experiment
-    (assert! '(experiment ,name ,growth? 
-			  ,nutrients ,essential-compounds
-			  ,bootstrap-compounds ,toxins
-			  ,knock-ins ,knock-outs)
+  `(ensure-network-closed 
+    experiment
+    (assert! '(experiment 
+	       ,name ,growth? 
+	       ,nutrients ,essential-compounds
+	       ,bootstrap-compounds ,toxins
+	       ,knock-ins ,knock-outs)
 	     :EXPERIMENTS)
     (debugging-nd
      "~%Adding experiment ~A" ',name)
-    (when (nd-debugging *nd*)
-      (run-rules)
-      (investigate-experiment ',name))))
+    (run-rules)
+    (investigate-experiment ',name)))
 
 (defmacro ensure-network-open (demander &rest forms)
   `(if (nd-network-closed? *nd*)
@@ -88,7 +89,7 @@
   (debugging-nd
    "~%Focusing on experiment ~A." name))
 
-(defun investigate-experiment (name &aux result)
+(defun investigate-experiment (name &aux result cache)
   (when (unknown? 'simplify-investigations) 
     (debugging-nd
      "~%Assuming simplify-investigations.")
@@ -98,14 +99,20 @@
      "~%Assuming unknown genes and reaction reversibilities as convenient.")
     (assume! 'assume-unknowns-as-convenient :INVESTIGATION))  
   (change-focus-experiment name)
+  (setq cache
+	(assoc name (nd-findings *nd*)))
   (setq result
-	(cond ((true? 'experiment-coherent)
-	       :COHERENT)
-	      ((true? 'experiment-growth)
-	       (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r) (enzyme-present ?x))))
-	      ((false? 'experiment-growth)
-	       (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
-	      (t (error "Experiment outcome is unknown!"))))
+	(cdr cache))
+  (unless cache
+    (setq result
+	  (cond ((true? 'experiment-coherent)
+		 :COHERENT)
+		((true? 'experiment-growth)
+		 (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r) (enzyme-present ?x))))
+		((false? 'experiment-growth)
+		 (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
+		(t (error "Experiment outcome is unknown!"))))
+    (setf (nd-findings *nd*) (acons name result (nd-findings *nd*))))
   (when (nd-debugging *nd*)
     (print-investigation name result))
   result)
@@ -116,3 +123,44 @@
     (progn 
       (format t " Experiment ~A is not coherent. Needs:" name)
       (pp-sets result t))))
+
+(defun filter-findings-by-growth (growth? &optional (findings (nd-findings *nd*)))
+  (remove-if-not
+   #'(lambda (name)
+       (fetch `(experiment ,name ,growth? . ?x)))
+   findings
+   :key #'car))
+
+(defun filter-findings-by-coherence (coherent? &optional (findings (nd-findings *nd*)))
+  (remove-if-not
+   (if coherent?
+       #'(lambda (result) (eq result :COHERENT))
+     #'(lambda (result) (not (eq result :COHERENT))))
+   findings
+   :key #'cdr))
+
+(defun summarize-findings (&aux positive negative false-negative false-positive growth no-growth summary)
+  (setq growth (filter-findings-by-growth t))
+  (setq no-growth (filter-findings-by-growth nil))
+  (setq positive (filter-findings-by-coherence t growth))
+  (setq negative (filter-findings-by-coherence t no-growth))
+  (setq false-negative (filter-findings-by-coherence nil growth))
+  (setq false-positive (filter-findings-by-coherence nil no-growth))
+  (setq summary (list positive negative false-negative false-positive))
+  (when (nd-debugging *nd*)
+    (print-summary summary))
+  summary)
+
+(defun print-summary-line (about line)
+  (format t "~%~A ~A findings: ~A" (list-length line) about (mapcar #'car line)))
+
+(defun print-summary (summary)
+  (print-summary-line "positive" (car summary))
+  (print-summary-line "negative" (cadr summary))
+  (print-summary-line "false-negative" (caddr summary))
+  (print-summary-line "false-positive" (cadddr summary)))
+
+(defun fix-for-experiment (name &aux cache)
+  (if (setq cache (assoc name (nd-findings *nd*)))
+      (cdr cache)
+    :UNKNOWN-EXPERIMENT))
