@@ -102,9 +102,12 @@
 	       (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
 	      (t (error "Experiment outcome is unknown!"))))
   (when (nd-debugging *nd*)
-    (if (eq :COHERENT result) 
-	(format t " Experiment ~A is coherent." name)
-      (progn 
-	(format t " Experiment ~A is not coherent. Needs:" name)
-	(pp-sets result t))))
+    (print-investigation name result))
   result)
+
+(defun print-investigation (name result)
+  (if (eq :COHERENT result) 
+      (format t " Experiment ~A is coherent." name)
+    (progn 
+      (format t " Experiment ~A is not coherent. Needs:" name)
+      (pp-sets result t))))
