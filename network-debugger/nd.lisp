@@ -1,9 +1,9 @@
 (defmacro network-debugger (name
 			    &key 
 			    (debugging nil)
-			    (extended? nil)
+			    (rules nil)
 			    (log nil))
-  `(let ((nd (create-nd ',name :log ,log :debugging ,debugging :extended? ,extended?)))
+  `(let ((nd (create-nd ',name :rules ,rules :log ,log :debugging ,debugging)))
      (debugging-or-logging-nd
       "~%Network Debugger ~A" ',name)
      nd))
@@ -97,7 +97,7 @@
     (debugging-nd
      "~%Assuming simplify-investigations.")
     (assume! 'simplify-investigations :INVESTIGATION))
-  (when (and (nd-extended? *nd*) (unknown? 'assume-unknowns-as-convenient)) 
+  (when (and (eq (nd-rules *nd*) :extended-reactions) (unknown? 'assume-unknowns-as-convenient)) 
     (debugging-nd
      "~%Assuming unknown genes and reaction reversibilities as convenient.")
     (assume! 'assume-unknowns-as-convenient :INVESTIGATION))  
