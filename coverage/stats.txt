@@ -1,0 +1,9 @@
+old system (lcoverage) with old data (real-ex): 
+* 4618 rules run before experiment
+* 1514 rules run for rich media experiment
+* 3934 rules run for starting investigation
+
+old system (ccoverage) with new data (ecoli):
+* 15350 rules run before experiment
+* 3831 rules run for first ecoli experiment
+* 19666 rules run for starting investigation
