@@ -10,7 +10,8 @@
 (pathway
  p2
  :reactants (b c)
- :products (d))
+ :products (d)
+ :enzymes (e2))
 
 (pathway
  p3

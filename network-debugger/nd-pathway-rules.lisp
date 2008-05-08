@@ -10,40 +10,40 @@
 		 (:NOT (enzyme-present ,?enzyme)))
 	       :ENZYME-NOT-FORMED))
 
-(rule ((:INTERN (reaction ?reaction ?reactants ?products ?reversible? ?enzymes)))
+(rule ((:INTERN (pathway ?pathway ?reactants ?products ?reversible? ?enzymes ?reactions)))
       (dolist (?reactant ?reactants)
-	(rassert! (compound ?reactant) :COMPOUND-OF-REACTION)
-	(rassert! (reactant ?reactant ?reaction) :REACTANT-OF-REACTION))
+	(rassert! (compound ?reactant) :COMPOUND-OF-PATHWAY)
+	(rassert! (pathway-reactant ?reactant ?pathway) :REACTANT-OF-PATHWAY))
       (dolist (?product ?products)
-	(rassert! (compound ?product) :COMPOUND-OF-REACTION)
-	(rassert! (product ?product ?reaction) :PRODUCT-OF-REACTION))
+	(rassert! (compound ?product) :COMPOUND-OF-PATHWAY)
+	(rassert! (pathway-product ?product ?pathway) :PRODUCT-OF-PATHWAY))
       (cond ((eq ?enzymes :SPONTANEOUS)
-	     (rassert! (reaction-enabled ?reaction) :REACTION-SPONTANEOUS))
+	     (rassert! (pathway-enabled ?pathway) :PATHWAY-SPONTANEOUS))
 	    (t
 	     (assert! `(:IMPLIES 
-			(:OR ,@(list-of 'enzyme-present ?enzymes))
-			(reaction-enabled ,?reaction))
-		       :REACTION-CATALYZED)
+			(:AND ,@(list-of 'enzyme-present ?enzymes))
+			(pathway-enabled ,?pathway))
+		       :PATHWAY-CATALYZED)
 	     (assert! `(:IMPLIES 
 			(:AND
-			 (:NOT (:OR ,@(list-of 'enzyme-present ?enzymes)))
-			 (:NOT experiment-growth) ; keep uncatalyzed reactions open for growth experiment abduction
+			 (:NOT (:AND ,@(list-of 'enzyme-present ?enzymes)))
+			 (:NOT experiment-growth) ; keep uncatalyzed pathways open for growth experiment abduction
 			 )
-			(:NOT (reaction-enabled ,?reaction)))
-		       :REACTION-NOT-CATALYZED)))
+			(:NOT (pathway-enabled ,?pathway)))
+		       :PATHWAY-NOT-CATALYZED)))
       (assert! `(:IMPLIES
-		 (:AND (reaction-enabled ,?reaction)
+		 (:AND (pathway-enabled ,?pathway)
 		       ,@(list-of 'compound-present ?reactants))
-		 (:AND (reaction-fired ,?reaction)
+		 (:AND (pathway-fired ,?pathway)
 		       ,@(list-of 'compound-present ?products)))
-	       :REACTION-FIRED)
+	       :PATHWAY-FIRED)
       (assert! `(:IMPLIES
 		 (:NOT (:AND ,@(list-of 'compound-present ?reactants)))
-		 (:NOT (reaction-fired ,?reaction)))
-	       :REACTION-NOT-FIRED)
+		 (:NOT (pathway-fired ,?pathway)))
+	       :PATHWAY-NOT-FIRED)
       (rassert! (:IMPLIES
-		 (:NOT (reaction-enabled ?reaction))
-		 (:NOT (reaction-fired ?reaction)))
+		 (:NOT (pathway-enabled ?pathway))
+		 (:NOT (pathway-fired ?pathway)))
 		:INCLUSION))
 
 (rule ((:INTERN (nutrient ?nutrient) :var ?def))
@@ -131,12 +131,12 @@
 
 (rule ((:TRUE network-closed))
       (rule ((:INTERN (compound ?compound)))
-	    (let* ((product-facts (fetch `(product ,?compound ?reaction)))
-		   (reaction-fired-facts (mapcar #'(lambda (fact) `(reaction-fired ,(caddr fact))) product-facts)))
+	    (let* ((product-facts (fetch `(pathway-product ,?compound ?pathway)))
+		   (pathway-fired-facts (mapcar #'(lambda (fact) `(pathway-fired ,(caddr fact))) product-facts)))
 	      (assert! `(:IMPLIES 
 			 (:AND 
 			  (:NOT (nutrient ,?compound))
-			  (:NOT (:OR ,@reaction-fired-facts)))
+			  (:NOT (:OR ,@pathway-fired-facts)))
 			 (:NOT (compound-present ,?compound)))
 		       :NETWORK-CLOSED))))
 
