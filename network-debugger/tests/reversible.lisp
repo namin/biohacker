@@ -1,4 +1,4 @@
-(network-debugger unknown-enzyme :debugging t)
+(network-debugger reversible :debugging t :extended? t)
 
 ;; Network
 (reaction 
