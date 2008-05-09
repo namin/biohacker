@@ -117,7 +117,7 @@
 	  (cond ((true? 'experiment-coherent)
 		 :COHERENT)
 		((true? 'experiment-growth)
-		 (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r) (pathway-enabled ?p) (enzyme-present ?e))))
+		 (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r) (pathway-enabled ?p))))
 		((false? 'experiment-growth)
 		 (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
 		(t (error "Experiment outcome is unknown!"))))
@@ -173,3 +173,18 @@
   (if (setq cache (assoc name (nd-findings *nd*)))
       (cdr cache)
     :UNKNOWN-EXPERIMENT))
+
+(defun minimize-nutrients (&aux name experiment nutrients min-nutrients extra-nutrients)
+  (unless (and (true? 'experiment-growth)
+	       (true? 'experiment-coherent)
+	       (setq name (cadr (car (remove-if-not #'true? (fetch '(focus-experiment ?x))))))
+	       (setq experiment (car (fetch `(experiment ,name . ?x)))))
+
+    (debugging-nd "Focus experiment is not growth experiment or not coherent.")
+    (return-from minimize-nutrients))
+  (setq nutrients (cadddr experiment))
+  (setq min-nutrients (mapcar #'cadr (all-antecedents 'experiment-coherent '((nutrient ?c)))))
+  (setq extra-nutrients (remove-if #'(lambda (c) (find c min-nutrients)) nutrients))
+  (debugging-or-logging-nd
+   "~%Minimum nutrients for growth: ~A~%Unnecessary nutrients for growth: ~A" min-nutrients extra-nutrients)
+  (list min-nutrients extra-nutrients))
