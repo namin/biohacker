@@ -43,6 +43,12 @@
     (debugging-nd
      "~%Adding pathway ~A." ',name)))
 
+(defun experiment-knock-ins (experiment)
+  (nth 7 experiment))
+
+(defun experiment-knock-outs (experiment)
+  (nth 8 experiment))
+
 (defmacro experiment (name 
 		      nutrients
 		      &key
@@ -209,4 +215,25 @@
   (setq set-unknown (intersection set unknown))
   (debugging-or-logging-nd
    "~%Reactions guessed to be ~A: ~A" (if (true? 'experiment-growth) "reversible" "irreversible") set-unknown)
+  set-unknown)
+
+(defun explicit-unspecified-genes (&aux name experiment set known set-unknown)
+  (unless (and (true? 'experiment-coherent)
+	       (setq name (cadr (car (remove-if-not #'true? (fetch '(focus-experiment ?x))))))
+	       (setq experiment (car (fetch `(experiment ,name . ?x)))))
+    (debugging-nd "Focus experiment is not coherent.")
+    (return-from explicit-unspecified-genes))
+  (setq 
+   set
+   (cond ((true? 'experiment-growth)
+	  (mapcar #'cadr (all-antecedents 'experiment-coherent '((gene-on ?g)))))
+	 ((false? 'experiment-growth)
+	  (mapcar #'cadadr (all-antecedents 'experiment-coherent '((:NOT (gene-on ?g))))))
+	 (t (error "Experiment outcome is not known."))))
+  (setq 
+   known
+   (funcall (if (true? 'experiment-growth) #'experiment-knock-ins #'experiment-knock-outs) experiment))
+  (setq set-unknown (remove-if #'(lambda (g) (find g known)) set))
+  (debugging-or-logging-nd
+   "~%Genes guessed to be ~A: ~A" (if (true? 'experiment-growth) "on" "off") set-unknown)
   set-unknown)
