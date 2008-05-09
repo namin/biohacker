@@ -55,12 +55,18 @@
       sets-so-far
     (append-to-all el (cdr sets) (cons (append el (car sets)) sets-so-far))))
 
-(defun all-variations-on-set (set literal-needs)
+(defun all-variations-on-set (set literal-needs &optional (k #'(lambda (x) x)))
   (if (null set)
-      (list nil)
-    (let ((first-sets (cdr (assoc (car set) literal-needs)))
-	  (rest-sets (all-variations-on-set (cdr set) literal-needs)))
-      (mapcan #'(lambda (el) (append-to-all el rest-sets)) first-sets))))
+      (funcall k (list nil))
+    (all-variations-on-set
+     (cdr set)
+     literal-needs
+     #'(lambda (rest-sets)
+	 (funcall
+	  k
+	  (mapcan 
+	   #'(lambda (el) (append-to-all el rest-sets)) 
+	   (cdr (assoc (car set) literal-needs))))))))
 
 (defun function-variations-on-set (literal-needs)
   #'(lambda (set) 
