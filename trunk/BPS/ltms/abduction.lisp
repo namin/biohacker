@@ -3,17 +3,21 @@
 ; a literal is a unique pair (<node> . <label>)
 ; where <label> is either :TRUE or :FALSE.
 
+(defun literal-node (literal)
+  (car literal))
+
+(defun literal-label (literal)
+  (cdr literal))
+
 ; the needs of a literal are a disjunctive set of conjunctive sets
 ; of literals, which if known, would force the literal to be true
-
-; literal-needs is an association list of (<literal> . <needs>)
 
 (defun unknown-literals (clause &optional except-nodes)
   ;; returns all unknown literals of the given clause
   ;; except those whose node is in the except-nodes list
   (remove-if
    #'(lambda (literal) 
-       (let ((node (car literal)))
+       (let ((node (literal-node literal)))
 	(or (known-node? node)
 	    (find node except-nodes))))
    (clause-literals clause)))
@@ -26,8 +30,8 @@
 
 (defun negate-literal (literal &aux node fun)
   ;; retrieves the literal corresponding to the negation of the given literal
-  (setq node (car literal))
-  (node-literal (car literal) (ecase (cdr literal) (:TRUE :FALSE) (:FALSE :TRUE))))
+  (setq node (literal-node literal))
+  (node-literal (literal-node literal) (ecase (literal-label literal) (:TRUE :FALSE) (:FALSE :TRUE))))
 
 (defun node-needs-1 (node label &aux node-list clauses)
   ;; returns the immediate needs of (node . label)
@@ -45,8 +49,8 @@
 
 (defun literal->fact (literal &aux form)
   ;; the pretty representation of a literal
-  (setq form (datum-lisp-form (tms-node-datum (car literal))))
-  (ecase (cdr literal)
+  (setq form (datum-lisp-form (tms-node-datum (literal-node literal))))
+  (ecase (literal-label literal)
     (:TRUE form)
     (:FALSE (list :NOT form))))
 
@@ -77,16 +81,12 @@
 		(car sssets))))
       ((null sssets) result)))
 
-(defun all-variations-on-set (set literal-needs)
+(defun all-variations-on-set (set)
   (all-possible-unions
    (mapcar 
     #'(lambda (literal)
-	(cdr (assoc literal literal-needs)))
+	(literal-mark literal))
     set)))
-
-(defun function-variations-on-set (literal-needs)
-  #'(lambda (set) 
-      (remove-supersets (all-variations-on-set set literal-needs))))
 
 (defun remove-supersets (sets &aux new-sets new-todo new-keep)
   (do ((sets sets new-sets)
@@ -121,10 +121,9 @@
       (setq new-keep keep)
       (setq new-todo (cons (car sets) todo))))))
 
-(defun all-variations-on-sets (sets literal-needs)
-  (remove-supersets
-   (mapcan (function-variations-on-set literal-needs)
-	   (remove-supersets sets))))
+(defun all-variations-on-sets (sets)
+  (excl:gc t)
+  (remove-supersets (mapcan #'all-variations-on-set (remove-supersets sets))))
 
 (defun add-literal-as-set-if (matching-patterns literal sets)
   (if (or (null matching-patterns)
@@ -132,31 +131,52 @@
       (cons (list literal) sets)
     sets))
 
+(defun literal-mark-init ()
+  (cons :NONE :NONE))
+
+(defun literal-mark-exists? (literal)
+  (not (eq (literal-mark literal) :NONE)))
+
+(defun literal-mark (literal)
+  (funcall
+   (ecase (literal-label literal)
+     (:TRUE #'car)
+     (:FALSE #'cdr))
+   (tms-node-mark (literal-node literal))))
+
+(defun set-literal-mark! (literal value &aux mark)
+  (setq mark (tms-node-mark (literal-node literal)))
+  (ecase (literal-label literal)
+    (:TRUE (setf (car mark) value))
+    (:FALSE (setf (cdr mark) value)))
+  (setf (tms-node-mark (literal-node literal)) mark))
+
 (defun add-literal-needs (literal
 			    &optional (matching-patterns nil)
-			     (literal-needs-list nil)
-			       &aux sets-1 sub-literals sets)
-  (setq literal-needs-list
-	(acons literal :PENDING literal-needs-list))
-  (setq sets-1 (node-needs-1 (car literal) (cdr literal)))
+			    &aux sets-1 sub-literals sets)
+  (set-literal-mark! literal :PENDING)
+  (setq sets-1 (node-needs-1 (literal-node literal) (literal-label literal)))
   (setq sub-literals (remove-duplicates (apply #'append sets-1)))
   (dolist (sub-literal sub-literals)
-    (unless (assoc sub-literal literal-needs-list)
-      (setq literal-needs-list (add-literal-needs sub-literal matching-patterns literal-needs-list))))
+    (unless (literal-mark-exists? sub-literal)
+      (add-literal-needs sub-literal matching-patterns)))
   (setq sets-1
 	(remove-if
 	 #'(lambda (set)
 	     (some 
-	      #'(lambda (sub-literal) (eq :PENDING (cdr (assoc sub-literal literal-needs-list))))
+	      #'(lambda (sub-literal) (eq :PENDING (literal-mark sub-literal)))
 	      set))
 	 sets-1))
-  (setq sets (all-variations-on-sets sets-1 literal-needs-list))
+  (setq sets (all-variations-on-sets sets-1))
   (setq sets (add-literal-as-set-if matching-patterns literal sets))
-  (acons literal sets literal-needs-list))
+  (set-literal-mark! literal sets))
+
 
 (defun node-needs (node label &optional (matching-patterns nil) &aux literal)
+  (clear-node-marks #'literal-mark-init)
   (setq literal (node-literal node label))
-  (cdr (assoc literal (add-literal-needs literal matching-patterns nil))))
+  (add-literal-needs literal matching-patterns)
+  (literal-mark literal))
 
 (defun function-matches (a)
   #'(lambda (b) (not (eq :FAIL (unify a b)))))

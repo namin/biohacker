@@ -661,7 +661,7 @@
   (unless (eq (tms-node-label node) :UNKNOWN)
     (setq *line-count* 0)
     (maphash #'(lambda (ignore node) (setf (tms-node-mark node) nil))
-	     (ltms-nodes (tms-node-ltms node)))
+	   (ltms-nodes ltms))
     (explain-1 node)))
 
 

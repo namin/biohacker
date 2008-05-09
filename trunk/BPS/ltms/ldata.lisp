@@ -259,13 +259,17 @@
 
 (defun explore (fact) (explore-network (get-tms-node fact)))
 
+(defun clear-node-marks (&optional (init #'(lambda () nil)))
+  (map-dbclass
+   #'(lambda (dbclass)
+       (dolist (datum (dbclass-facts dbclass))
+	 (setf (tms-node-mark (datum-tms-node datum))
+	       (funcall init))))))
+
 (defun explain (fact)
   (unless (unknown? fact)
     (setq *line-count* 0)
-    (map-dbclass
-     #'(lambda (dbclass)
-	 (dolist (datum (dbclass-facts dbclass))
-	   (setf (tms-node-mark (datum-tms-node datum)) nil))))
+    (clear-node-marks)
     (explain-1 (datum-tms-node (referent fact)))))
 
 ;;;; Global interrogatives
