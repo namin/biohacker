@@ -112,7 +112,7 @@
 (defun all-variations-on-sets (sets literal-needs)
   (remove-supersets
    (mapcan (function-variations-on-set literal-needs)
-	   sets)))
+	   (remove-supersets sets))))
 
 (defun add-literal-as-set-if (matching-patterns literal sets)
   (if (or (null matching-patterns)
@@ -120,44 +120,46 @@
       (cons (list literal) sets)
     sets))
 
-(defun add-literal-needs (literal
-			  &optional (matching-patterns nil) (literal-needs-list nil) 
-			  &aux sets-1 sub-literals sets)
+(defun add-literals-needs (literals
+			   &optional (matching-patterns nil) (literal-needs-list nil) (k #'(lambda (x) x))
+			   &aux sets-1 sub-literals sets literal)
+  (when (null literals)
+    (return-from add-literals-needs (funcall k literal-needs-list)))
+  (setq literal (car literals))
+  (when (assoc literal literal-needs-list)
+    (return-from add-literals-needs (funcall k literal-needs-list)))
   (setq literal-needs-list
 	(acons literal :PENDING literal-needs-list))
   (setq sets-1 (node-needs-1 (car literal) (cdr literal)))
   (setq sub-literals (remove-duplicates (apply #'append sets-1)))
-  (dolist (sub-literal sub-literals)
-    (unless (assoc sub-literal literal-needs-list)
-      (setq literal-needs-list
-	    (add-literal-needs
-	     sub-literal
-	     matching-patterns
-	     literal-needs-list))))
-  (setq sets-1
-	(remove-if
-	 #'(lambda (set)
-	     (some 
-	      #'(lambda (sub-literal)
-		  (eq :PENDING 
-		      (cdr (assoc sub-literal literal-needs-list))))
-	      set))
-	 sets-1))
-  (setq sets
-	(all-variations-on-sets
-	 sets-1
-	 literal-needs-list))
-  (setq sets
-	(add-literal-as-set-if
-	 matching-patterns
-	 literal
-	 sets))
-  (acons literal sets literal-needs-list))
-
+  (add-literals-needs 
+   (append (cdr literals) sub-literals)
+   matching-patterns
+   literal-needs-list
+   #'(lambda (literal-needs-list)
+       (setq sets-1
+	     (remove-if
+	      #'(lambda (set)
+		  (some 
+		   #'(lambda (sub-literal)
+		       (eq :PENDING 
+			   (cdr (assoc sub-literal literal-needs-list))))
+		   set))
+	      sets-1))
+       (setq sets
+	     (all-variations-on-sets
+	      sets-1
+	      literal-needs-list))
+       (setq sets
+	     (add-literal-as-set-if
+	      matching-patterns
+	      literal
+	      sets))
+       (funcall k (acons literal sets literal-needs-list)))))
 
 (defun node-needs (node label &optional (matching-patterns nil) &aux literal)
   (setq literal (node-literal node label))
-  (cdr (assoc literal (add-literal-needs literal matching-patterns))))
+  (cdr (assoc literal (add-literals-needs (list literal) matching-patterns))))
 
 (defun function-matches (a)
   #'(lambda (b) (not (eq :FAIL (unify a b)))))
