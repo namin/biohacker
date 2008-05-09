@@ -86,7 +86,7 @@
 
 (defun function-variations-on-set (literal-needs)
   #'(lambda (set) 
-      (mapcar #'remove-duplicates (all-variations-on-set set literal-needs))))
+      (remove-supersets (all-variations-on-set set literal-needs))))
 
 (defun remove-supersets (sets &aux new-sets new-todo new-keep)
   (do ((sets sets new-sets)
