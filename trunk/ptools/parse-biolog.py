@@ -247,7 +247,7 @@ if __name__ == '__main__':
     for i in range(3):
         pm.append( pm_parser.parse( pm_filename % (i+1) ) )
         
-    essential_compounds = ['ALA','ARG','ASN','ASP','CYS','GLN','GLT','GLY','HIS','ILE','LEU','LYS','MET','PHE','PRO','SER','THR','TRP','TYR','VAL','DATP','DTTP','DGTP','DCTP','ATP','UTP','GTP','CTP','L-1-PHOSPHATIDYL-ETHANOLAMINE','CARDIOLIPIN','L-1-PHOSPHATIDYL-GLYCEROL','C6','BISOHMYR-GLC','ADP-L-GLYCERO-D-MANNO-HEPTOSE','KDO','UDP-GLUCOSE','UDP-GALACTOSE','DTDP-RHAMNOSE','GDP-MANNOSE','N-ACETYL-D-GLUCOSAMINE',]
+    essential_compounds = ['L-ALPHA-ALANINE','ARG','ASN','L-ASPARTATE','CYS','GLN','GLT','GLY','HIS','ILE','LEU','LYS','MET','PHE','PRO','SER','THR','TRP','TYR','VAL','DATP','TTP','DGTP','DCTP','ATP','UTP','GTP','CTP','L-1-PHOSPHATIDYL-ETHANOLAMINE','CARDIOLIPIN','L-1-PHOSPHATIDYL-GLYCEROL','C6','BISOHMYR-GLC','ADP-L-GLYCERO-D-MANNO-HEPTOSE','KDO','UDP-GLUCOSE','UDP-GALACTOSE','DTDP-RHAMNOSE','GDP-MANNOSE','N-ACETYL-D-GLUCOSAMINE',]
 
     gene_names = parse_gene_names( 'gene-blattner.txt' )
     compounds = parse_compound_mappings( 'iAF1260-ecocyc-cpd-mappings.txt' )
