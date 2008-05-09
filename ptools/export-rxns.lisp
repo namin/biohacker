@@ -9,6 +9,7 @@
 	   do (print enzyme))
 	(loop for pwy in (collect-pwys (all-pathways :small-molecule) #'balanced-pwy-p)
 	     do (print pwy))))
+
 	    
     
 (defun make-growth  (essential-compounds)
@@ -95,6 +96,23 @@
 	      :reversible? nil
 	      :enzymes ,(enzymes-of-pathway pwy)
 	      :reactions ,(reactions-of-pathway pwy))))
+
+(defun substrates-of-pathway (pwy)
+  (let (reactants products)
+    (loop for rxn in (reactions-of-pathway pwy)
+	do
+	  (multiple-value-bind (rct prod)
+	      (reaction-reactants-and-products rxn :pwy pwy)
+	    (setq reactants (union rct reactants :test #'fequal))
+	    (setq products (union prod products :test #'fequal))
+	    )
+	  )
+    (values reactants
+	    (set-difference reactants products :test #'fequal)
+	    products
+	    (set-difference products reactants :test #'fequal)
+	    )
+    ) )
 
 (defun reactions-of-pathway (pwy)
   (remove-duplicates
