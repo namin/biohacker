@@ -188,3 +188,25 @@
   (debugging-or-logging-nd
    "~%Minimum nutrients for growth: ~A~%Unnecessary nutrients for growth: ~A" min-nutrients extra-nutrients)
   (list min-nutrients extra-nutrients))
+
+(defun explicit-unknown-reaction-reversibilities (&aux name experiment set unknown set-unknown)
+  (unless (and (true? 'experiment-coherent)
+	       (setq name (cadr (car (remove-if-not #'true? (fetch '(focus-experiment ?x))))))
+	       (setq experiment (car (fetch `(experiment ,name . ?x)))))
+
+    (debugging-nd "Focus experiment is not coherent.")
+    (return-from explicit-unknown-reaction-reversibilities))
+  (setq 
+   set
+   (cond ((true? 'experiment-growth)
+	  (mapcar #'cadr (all-antecedents 'experiment-coherent '((reaction-reversible ?r)))))
+	 ((false? 'experiment-growth)
+	  (mapcar #'cadadr (all-antecedents 'experiment-coherent '((:NOT (reaction-reversible ?r))))))
+	 (t (error "Experiment outcome is not known."))))
+  (setq
+   unknown
+   (mapcar #'cadr (fetch '(reaction ?name ?reactants ?products :UNKNOWN ?enzymes))))
+  (setq set-unknown (intersection set unknown))
+  (debugging-or-logging-nd
+   "~%Reactions guessed to be ~A: ~A" (if (true? 'experiment-growth) "reversible" "irreversible") set-unknown)
+  set-unknown)
