@@ -33,9 +33,12 @@
 		   products
 		   (reversible? nil)
 		   (enzymes nil)
-		   reactions)
+		   (reactions nil)
+		   (proper-products nil proper-products?))
+  (unless proper-products?
+    (setq proper-products products))
   `(ensure-network-open pathway
-    (assert! '(pathway ,name ,reactants ,products ,reversible? ,enzymes ,reactions)
+    (assert! '(pathway ,name ,reactants ,products ,reversible? ,enzymes ,reactions ,proper-products)
 	     :NETWORK)
     (debugging-nd
      "~%Adding pathway ~A." ',name)))
