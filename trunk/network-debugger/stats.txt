@@ -4,4 +4,6 @@ new system (network-debugger) with new data (ecoli):
 * 3825 rules run for first experiment
 
 new system (network-debugger :just-pathways) with new data (ecoli):
-* 5505 rules run before experiment
+* 1086 rules run before experiment
+* 1479 rules run for closing network
+* 903 rules run for first experiment
