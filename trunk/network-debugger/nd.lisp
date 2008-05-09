@@ -114,7 +114,7 @@
 	  (cond ((true? 'experiment-coherent)
 		 :COHERENT)
 		((true? 'experiment-growth)
-		 (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r) (pathway-enabled ?p) (enzyme-present ?x))))
+		 (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r) (pathway-enabled ?p) (enzyme-present ?e))))
 		((false? 'experiment-growth)
 		 (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
 		(t (error "Experiment outcome is unknown!"))))

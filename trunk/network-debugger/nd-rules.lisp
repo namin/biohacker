@@ -1,6 +1,6 @@
 (rule ((:INTERN (enzyme ?enzyme . ?genes)))
       (dolist (?gene ?genes)
-	(rassert! (gene ?gene) :NETWORK))
+	(rassert! (gene ?gene) :GENE-OF-ENZYME))
       (assert! `(:IMPLIES
 		 (:AND ,@(list-of 'gene-on ?genes))
 		 (enzyme-present ,?enzyme))
@@ -53,6 +53,11 @@
 		:NUTRIENT-PRESENT))
 
 (rule ((:INTERN (experiment ?experiment ?growth? ?nutrients ?essential-compounds ?bootstrap-compounds ?toxins ?knock-ins ?knock-outs)))
+      (dolist (?compound (append ?essential-compounds ?bootstrap-compounds ?toxins))
+	(rassert! (compound ?compound)
+		  :COMPOUND-OF-EXPERIMENT))
+      (dolist (?gene (append ?knock-ins ?knock-outs))
+	(rassert! (gene ?gene) :GENE-OF-EXPERIMENT))
       (assert! `(:IMPLIES 
 		 (focus-experiment ,?experiment)
 		 (:AND ,@(list-of 'nutrient ?nutrients)
