@@ -1,4 +1,4 @@
-(network-debugger unknown-enzyme :debugging t)
+(network-debugger unknown-enzyme :debugging t :growth-patterns ((reaction-enabled ?r) (nutrient ?c) (enzyme-present ?e)) :abducting t)
 
 ;; Network
 (reaction 
