@@ -122,7 +122,6 @@
       (setq new-todo (cons (car sets) todo))))))
 
 (defun all-variations-on-sets (sets)
-  (excl:gc t)
   (remove-supersets (mapcan #'all-variations-on-set (remove-supersets sets))))
 
 (defun add-literal-as-set-if (matching-patterns literal sets)

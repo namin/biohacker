@@ -81,7 +81,6 @@
 (defmacro ensure-network-closed (demander &rest forms)
   `(progn
      (when (not (nd-network-closed? *nd*))
-       (excl:gc t)
        (debugging-or-logging-nd "~%Closing network for ~A." ',demander)
        (run-rules-logging)
        (assert! 'network-closed :ENSURE)
