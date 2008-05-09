@@ -267,3 +267,9 @@
   (debugging-or-logging-nd
    "~%Nutrients guessed to be ~A: ~A" (if (true? 'experiment-growth) "present" "absent") set-unknown)
   set-unknown)
+
+(defun nd-forward-needs ()
+  (cond ((true? 'experiment-growth)
+	 (needs-forward 'experiment-coherent :TRUE '((reaction-enabled ?r) (nutrient ?x))))
+	((false? 'experiment-growth)
+	 (needs-forward 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))) )
