@@ -28,6 +28,15 @@
 (defmacro debugging-nd (msg &rest args)
   `(when (nd-debugging *ND*) (format t ,msg  ,@args)))
 
+(defmacro tolog (filename &body body)
+  `(with-open-file 
+    (file ,filename
+	  :direction :output
+	  :if-exists :append
+	  :if-does-not-exist :create)
+    (let ((*standard-output* file))
+      ,@body)))
+
 (defmacro when-logging-nd (&body body)
   `(when (nd-log *ND*)
      (tolog
