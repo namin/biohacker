@@ -50,11 +50,10 @@
   (setq node (get-tms-node fact))
   (literal-sets->fact-sets (node-needs-1 node label)))
 
-(defun append-to-all (el sets)
+(defun append-to-all (el sets &optional (sets-so-far nil))
   (if (null sets)
-      nil
-    (cons (append el (car sets))
-	  (append-to-all el (cdr sets)))))
+      sets-so-far
+    (append-to-all el (cdr sets) (cons (append el (car sets)) sets-so-far))))
 
 (defun all-variations-on-set (set literal-needs)
   (if (null set)
