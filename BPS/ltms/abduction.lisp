@@ -223,3 +223,4 @@
     (dolist (fact set)
       (format st " ~A " fact))
     (format st ")")))
+
