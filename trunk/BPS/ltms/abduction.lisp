@@ -1,40 +1,50 @@
 ;; Ex 3, Chapter 10
 
-(defun unknown-pairs (clause &optional except-nodes)
+; a literal is a unique pair (<node> . <label>)
+; where <label> is either :TRUE or :FALSE.
+
+; the needs of a literal are a disjunctive set of conjunctive sets
+; of literals, which if known, would force the literal to be true
+
+; literal-needs is an association list of (<literal> . <needs>)
+
+(defun unknown-literals (clause &optional except-nodes)
+  ;; returns all unknown literals of the given clause
+  ;; except those whose node is in the except-nodes list
   (remove-if
-   #'(lambda (term-pair) 
-       (let ((node (car term-pair)))
+   #'(lambda (literal) 
+       (let ((node (car literal)))
 	(or (known-node? node)
 	    (find node except-nodes))))
    (clause-literals clause)))
 
-(defun opposite-pair (term-pair &aux node fun)
-  (setq node (car term-pair))
-  (setq fun (ecase (cdr term-pair) (:TRUE #'tms-node-false-literal) (:FALSE #'tms-node-true-literal)))
-  (funcall fun node))
-
-(defun opposite-pairs (term-pairs)
-  (mapcar #'opposite-pair term-pairs))
-
 (defun node-literal (node label)
+  ;; retrieves the literal corresponding (node . label)
   (funcall
    (ecase label (:TRUE #'tms-node-true-literal) (:FALSE #'tms-node-false-literal))
    node))
 
+(defun negate-literal (literal &aux node fun)
+  ;; retrieves the literal corresponding to the negation of the given literal
+  (setq node (car literal))
+  (node-literal (car literal) (ecase (cdr literal) (:TRUE :FALSE) (:FALSE :TRUE))))
+
 (defun node-needs-1 (node label &aux node-list clauses)
+  ;; returns the immediate needs of (node . label)
   (when (unknown-node? node)
-    (setq clauses 
+    (setq clauses ;; unsatisfied clauses in which (node . label) appears
 	  (remove-if #'satisfied-clause?
 	   (funcall
 	    (ecase label (:TRUE #'tms-node-true-clauses) (:FALSE #'tms-node-false-clauses))
 	    node)))
     (setq node-list (list node))
     (mapcar #'(lambda (clause)
-		(opposite-pairs (unknown-pairs clause node-list)))
+		;; setting of the unknown literals which would force (node . label)
+		(mapcar #'negate-literal (unknown-literals clause node-list)))
 	    clauses)))
 
-
 (defun literal->fact (literal &aux form)
+  ;; the pretty representation of a literal
   (setq form (datum-lisp-form (tms-node-datum (car literal))))
   (ecase (cdr literal)
     (:TRUE form)
@@ -50,22 +60,25 @@
   (setq node (get-tms-node fact))
   (literal-sets->fact-sets (node-needs-1 node label)))
 
-(defun append-to-all (set ssets)
+(defun union-to-each (set ssets)
+  ;; returns all unions of the given set with each set in ssets
   (do ((ssets ssets (cdr ssets))
-       (result nil (cons (append set (car ssets)) result)))
+       (result nil (cons (union set (car ssets)) result)))
       ((null ssets) result)))
 
-(defun all-combinations (sssets)
+(defun all-possible-unions (sssets)
+  ;; given a set of sets of sets, returns a set of sets
+  ;; representing all possible unions of one set from each set of sets
   (do ((sssets sssets (cdr sssets))
        (result (list nil)
 	       (mapcan 
 		#'(lambda (set)
-		    (append-to-all set result))
+		    (union-to-each set result))
 		(car sssets))))
       ((null sssets) result)))
 
 (defun all-variations-on-set (set literal-needs)
-  (all-combinations
+  (all-possible-unions
    (mapcar 
     #'(lambda (literal)
 	(cdr (assoc literal literal-needs)))
@@ -139,20 +152,11 @@
 	(remove-if
 	 #'(lambda (set)
 	     (some 
-	      #'(lambda (sub-literal)
-		  (eq :PENDING 
-		      (cdr (assoc sub-literal literal-needs-list))))
+	      #'(lambda (sub-literal) (eq :PENDING (cdr (assoc sub-literal literal-needs-list))))
 	      set))
 	 sets-1))
-  (setq sets
-	(all-variations-on-sets
-	  sets-1
-	   literal-needs-list))
-  (setq sets
-	(add-literal-as-set-if
-	  matching-patterns
-	   literal
-	    sets))
+  (setq sets (all-variations-on-sets sets-1 literal-needs-list))
+  (setq sets (add-literal-as-set-if matching-patterns literal sets))
   (acons literal sets literal-needs-list))
 
 (defun node-needs (node label &optional (matching-patterns nil) &aux literal)
@@ -163,28 +167,20 @@
   #'(lambda (b) (not (eq :FAIL (unify a b)))))
 
 (defun function-matching-patterns (patterns)
-  #'(lambda (form)
-      (some (function-matches form)
-	    patterns)))
+  #'(lambda (form) (some (function-matches form) patterns)))
 
 (defun needs (fact label &optional (patterns nil) &aux matching-patterns node sets)
   (setq node (get-tms-node fact))
   (run-rules)
-  (setq matching-patterns
-	(when patterns
-	  (function-matching-patterns patterns)))
-  (setq sets 
-	(literal-sets->fact-sets
-	 (node-needs node label matching-patterns)))
+  (setq matching-patterns (when patterns (function-matching-patterns patterns)))
+  (setq sets (literal-sets->fact-sets (node-needs node label matching-patterns)))
   sets)
 
 (defun form-cost (form pattern-cost-list)
   (cdr (assoc-if (function-matches form) pattern-cost-list)))
 
 (defun explanation-cost (exp pattern-cost-list)
-  (apply #'+
-	 (mapcar #'(lambda (form) (form-cost form pattern-cost-list))
-		 exp)))
+  (apply #'+ (mapcar #'(lambda (form) (form-cost form pattern-cost-list)) exp)))
 
 (defun labduce (fact label pattern-cost-list &aux patterns sets min-cost-exp min-cost cost)
   (setq patterns (mapcar #'car pattern-cost-list))
@@ -204,11 +200,7 @@
    (format nil "~A" y)))
 
 (defun sort-fact-sets (sets)
-  (sort
-   (mapcar #'(lambda (set)
-	      (sort set #'alphalessp))
-	   sets)
-   #'alphalessp))
+  (sort (mapcar #'(lambda (set) (sort set #'alphalessp)) sets) #'alphalessp))
 
 (defun pp-sets (sets &optional (st t))
   (dolist (set sets)
