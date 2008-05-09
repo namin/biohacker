@@ -32,6 +32,7 @@
     "cwa"       ;; Closed-world assumption mechanism
     "dds"       ;; Dependency-directed search facility
     "abduction" ;; Abduction mechanism (Ex 3 Ch 10)
+    "explain"   ;; Find all antecedents by pattern matching
     ))     
 
 (defparameter *set-rule-file* "setrule")
