@@ -10,7 +10,7 @@
 		 (:NOT (enzyme-present ,?enzyme)))
 	       :ENZYME-NOT-FORMED))
 
-(rule ((:INTERN (pathway ?pathway ?reactants ?products ?reversible? ?enzymes ?reactions)))
+(rule ((:INTERN (pathway ?pathway ?reactants ?products ?reversible? ?enzymes ?reactions ?proper-products)))
       (dolist (?reactant ?reactants)
 	(rassert! (compound ?reactant) :COMPOUND-OF-PATHWAY)
 	(rassert! (pathway-reactant ?reactant ?pathway) :REACTANT-OF-PATHWAY))

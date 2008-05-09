@@ -25,7 +25,9 @@ Place the following forms in biohacker/trunk/ptools/data/*-network.lisp
                     - (:UNKNOWN) means that some unknown enzyme is needed
                       :UNKNOWN can be part of any enzyme list & will be treated specially
                     >
-	  :reactions <list of all reactions in the pathway> ; pathways only
+          pathway-only keys
+	  :reactions <list of all reactions in the pathway>
+	  :proper-products <list of the actual end products of a pathway (should be a subset of products, products by default)>
 	  )
 
 (enzyme <name> . <list of genes (conjunctive)>)
