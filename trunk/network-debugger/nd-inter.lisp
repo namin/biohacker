@@ -10,6 +10,8 @@
   (network-closed? nil)	          ; Whether reactions, enzymes and pathways can still be added
   (findings nil)                  ; An association list of (experiment-name . finding)
   (abducting nil)                 ; Whether abducting during investigation
+  (growth-patterns nil)
+  (no-growth-patterns nil)
   )
 
 (defun nd-print-procedure (nd st ignore)
@@ -62,7 +64,7 @@
      (when-logging-nd
       ,@body)))
 
-(defun create-nd (title &key debugging log rules abducting)
+(defun create-nd (title &key debugging log rules abducting growth-patterns no-growth-patterns)
   (unless rules
     (setq rules :just-reactions))
    (let ((nd (make-nd
@@ -71,7 +73,9 @@
 	      :DEBUGGING debugging
 	      :ABDUCTING abducting
 	      :LOG log
-	      :rules rules)))
+	      :rules rules
+	      :growth-patterns growth-patterns
+	      :no-growth-patterns no-growth-patterns)))
      (setq *ND* nd)
      (change-ltms 
       (ltre-ltms (nd-ltre nd)) 
@@ -83,10 +87,12 @@
 	((:just-pathways) *nd-pathway-rules-file*)))
      nd))
 
-(defun change-nd (nd &key (debugging nil debugging?) (log nil log?) (abducting nil abducting?))
+(defun change-nd (nd &key (debugging nil debugging?) (log nil log?) (abducting nil abducting?) (growth-patterns nil growth-patterns?) (no-growth-patterns nil no-growth-patterns?))
   (when debugging? (setf (nd-debugging nd) debugging))
   (when log? (setf (nd-log nd) log))
-  (when abducting? (setf (nd-abducting nd) abducting)))
+  (when abducting? (setf (nd-abducting nd) abducting))
+  (when growth-patterns? (setf (nd-growth-patterns nd) growth-patterns))
+  (when no-growth-patterns? (setf (nd-no-growth-patterns nd) no-growth-patterns)))
 
 (defun view-fact (fact)
   (when (listp fact)
