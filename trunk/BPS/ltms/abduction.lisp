@@ -138,16 +138,11 @@
 			       &aux sets-1 sub-literals sets)
   (setq literal-needs-list
 	(acons literal :PENDING literal-needs-list))
-  (setq sets-1 (node-needs-1 (car literal)
-			      (cdr literal)))
+  (setq sets-1 (node-needs-1 (car literal) (cdr literal)))
   (setq sub-literals (remove-duplicates (apply #'append sets-1)))
   (dolist (sub-literal sub-literals)
     (unless (assoc sub-literal literal-needs-list)
-      (setq literal-needs-list
-	    (add-literal-needs
-	     sub-literal
-	     matching-patterns
-	     literal-needs-list))))
+      (setq literal-needs-list (add-literal-needs sub-literal matching-patterns literal-needs-list))))
   (setq sets-1
 	(remove-if
 	 #'(lambda (set)
