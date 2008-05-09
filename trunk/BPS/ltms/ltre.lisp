@@ -33,6 +33,7 @@
     "dds"       ;; Dependency-directed search facility
     "abduction" ;; Abduction mechanism (Ex 3 Ch 10)
     "explain"   ;; Find all antecedents by pattern matching
+    "forward-abduction" ;; Simplified abduction mechanism that gives only one (random) answer
     ))     
 
 (defparameter *set-rule-file* "setrule")
