@@ -1,4 +1,4 @@
-(network-debugger simple :debugging t :log "simple-stats-log.txt")
+(network-debugger simple :debugging t :log "simple-stats.log")
 
 ;; Network
 (reaction 
