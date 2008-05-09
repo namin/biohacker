@@ -50,23 +50,26 @@
   (setq node (get-tms-node fact))
   (literal-sets->fact-sets (node-needs-1 node label)))
 
-(defun append-to-all (el sets &optional (sets-so-far nil))
-  (if (null sets)
-      sets-so-far
-    (append-to-all el (cdr sets) (cons (append el (car sets)) sets-so-far))))
+(defun append-to-all (set ssets)
+  (do ((ssets ssets (cdr ssets))
+       (result nil (cons (append set (car ssets)) result)))
+      ((null ssets) result)))
 
-(defun all-variations-on-set (set literal-needs &optional (k #'(lambda (x) x)))
-  (if (null set)
-      (funcall k (list nil))
-    (all-variations-on-set
-     (cdr set)
-     literal-needs
-     #'(lambda (rest-sets)
-	 (funcall
-	  k
-	  (mapcan 
-	   #'(lambda (el) (append-to-all el rest-sets)) 
-	   (cdr (assoc (car set) literal-needs))))))))
+(defun all-combinations (sssets)
+  (do ((sssets sssets (cdr sssets))
+       (result (list nil)
+	       (mapcan 
+		#'(lambda (set)
+		    (append-to-all set result))
+		(car sssets))))
+      ((null sssets) result)))
+
+(defun all-variations-on-set (set literal-needs)
+  (all-combinations
+   (mapcar 
+    #'(lambda (literal)
+	(cdr (assoc literal literal-needs)))
+    set)))
 
 (defun function-variations-on-set (literal-needs)
   #'(lambda (set) 
