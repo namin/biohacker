@@ -6,7 +6,7 @@
 	       ,@(list-of 'gene-on actual-genes)
 	       (:OR (:NOT (unknown-gene-for ,?enzyme)) (unknown-gene-on-for ,?enzyme)))))
 	(dolist (?gene actual-genes)
-	  (rassert! (gene ?gene) :NETWORK))
+	  (rassert! (gene ?gene) :GENE-OF-ENZYME))
 	(if unknown?
 	    (progn
 	      (rassert! (unknown-gene-for ?enzyme) :NETWORK-EXTENSION)
@@ -112,6 +112,11 @@
 		:NUTRIENT-PRESENT))
 
 (rule ((:INTERN (experiment ?experiment ?growth? ?nutrients ?essential-compounds ?bootstrap-compounds ?toxins ?knock-ins ?knock-outs)))
+      (dolist (?compound (append ?essential-compounds ?bootstrap-compounds ?toxins))
+	(rassert! (compound ?compound)
+		  :COMPOUND-OF-EXPERIMENT))
+      (dolist (?gene (append ?knock-ins ?knock-outs))
+	(rassert! (gene ?gene) :GENE-OF-EXPERIMENT))
       (assert! `(:IMPLIES 
 		 (focus-experiment ,?experiment)
 		 (:AND ,@(list-of 'nutrient ?nutrients)
