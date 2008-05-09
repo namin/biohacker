@@ -8,7 +8,8 @@
 				  ; :extended-reactions (support for :unknown genes and reversible reactions)
 				  ; :just-pathways
   (network-closed? nil)	          ; Whether reactions, enzymes and pathways can still be added
-  (findings nil)                  ; An association list of (experiment-name . investigation-result)
+  (findings nil)                  ; An association list of (experiment-name . finding)
+  (abducting nil)                 ; Whether abducting during investigation
   )
 
 (defun nd-print-procedure (nd st ignore)
@@ -61,13 +62,14 @@
      (when-logging-nd
       ,@body)))
 
-(defun create-nd (title &key debugging log rules)
+(defun create-nd (title &key debugging log rules abducting)
   (unless rules
     (setq rules :just-reactions))
    (let ((nd (make-nd
 	      :TITLE title 
 	      :LTRE (create-ltre (list :LTRE-OF title))
 	      :DEBUGGING debugging
+	      :ABDUCTING abducting
 	      :LOG log
 	      :rules rules)))
      (setq *ND* nd)
@@ -81,9 +83,10 @@
 	((:just-pathways) *nd-pathway-rules-file*)))
      nd))
 
-(defun change-nd (nd &key (debugging nil debugging?) (log nil log?))
+(defun change-nd (nd &key (debugging nil debugging?) (log nil log?) (abducting nil abducting?))
   (when debugging? (setf (nd-debugging nd) debugging))
-  (when log? (setf (nd-log nd) log)))
+  (when log? (setf (nd-log nd) log))
+  (when abducting? (setf (nd-abducting nd) abducting)))
 
 (defun view-fact (fact)
   (when (listp fact)

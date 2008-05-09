@@ -2,8 +2,9 @@
 			    &key 
 			    (debugging nil)
 			    (rules nil)
-			    (log nil))
-  `(let ((nd (create-nd ',name :rules ,rules :log ,log :debugging ,debugging)))
+			    (log nil)
+			    (abducting nil))
+  `(let ((nd (create-nd ',name :abducting ,abducting :rules ,rules :log ,log :debugging ,debugging)))
      (debugging-or-logging-nd
       "~%Network Debugger ~A" ',name)
      nd))
@@ -116,27 +117,34 @@
   (change-focus-experiment name)
   (setq cache
 	(assoc name (nd-findings *nd*)))
-  (setq result
-	(cdr cache))
+  (setq result (cdr cache))
   (unless cache
-    (setq result
-	  (cond ((true? 'experiment-coherent)
-		 :COHERENT)
-		((true? 'experiment-growth)
-		 (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r) (pathway-enabled ?p))))
-		((false? 'experiment-growth)
-		 (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
-		(t (error "Experiment outcome is unknown!"))))
+    (setq result (if (true? 'experiment-coherent) :COHERENT :NEEDS))
     (setf (nd-findings *nd*) (acons name result (nd-findings *nd*))))
-  (when-debugging-or-logging-nd
-    (print-investigation name result))
+  (if (nd-abducting *nd*)
+    (abduct)
+    (debugging-or-logging-nd
+     "~%Experiment ~A ~A." name (if (eq :COHERENT result) "is coherent" "is not immediately coherent")))
   result)
 
-(defun print-investigation (name result)
+(defun abduct (&aux result)
+  (setq result
+	(cond ((true? 'experiment-coherent)
+	       :COHERENT)
+	      ((true? 'experiment-growth)
+	       (needs 'experiment-coherent :TRUE '((nutrient ?c) (reaction-enabled ?r) (pathway-enabled ?p))))
+	      ((false? 'experiment-growth)
+	       (needs 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))
+	      (t (error "Experiment outcome is unknown!"))))
+  (when-debugging-or-logging-nd
+   (print-abduction result))
+  result)
+
+(defun print-abduction (result)
   (if (eq :COHERENT result) 
-      (format t "~%Experiment ~A is coherent." name)
+      (format t "~%Experiment is coherent.")
     (progn 
-      (format t "~%Experiment ~A is not coherent. Needs:" name)
+      (format t "~%Experiment is not coherent. Needs:")
       (pp-sets result t))))
 
 (defun filter-findings-by-growth (growth? &optional (findings (nd-findings *nd*)))
