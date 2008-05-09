@@ -63,7 +63,8 @@
     (debugging-or-logging-nd
      "~%Adding experiment ~A" ',name)
     (run-rules-logging)
-    (investigate-experiment ',name)))
+    (investigate-experiment ',name)
+    ))
 
 (defmacro ensure-network-open (demander &rest forms)
   `(if (nd-network-closed? *nd*)
@@ -73,6 +74,7 @@
 (defmacro ensure-network-closed (demander &rest forms)
   `(progn
      (when (not (nd-network-closed? *nd*))
+       (excl:gc t)
        (debugging-or-logging-nd "~%Closing network for ~A." ',demander)
        (run-rules-logging)
        (assert! 'network-closed :ENSURE)
@@ -94,6 +96,7 @@
    "~%Focusing on experiment ~A." name))
 
 (defun investigate-experiment (name &aux result cache)
+  (excl:gc t)
   (when-logging-nd
    "Investigating experiment ~A." name)
   (when (unknown? 'simplify-investigations) 
