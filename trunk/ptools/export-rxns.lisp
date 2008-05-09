@@ -3,10 +3,12 @@
 
 (defun export-rxns (filename)
   (tofile filename
-    (format t "~A~%~A~%~A~%" 
-	    (collect-rxns (all-rxns :smm) #'balanced-rxn-p)
-	    (collect-enzymes (all-rxns :smm) #'balanced-rxn-p)
-	    (collect-pwys (all-pathways :small-molecule) #'balanced-pwy-p))))
+	(loop for rxn in (collect-rxns (all-rxns :smm) #'balanced-rxn-p)
+	   do (print rxn))
+	(loop for enzyme in (collect-enzymes (all-rxns :smm) #'balanced-rxn-p)
+	   do (print enzyme))
+	(loop for pwy in (collect-pwys (all-pathways :small-molecule) #'balanced-pwy-p)
+	     do (print pwy))))
 	    
     
 (defun make-growth  (essential-compounds)
@@ -89,6 +91,7 @@
     `(pathway ,(get-frame-name pwy)
 	      :reactants ,proper-reactants
 	      :products ,all-products
+	      :proper-products ,proper-products
 	      :reversible? nil
 	      :enzymes ,(enzymes-of-pathway pwy)
 	      :reactions ,(reactions-of-pathway pwy))))
@@ -109,8 +112,11 @@
 	     ,@(enzymes-of-reaction rxn)))
 
 (defun translate-enzyme-to-tms (enzyme)
+  (let ((enzymes (genes-of-protein enzyme)))
   `(enzyme ,(get-frame-name enzyme)
-	   ,@(genes-of-protein enzyme)))
+	   ,@(if enzymes
+		 enzymes
+		 '(unknown)))))
 
 
 
@@ -123,12 +129,14 @@
 	  (products (if (eq rxn-direction :r2l)
 			(get-slot-values rxn 'left)
 			(get-slot-values rxn 'right)))
-	  (reversible? (or (eq rxn-direction nil) 
-			   (eq rxn-direction :both))))
+	  (reversible? (if (eq rxn-direction :both)
+			   t
+			   :unknown)))
       `(reaction ,(get-frame-name rxn) 
 		 :reactants ,reactants
 		 :products ,products
-		 :reversible? ,reversible?
+		 ,@(if (not (eq :unknown reversible? ))
+		       `(:reversible? ,reversible?))
 		 :enzymes ,enzymes))))
 
 (defun substrate-not-frame-p (rxn)
@@ -174,4 +182,3 @@
     (= 0 (- reactant-atoms product-atoms))))
     
 	
-	      
