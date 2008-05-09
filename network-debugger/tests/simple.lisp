@@ -1,4 +1,4 @@
-(network-debugger simple :debugging t)
+(network-debugger simple :debugging t :abducting t)
 
 ;; Network
 (reaction 
