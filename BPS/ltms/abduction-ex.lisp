@@ -48,7 +48,7 @@
 (setq patterns '((son ?son of ?father) (father ?father of ?son) (brothers ?a ?b) (uncle ?a of ?b) (nephew ?a of ?b)))
 
 (needs '(father mohamed of aadel) :TRUE patterns)
-; (((SON AADEL OF MOHAMED)))
+; (((FATHER MOHAMED OF AADEL)) ((SON AADEL OF MOHAMED)))
 
 (sort-fact-sets (needs '(related mohamed aadel) :TRUE patterns))
 ;(((BROTHERS AADEL MOHAMED)) 

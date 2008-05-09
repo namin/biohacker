@@ -16,6 +16,11 @@
 (defun opposite-pairs (term-pairs)
   (mapcar #'opposite-pair term-pairs))
 
+(defun node-literal (node label)
+  (funcall
+   (ecase label (:TRUE #'tms-node-true-literal) (:FALSE #'tms-node-false-literal))
+   node))
+
 (defun node-needs-1 (node label &aux node-list clauses)
   (when (unknown-node? node)
     (setq clauses 
@@ -44,12 +49,6 @@
 (defun needs-1 (fact label &aux node)
   (setq node (get-tms-node fact))
   (literal-sets->fact-sets (node-needs-1 node label)))
-
-(defun function-circular-need (nodes)
-  #'(lambda (literals) 
-    (dolist (literal literals nil)
-      (when (find (car literal) nodes)
-	(return t)))))
 
 (defun append-to-all (el sets)
   (if (null sets)
@@ -116,28 +115,44 @@
       (cons (list literal) sets)
     sets))
 
-(defun node-needs (node label &optional (matching-patterns nil) &key (nodes nil) &aux sets-1 sets new-nodes literals literal-needs)
-  (when (and (setq new-nodes (cons node nodes))
-	     (setq sets-1 
-		   (remove-if 
-		    (function-circular-need nodes) 
-		    (node-needs-1 node label))))
-    (setq literals
-	  (remove-duplicates (apply #'append sets-1)))
-    ; association list of (literal . needs)
-    (setq literal-needs
-	  (mapcar #'(lambda (literal)
-		      (cons literal 
-			    (add-literal-as-set-if 
-			     matching-patterns 
-			     literal
-			     (node-needs (car literal) (cdr literal) matching-patterns :nodes new-nodes))))
-		  literals))
-    (setq sets
-	  (all-variations-on-sets
-	   sets-1
-	   literal-needs))
-    sets))
+(defun add-literal-needs (literal
+			  &optional (matching-patterns nil) (literal-needs-list nil) 
+			  &aux sets-1 sub-literals sets)
+  (setq literal-needs-list
+	(acons literal :PENDING literal-needs-list))
+  (setq sets-1 (node-needs-1 (car literal) (cdr literal)))
+  (setq sub-literals (remove-duplicates (apply #'append sets-1)))
+  (dolist (sub-literal sub-literals)
+    (unless (assoc sub-literal literal-needs-list)
+      (setq literal-needs-list
+	    (add-literal-needs
+	     sub-literal
+	     matching-patterns
+	     literal-needs-list))))
+  (setq sets-1
+	(remove-if
+	 #'(lambda (set)
+	     (some 
+	      #'(lambda (sub-literal)
+		  (eq :PENDING 
+		      (cdr (assoc sub-literal literal-needs-list))))
+	      set))
+	 sets-1))
+  (setq sets
+	(all-variations-on-sets
+	 sets-1
+	 literal-needs-list))
+  (setq sets
+	(add-literal-as-set-if
+	 matching-patterns
+	 literal
+	 sets))
+  (acons literal sets literal-needs-list))
+
+
+(defun node-needs (node label &optional (matching-patterns nil) &aux literal)
+  (setq literal (node-literal node label))
+  (cdr (assoc literal (add-literal-needs literal matching-patterns))))
 
 (defun function-matches (a)
   #'(lambda (b) (not (eq :FAIL (unify a b)))))
