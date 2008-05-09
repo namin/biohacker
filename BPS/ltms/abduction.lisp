@@ -120,20 +120,32 @@
       (cons (list literal) sets)
     sets))
 
-(defun add-literals-needs (literals
-			   &optional (matching-patterns nil) (literal-needs-list nil) (k #'(lambda (x) x))
-			   &aux sets-1 sub-literals sets literal)
-  (when (null literals)
-    (return-from add-literals-needs (funcall k literal-needs-list)))
-  (setq literal (car literals))
-  (when (assoc literal literal-needs-list)
-    (return-from add-literals-needs (funcall k literal-needs-list)))
+(defun add-all-literals-needs (literals matching-patterns literal-needs-list 
+					&optional (k #'(lambda (x) x)))
+  (if (null literals)
+      (funcall k literal-needs-list)
+    (add-all-literals-needs
+     (cdr literals)
+     matching-patterns
+     literal-needs-list
+     #'(lambda (literal-needs-list)
+	 (if (assoc (car literals) literal-needs-list)
+	     (funcall k literal-needs-list)
+	   (add-literal-needs
+	    (car literals)
+	    matching-patterns
+	    literal-needs-list
+	    k))))))
+
+(defun add-literal-needs (literal matching-patterns literal-needs-list 
+				  &optional (k #'(lambda (x) x))
+				  &aux sets-1 sub-literals sets)
   (setq literal-needs-list
 	(acons literal :PENDING literal-needs-list))
   (setq sets-1 (node-needs-1 (car literal) (cdr literal)))
   (setq sub-literals (remove-duplicates (apply #'append sets-1)))
-  (add-literals-needs 
-   (append (cdr literals) sub-literals)
+  (add-all-literals-needs
+   sub-literals
    matching-patterns
    literal-needs-list
    #'(lambda (literal-needs-list)
@@ -159,7 +171,7 @@
 
 (defun node-needs (node label &optional (matching-patterns nil) &aux literal)
   (setq literal (node-literal node label))
-  (cdr (assoc literal (add-literals-needs (list literal) matching-patterns))))
+  (cdr (assoc literal (add-literal-needs literal matching-patterns nil))))
 
 (defun function-matches (a)
   #'(lambda (b) (not (eq :FAIL (unify a b)))))
