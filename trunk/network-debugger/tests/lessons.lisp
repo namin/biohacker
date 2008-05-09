@@ -17,3 +17,8 @@
 	  EG11978 EG12411))
 (setq reversibles
       '(DCTP-DEAM-RXN CYTIDEAM2-RXN))
+
+(pathway-tools-file "minimal-nutrients.txt" minimal-nutrient-set)
+(pathway-tools-file "on-genes.txt" on-genes)
+(pathway-tools-file "reversibles.txt" reversibles)
+(pathway-tools-file "all.txt" (append reversibles on-genes minimal-nutrient-set))
