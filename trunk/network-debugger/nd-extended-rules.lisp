@@ -153,7 +153,7 @@
 		   (:AND
 		    (focus-experiment ,?experiment)
 		    (:NOT ,and-all-bootstraps-present))
-		   (:NOT experiment-coherent))
+		   (:NOT experiment-consistent))
 		 :EXPERIMENT-PREDICTION-MISSING-BOOTSTRAP-COMPOUND)
 	(assert! `(:IMPLIES
 		   (:AND
@@ -162,7 +162,7 @@
 		    ,(ecase ?growth?
 		       ((t) 'growth)
 		       ((nil) '(:NOT growth))))
-		   experiment-coherent)
+		   experiment-consistent)
 		 :EXPERIMENT-PREDICTION-OK))
       (assert! `(:IMPLIES
 		 (:AND
@@ -170,7 +170,7 @@
 		  ,(ecase ?growth?
 		     ((nil) 'growth)
 		     ((t) '(:NOT growth))))
-		 (:NOT experiment-coherent))
+		 (:NOT experiment-consistent))
 	       :EXPERIMENT-PREDICTION-WRONG-OUTCOME)
       (when (not ?growth?)
 	(rule ((:INTERN (compound ?compound)))

@@ -120,32 +120,32 @@
 	(assoc name (nd-findings *nd*)))
   (setq result (cdr cache))
   (unless cache
-    (setq result (if (true? 'experiment-coherent) :COHERENT :NEEDS))
+    (setq result (if (true? 'experiment-consistent) :CONSISTENT :NEEDS))
     (setf (nd-findings *nd*) (acons name result (nd-findings *nd*))))
   (if (nd-abducting *nd*)
     (abduct)
     (debugging-or-logging-nd
-     "~%Experiment ~A ~A." name (if (eq :COHERENT result) "is coherent" "is not immediately coherent")))
+     "~%Experiment ~A ~A with model." name (if (eq :CONSISTENT result) "is consistent" "is not immediately consistent")))
   result)
 
 (defun abduct (&aux result)
   (setq result
-	(cond ((true? 'experiment-coherent)
-	       :COHERENT)
+	(cond ((true? 'experiment-consistent)
+	       :CONSISTENT)
 	      ((true? 'experiment-growth)
-	       (needs 'experiment-coherent :TRUE (nd-growth-patterns *nd*)))
+	       (needs 'experiment-consistent :TRUE (nd-growth-patterns *nd*)))
 	      ((false? 'experiment-growth)
-	       (needs 'experiment-coherent :TRUE (nd-no-growth-patterns *nd*)))
+	       (needs 'experiment-consistent :TRUE (nd-no-growth-patterns *nd*)))
 	      (t (error "Experiment outcome is unknown!"))))
   (when-debugging-or-logging-nd
    (print-abduction result))
   result)
 
 (defun print-abduction (result)
-  (if (eq :COHERENT result) 
-      (format t "~%Experiment is coherent.")
+  (if (eq :CONSISTENT result) 
+      (format t "~%Experiment is consistent with model.")
     (progn 
-      (format t "~%Experiment is not coherent. Needs:")
+      (format t "~%Experiment is not consistent with model. Needs:")
       (pp-sets result t))))
 
 (defun filter-findings-by-growth (growth? &optional (findings (nd-findings *nd*)))
@@ -155,21 +155,21 @@
    findings
    :key #'car))
 
-(defun filter-findings-by-coherence (coherent? &optional (findings (nd-findings *nd*)))
+(defun filter-findings-by-consistence (consistent? &optional (findings (nd-findings *nd*)))
   (remove-if-not
-   (if coherent?
-       #'(lambda (result) (eq result :COHERENT))
-     #'(lambda (result) (not (eq result :COHERENT))))
+   (if consistent?
+       #'(lambda (result) (eq result :CONSISTENT))
+     #'(lambda (result) (not (eq result :CONSISTENT))))
    findings
    :key #'cdr))
 
 (defun summarize-findings (&aux positive negative false-negative false-positive growth no-growth summary)
   (setq growth (filter-findings-by-growth t))
   (setq no-growth (filter-findings-by-growth nil))
-  (setq positive (filter-findings-by-coherence t growth))
-  (setq negative (filter-findings-by-coherence t no-growth))
-  (setq false-negative (filter-findings-by-coherence nil growth))
-  (setq false-positive (filter-findings-by-coherence nil no-growth))
+  (setq positive (filter-findings-by-consistence t growth))
+  (setq negative (filter-findings-by-consistence t no-growth))
+  (setq false-negative (filter-findings-by-consistence nil growth))
+  (setq false-positive (filter-findings-by-consistence nil no-growth))
   (setq summary (list positive negative false-negative false-positive))
   (when-debugging-or-logging-nd
     (print-summary summary))
@@ -191,32 +191,32 @@
 
 (defun minimize-nutrients (&aux name experiment nutrients min-nutrients extra-nutrients)
   (unless (and (true? 'experiment-growth)
-	       (true? 'experiment-coherent)
+	       (true? 'experiment-consistent)
 	       (setq name (cadr (car (remove-if-not #'true? (fetch '(focus-experiment ?x))))))
 	       (setq experiment (car (fetch `(experiment ,name . ?x)))))
 
-    (debugging-nd "Focus experiment is not growth experiment or not coherent.")
+    (debugging-nd "Focus experiment is not growth experiment or not consistent.")
     (return-from minimize-nutrients))
   (setq nutrients (cadddr experiment))
-  (setq min-nutrients (mapcar #'cadr (all-antecedents 'experiment-coherent '((nutrient ?c)))))
+  (setq min-nutrients (mapcar #'cadr (all-antecedents 'experiment-consistent '((nutrient ?c)))))
   (setq extra-nutrients (remove-if #'(lambda (c) (find c min-nutrients)) nutrients))
   (debugging-or-logging-nd
    "~%Minimum nutrients for growth: ~A~%Unnecessary nutrients for growth: ~A" min-nutrients extra-nutrients)
   (list min-nutrients extra-nutrients))
 
 (defun explicit-reversibility (&aux name experiment set unknown set-unknown)
-  (unless (and (true? 'experiment-coherent)
+  (unless (and (true? 'experiment-consistent)
 	       (setq name (cadr (car (remove-if-not #'true? (fetch '(focus-experiment ?x))))))
 	       (setq experiment (car (fetch `(experiment ,name . ?x)))))
 
-    (debugging-nd "Focus experiment is not coherent.")
+    (debugging-nd "Focus experiment is not consistent.")
     (return-from explicit-reversibility))
   (setq 
    set
    (cond ((true? 'experiment-growth)
-	  (mapcar #'cadr (all-antecedents 'experiment-coherent '((reaction-reversible ?r)))))
+	  (mapcar #'cadr (all-antecedents 'experiment-consistent '((reaction-reversible ?r)))))
 	 ((false? 'experiment-growth)
-	  (mapcar #'cadadr (all-antecedents 'experiment-coherent '((:NOT (reaction-reversible ?r))))))
+	  (mapcar #'cadadr (all-antecedents 'experiment-consistent '((:NOT (reaction-reversible ?r))))))
 	 (t (error "Experiment outcome is not known."))))
   (setq
    unknown
@@ -227,17 +227,17 @@
   set-unknown)
 
 (defun explicit-gene-expression (&aux name experiment set known set-unknown)
-  (unless (and (true? 'experiment-coherent)
+  (unless (and (true? 'experiment-consistent)
 	       (setq name (cadr (car (remove-if-not #'true? (fetch '(focus-experiment ?x))))))
 	       (setq experiment (car (fetch `(experiment ,name . ?x)))))
-    (debugging-nd "Focus experiment is not coherent.")
+    (debugging-nd "Focus experiment is not consistent.")
     (return-from explicit-gene-expression))
   (setq 
    set
    (cond ((true? 'experiment-growth)
-	  (mapcar #'cadr (all-antecedents 'experiment-coherent '((gene-on ?g)))))
+	  (mapcar #'cadr (all-antecedents 'experiment-consistent '((gene-on ?g)))))
 	 ((false? 'experiment-growth)
-	  (mapcar #'cadadr (all-antecedents 'experiment-coherent '((:NOT (gene-on ?g))))))
+	  (mapcar #'cadadr (all-antecedents 'experiment-consistent '((:NOT (gene-on ?g))))))
 	 (t (error "Experiment outcome is not known."))))
   (setq 
    known
@@ -248,17 +248,17 @@
   set-unknown)
 
 (defun explicit-nutrients (&aux name experiment set known set-unknown)
-  (unless (and (true? 'experiment-coherent)
+  (unless (and (true? 'experiment-consistent)
 	       (setq name (cadr (car (remove-if-not #'true? (fetch '(focus-experiment ?x))))))
 	       (setq experiment (car (fetch `(experiment ,name . ?x)))))
-    (debugging-nd "Focus experiment is not coherent.")
+    (debugging-nd "Focus experiment is not consistent.")
     (return-from explicit-nutrients))
   (setq 
    set
    (cond ((true? 'experiment-growth)
-	  (mapcar #'cadr (all-antecedents 'experiment-coherent '((nutrient ?c)))))
+	  (mapcar #'cadr (all-antecedents 'experiment-consistent '((nutrient ?c)))))
 	 ((false? 'experiment-growth)
-	  (mapcar #'cadadr (all-antecedents 'experiment-coherent '((:NOT (nutrient ?c))))))
+	  (mapcar #'cadadr (all-antecedents 'experiment-consistent '((:NOT (nutrient ?c))))))
 	 (t (error "Experiment outcome is not known."))))
   (setq set-unknown set)
   (when (true? 'experiment-growth)
@@ -271,6 +271,6 @@
 
 (defun nd-forward-needs ()
   (cond ((true? 'experiment-growth)
-	 (needs-forward 'experiment-coherent :TRUE '((reaction-enabled ?r) (nutrient ?x))))
+	 (needs-forward 'experiment-consistent :TRUE '((reaction-enabled ?r) (nutrient ?x))))
 	((false? 'experiment-growth)
-	 (needs-forward 'experiment-coherent :TRUE '((:NOT (gene-on ?g)))))))
+	 (needs-forward 'experiment-consistent :TRUE '((:NOT (gene-on ?g)))))))
