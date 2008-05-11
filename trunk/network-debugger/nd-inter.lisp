@@ -1,4 +1,4 @@
-(defstruct (nd (:PRINT-FUNCTION nd-print-procedure))
+ispss(defstruct (nd (:PRINT-FUNCTION nd-print-procedure))
   title				  ; Pretty name
   ltre				  ; Pointer to its LTRE
   (debugging nil)		  ; Show basic operations
@@ -10,8 +10,8 @@
   (network-closed? nil)	          ; Whether reactions, enzymes and pathways can still be added
   (findings nil)                  ; An association list of (experiment-name . finding)
   (abducting nil)                 ; Whether abducting during investigation
-  (growth-patterns nil)
-  (no-growth-patterns nil)
+  (growth-patterns nil)           ; Patterns for abduction on growth experiments
+  (no-growth-patterns nil)        ; ...                       no-growth ...
   )
 
 (defun nd-print-procedure (nd st ignore)
@@ -27,42 +27,6 @@
 (defun In-ND (nd) 
   (setq *ND* nd)
   (In-LTRE (nd-ltre nd)))
-
-(defmacro debugging-nd (msg &rest args)
-  `(when (nd-debugging *ND*) (format t ,msg  ,@args)))
-
-(defmacro tolog (filename &body body)
-  `(with-open-file 
-    (file ,filename
-	  :direction :output
-	  :if-exists :append
-	  :if-does-not-exist :create)
-    (let ((*standard-output* file))
-      ,@body)))
-
-(defmacro when-logging-nd (&body body)
-  `(when (nd-log *ND*)
-     (tolog
-      (nd-log *ND*)
-      ,@body)))
-
-(defmacro debugging-or-logging-nd (msg &rest args)
-  `(progn
-     (debugging-nd
-       ,msg ,@args)
-     (logging-nd
-       ,msg ,@args)))
-
-(defmacro logging-nd (msg &rest args)
-  `(when-logging-nd
-    (format t ,msg ,@args)))
-
-(defmacro when-debugging-or-logging-nd (&body body)
-  `(progn
-     (when (nd-debugging *nd*)
-       ,@body)
-     (when-logging-nd
-      ,@body)))
 
 (defun create-nd (title &key debugging log rules abducting growth-patterns no-growth-patterns)
   (unless rules
@@ -129,3 +93,39 @@
   (setq n-after (n-rules-run))
   (logging-nd
    "~%~A rules run." (- n-after n-before)))
+
+(defmacro debugging-nd (msg &rest args)
+  `(when (nd-debugging *ND*) (format t ,msg  ,@args)))
+
+(defmacro tolog (filename &body body)
+  `(with-open-file 
+    (file ,filename
+	  :direction :output
+	  :if-exists :append
+	  :if-does-not-exist :create)
+    (let ((*standard-output* file))
+      ,@body)))
+
+(defmacro when-logging-nd (&body body)
+  `(when (nd-log *ND*)
+     (tolog
+      (nd-log *ND*)
+      ,@body)))
+
+(defmacro debugging-or-logging-nd (msg &rest args)
+  `(progn
+     (debugging-nd
+       ,msg ,@args)
+     (logging-nd
+       ,msg ,@args)))
+
+(defmacro logging-nd (msg &rest args)
+  `(when-logging-nd
+    (format t ,msg ,@args)))
+
+(defmacro when-debugging-or-logging-nd (&body body)
+  `(progn
+     (when (nd-debugging *nd*)
+       ,@body)
+     (when-logging-nd
+      ,@body)))
