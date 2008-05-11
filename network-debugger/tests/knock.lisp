@@ -77,20 +77,20 @@ Closing network for EXPERIMENT.
 Adding experiment POSITIVE
 Assuming simplify-investigations.
 Focusing on experiment POSITIVE.
-Experiment POSITIVE is coherent.
+Experiment POSITIVE is consistent with model.
 Adding experiment KNOCK-OUT-POSITIVE
 Retracting focus on experiment POSITIVE.
 Focusing on experiment KNOCK-OUT-POSITIVE.
-Experiment KNOCK-OUT-POSITIVE is coherent.
+Experiment KNOCK-OUT-POSITIVE is consistent with model.
 Adding experiment KNOCK-OUT-FALSE-POSITIVE
 Retracting focus on experiment KNOCK-OUT-POSITIVE.
 Focusing on experiment KNOCK-OUT-FALSE-POSITIVE.
-Experiment KNOCK-OUT-FALSE-POSITIVE is not coherent. Needs:
+Experiment KNOCK-OUT-FALSE-POSITIVE is not consistent with model. Needs:
 ( (NOT (GENE-ON G4)) )
 Adding experiment KNOCK-OUT-FALSE-NEGATIVE
 Retracting focus on experiment KNOCK-OUT-FALSE-POSITIVE.
 Focusing on experiment KNOCK-OUT-FALSE-NEGATIVE.
-Experiment KNOCK-OUT-FALSE-NEGATIVE is not coherent. Needs:
+Experiment KNOCK-OUT-FALSE-NEGATIVE is not consistent with model. Needs:
 ( (NUTRIENT E) )
 ( (REACTION-ENABLED R3) )
 ( (REACTION-ENABLED R4)  (NUTRIENT F) )

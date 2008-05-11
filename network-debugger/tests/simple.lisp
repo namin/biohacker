@@ -72,7 +72,7 @@ Closing network for EXPERIMENT.
 Adding experiment FALSE-NEGATIVE
 Assuming simplify-investigations.
 Focusing on experiment FALSE-NEGATIVE.
-Experiment FALSE-NEGATIVE is not coherent. Needs:
+Experiment FALSE-NEGATIVE is not consistent with model. Needs:
 ( (NUTRIENT E) )
 ( (NUTRIENT D) )
 ( (REACTION-ENABLED R2) )
@@ -80,16 +80,16 @@ Experiment FALSE-NEGATIVE is not coherent. Needs:
 Adding experiment FALSE-POSITIVE
 Retracting focus on experiment FALSE-NEGATIVE.
 Focusing on experiment FALSE-POSITIVE.
-Experiment FALSE-POSITIVE is not coherent. Needs:
+Experiment FALSE-POSITIVE is not consistent with model. Needs:
 ( (NOT (GENE-ON G4)) )
 Adding experiment POSITIVE
 Retracting focus on experiment FALSE-POSITIVE.
 Focusing on experiment POSITIVE.
-Experiment POSITIVE is coherent.
+Experiment POSITIVE is consistent with model.
 Adding experiment NEGATIVE
 Retracting focus on experiment POSITIVE.
 Focusing on experiment NEGATIVE.
-Experiment NEGATIVE is coherent.
+Experiment NEGATIVE is consistent with model.
 1 positive findings: (POSITIVE)
 1 negative findings: (NEGATIVE)
 1 false-negative findings: (FALSE-NEGATIVE)

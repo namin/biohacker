@@ -54,7 +54,7 @@ Closing network for EXPERIMENT.
 Adding experiment GROWTH-DUE-TO-UNKNOWN
 Assuming simplify-investigations.
 Focusing on experiment GROWTH-DUE-TO-UNKNOWN.
-Experiment GROWTH-DUE-TO-UNKNOWN is not coherent. Needs:
+Experiment GROWTH-DUE-TO-UNKNOWN is not consistent with model. Needs:
 ( (NUTRIENT E) )
 ( (NUTRIENT D)  (NUTRIENT G) )
 ( (NUTRIENT C)  (NUTRIENT G) )

@@ -1,4 +1,4 @@
-ispss(defstruct (nd (:PRINT-FUNCTION nd-print-procedure))
+(defstruct (nd (:PRINT-FUNCTION nd-print-procedure))
   title				  ; Pretty name
   ltre				  ; Pointer to its LTRE
   (debugging nil)		  ; Show basic operations
