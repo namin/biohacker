@@ -4,7 +4,7 @@
 			    (rules nil)
 			    (log nil)
 			    (abducting nil)
-			    (growth-patterns '((nutrient ?c) (reaction-enabled ?r) (pathway-enabled ?p)))
+			    (growth-patterns '((reaction-enabled ?r) (pathway-enabled ?p) (nutrient ?c)))
 			    (no-growth-patterns '((:NOT (gene-on ?g)))))
   `(let ((nd (create-nd ',name :growth-patterns ',growth-patterns :no-growth-patterns ',no-growth-patterns :abducting ,abducting :rules ,rules :log ,log :debugging ,debugging)))
      (debugging-or-logging-nd
