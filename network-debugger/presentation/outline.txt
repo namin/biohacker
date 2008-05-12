@@ -1,0 +1,38 @@
+* overview
+  * slides
+    * system.png
+* user data
+  * slides
+    * demo.png
+    * spec.txt (in network-debugger)
+    * demo-network.lisp
+    * demo-experiments.lisp
+* queries
+  * slides
+    * demo-positive.lisp
+    * demo-negative.lisp
+    * demo-false-positive.lisp
+    * demo-false-negative.lisp
+* implementation (in network-debugger)
+  * slides
+    * nd.lisp
+    * nd-extended-rules.lisp
+    * abduction.lisp (in BPS/ltms)
+    * explain.lisp (in BPS/ltms)
+  * extra slides
+    * nd-inter.lisp
+    * utils.lisp
+    * loader.lisp
+    * nd-rules.lisp
+    * nd-pathway-rules.lisp
+    * forward-abduction.lisp (in BPS/ltms)
+* key points
+  * show system.png again
+  * components can vary independentdly
+  * LTMS & query module in particular indepedent of domain
+  * all domain knowledge is declarative
+* transition
+  * issue: 
+    in practice, false negatives because no support for generic reactions
+
+
