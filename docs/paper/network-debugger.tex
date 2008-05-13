@@ -119,4 +119,43 @@ reactions that had to explicitly be assumed reversible for the proof:
 genes had to explicitly be assumed on for the proof.
 
 \subsection{Specification}
+
+We describe the user language to define the network model and experiments.
+
+The network model consists of definitions of pathways, reactions, and enzymes.
+
+An enzyme is defined by {\small\tt (enzyme <name> . <list of genes
+(conjunctive)>}. The list of genes may contain {\small\tt :UNKNOWN} to
+indicate that the enzyme has some unknown gene contributing to its
+formation.
+
+A pathway or reaction is defined by
+{\small\tt (pathway/reaction <name> ...)} where {\small\tt ...} can contain any of the following keys:
+\begin{description}
+\item[:reactants] <list of reactants>
+\item[:products] <list of products>
+\item[:reversible?] <t / nil / :UNKNOWN> (By default, :UNKNOWN for reactions and nil for pathways.)
+\item[:enzymes] <list of enzymes (disjunctive for reactions, unspecified logic for pathways)>
+Note that
+\begin{itemize}
+\item nil for a reaction means that NO enzymes catalyze it, i.e. the reaction will never be fired but might play a role in abduction.
+\item :SPONTANEOUS, instead of a list, means that no enzymes are needed.
+\item (:UNKNOWN) means that some unknown enzyme is needed. :UNKNOWN can be part of any enzyme list.
+\end{itemize}
+\item[:reactions] <list of all reactions in the pathway> (pathways only)
+\item[:proper-products] <list of the actual end products of a pathway> (pathways only) (This list should be a subset of products, and is the same as products by default.)
+\end{description}
+
+An experiment is defined by {\small\tt (experiment <name>
+<nutrient-list> :growth? <T or nil> :essential-compounds <list of
+compounds that must be produecd in order to achieve growth
+(conjunctive)> ...)} where {\small\tt ...} can contain any of the
+following:
+\begin{description}
+\item[knock-outs] <list of genes asserted to be off>
+\item[knock-ins] <list of genes asserted to be on>
+\item[toxins] <list of compounds that if produced cause no-growth experimental outcomes (disjunctive)>
+\item[bootstrap-compounds] <list of compounds that are asserted to exist, but not nutrients>
+\end{description}
+
 \subsection{Implementation}
