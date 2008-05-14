@@ -104,7 +104,6 @@
    "~%Focusing on experiment ~A." name))
 
 (defun investigate-experiment (name &aux result cache)
-  (excl:gc t)
   (when-logging-nd
    "Investigating experiment ~A." name)
   (when (unknown? 'simplify-investigations) 
