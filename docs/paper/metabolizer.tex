@@ -77,14 +77,13 @@ The design we had in mind is as follows:
 
 \vspace{.1in}
 
-In addition to the specific reactants, we have two pieces of information
-to work with as input to REWRITE: our generic reaction, represented
-as an atom mapping from generic reactants to generic products, and
-our MATCH to the specific reactants, also represented as a mapping.
-The REWRITE procedure would combine these two mappings to figure out
-how to rewrite the specific reactants into specific products. We may
-be better served thinking about how to create a better language for
-describing the mappings, rather than using atom number mappings. Currently,
-the task of coding REWRITE seems both daunting and not particularly
-stimulating. 
+In addition to the specific reactants, we have two pieces of information to
+work with as input to REWRITE: our generic reaction, represented as an atom
+mapping from generic reactants to generic products, and our MATCH to the
+specific reactants, also represented as a mapping.  The REWRITE procedure
+would then combine these two mappings to figure out how to rewrite the
+specific reactants into specific products. We may be better served thinking
+about how to create a better language for describing the mappings, rather
+than using atom number mappings. We haven't yet attempted an
+implementation.
 
