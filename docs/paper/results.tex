@@ -1,0 +1,122 @@
+\section{Results} 
+To test the ability of {\tt BIOHACKER} to debug in real data, we
+exported the EcoCyc\cite{ecocyc}\cite{romero2001} representation of the {\em E. coli}
+metabolic network into the {\tt BIOHACKER} domain data format, generating
+929 {\tt reaction}s, 836 {\tt enzyme}s, and 251 {\tt pathway} premises.
+
+To ensure that our model would grow on at least one nutrient media, we generated an {\em in silico} rich medium
+set by taking the union of all proper reactants of each pathway in the model, as shown in Listing~\ref{listing:richMedia}
+
+\begin{lstlisting}[label={listing:richMedia},caption={{\em E. coli} rich media}]
+(defun make-rich-media (pwy-list filter-p)
+  `(experiment 
+    growth 
+    (nutrients 
+     ,@(remove-duplicates 
+	(loop for pwy in pwy-list
+	   when (funcall filter-p pwy)
+	   append (multiple-value-bind
+			(all-reactants 
+			 proper-reactants 
+			 all-products 
+			 proper-products)
+		      (substrates-of-pathway pwy)
+		    proper-reactants)))) (OFF)))
+\end{lstlisting}
+
+We then selected as our essential compounds the full set of amino acids, nucleic acids, cytoplasmic membrane components,
+outer membrane components, and cell wall components as shown in Listing~\ref{listing:essentialCompounds}
+
+\begin{lstlisting}[label={listing:essentialCompounds},caption={{\em E. coli} essential compounds}]
+(setq *amino-acids*
+  '(L-ALPHA-ALANINE ARG ASN L-ASPARTATE CYS GLN 
+    GLT GLY HIS ILE LEU LYS MET PHE PRO SER THR 
+    TRP TYR VAL))
+
+(setq *dna-and-rna*
+  '(DATP TTP DGTP DCTP ATP UTP GTP CTP))
+
+(setq *cytoplasmic-membrane*
+  '(L-1-PHOSPHATIDYL-ETHANOLAMINE CARDIOLIPIN 
+    L-1-PHOSPHATIDYL-GLYCEROL))
+
+(setq *outer-membrane* '(C6))
+(setq *cell-wall*
+  '(BISOHMYR-GLC ADP-L-GLYCERO-D-MANNO-HEPTOSE 
+    KDO UDP-GLUCOSE UDP-GALACTOSE DTDP-RHAMNOSE 
+    GDP-MANNOSE N-ACETYL-D-GLUCOSAMINE))
+\end{lstlisting}
+
+Surprisingly, even with this rich media, we were still unable to produce compound {\tt C6} (lipid intermediate II)
+
+By manual checking, we discovered that the reason for this is that an upstream reaction, {\tt UDPNACETYLMURAMATEDEHYDROG-RXN }, in the Peptidoglycan biosynthesis pathway was reversed, making the entire chain of downstream metabolites unproduceable. 
+
+Once this bug was discovered,  we added a new rule to our set of strategies such that
+ if a metabolite is unproducable, the system tries to reverse
+reactions with unknown reversibilities to see if that will
+solve the problem.  
+
+Interestingly, it has been shown that for many metabolic reconstructions,
+that ''the dominant flow restoration mechanism is directionality
+reversals of existing reactions in the respective
+models''\cite{kumar2007}
+
+Once we debugged this problem, we wished to reduce the rich medium to a minimal nutrient set that was still
+capable of producing growth. By applying the abduction mechanism of the underlying TMS, we were able to make the following
+minimal nutrient set prediciton as shown in Listing~\ref{listing:minimalNutrientSet}.
+\begin{lstlisting}[label={listing:minimalNutrientSet},caption={{\em E. coli} predicted minimal nutrient set}]
+(GLN ASN THR LEU VAL ILE TRP PHE TYR CYS MET 
+     LYS GLY ARG HIS PRO UDP-GALACTOSE 
+     UDP-GLUCOSE RIBULOSE-5P 
+     ADP-L-GLYCERO-D-MANNO-HEPTOSE GLC-1-P 
+     TTP FRUCTOSE-6P 3-OHMYRISTOYL-ACP GLT 
+     NADPH PHOSPHO-ENOL-PYRUVATE 
+     MESO-DIAMINOPIMELATE L-ALPHA-ALANINE 
+     D-ALANINE UDP-N-ACETYL-D-GLUCOSAMINE 
+     UNDECAPRENYL-P GTP GLYCEROL-3P SER
+     CDPDIACYLGLYCEROL METHYLENE-THF UTP 
+     CTP UDP |Red-Glutaredoxins|
+     |Red-Thioredoxin| |Reduced-flavodoxins| 
+     CDP ATP WATER
+     DIACETYLCHITOBIOSE-6-PHOSPHATE)
+\end{lstlisting}
+This minimal nutrient set allowed us to focus on reactions and pathways that could produce these compounds starting
+with experimentally determined nutrient sets, such as Middlebrook growth medium L9, as described in \cite{joyce2006}.
+
+
+Finally, we then converted 13750 conditional gene essentiality experiments performed by
+Covert et al\cite{covert2004} and for each condition, we recorded
+whether the {\em E. coli} model's predictions of growth were
+consistent or inconsistent with the experimental results. as shown in Listing~\ref{listing:biolog-experiment}.
+
+\begin{lstlisting}[label={listing:biolog-experiments},caption={{\em E. coli} conditional essentiality experiments}]
+(experiment in_vivo_EG11074_ala-D_nh4 
+	    ( CARBON-DIOXIDE PROTON WATER 
+			     AMMONIUM 
+			     SULFATE 
+			     D-ALANINE |Pi| 
+			     OXYGEN-MOLECULE )
+   :growth?  T
+   :essential-compounds 
+   ( L-ALPHA-ALANINE ARG ASN L-ASPARTATE CYS
+     GLN GLT GLY HIS ILE LEU LYS MET PHE PRO 
+     SER THR TRP TYR VAL DATP TTP DGTP DCTP 
+     ATP UTP GTP CTP 
+     L-1-PHOSPHATIDYL-ETHANOLAMINE CARDIOLIPIN
+     L-1-PHOSPHATIDYL-GLYCEROL C6 BISOHMYR-GLC
+     ADP-L-GLYCERO-D-MANNO-HEPTOSE KDO 
+     UDP-GLUCOSE  UDP-GALACTOSE DTDP-RHAMNOSE 
+     GDP-MANNOSE N-ACETYL-D-GLUCOSAMINE )
+
+   :knock-outs ( EG11074 )
+   :knock-ins Nil
+   :toxins Nil
+   :bootstrap-compounds Nil)
+
+\end{lstlisting}
+
+As we discovered, most of the model predictions were false negatives
+due to the existence of uninstantiated generic reactions. Inspired by
+the symbolic computational approach to infer novel biochemical
+knowledge described in \cite{McShan2004}, we decided to implement the
+{\tt METABOLIZER} portion of our project.
