@@ -1,7 +1,7 @@
 \section{Results} 
-To test the ability of {\tt BIOHACKER} to debug in real data, we
+To test the ability of the {\tt NETWORK DEBUGGER} to debug real data, we
 exported the EcoCyc\cite{ecocyc}\cite{romero2001} representation of the {\em E. coli}
-metabolic network into the {\tt BIOHACKER} domain data format, generating
+metabolic network into the {\tt NETWORK DEBUGGER} domain data format, generating
 929 {\tt reaction}s, 836 {\tt enzyme}s, and 251 {\tt pathway} premises.
 
 To ensure that our model would grow on at least one nutrient media, we generated an {\em in silico} rich medium
@@ -51,7 +51,7 @@ Surprisingly, even with this rich media, we were still unable to produce compoun
 
 By manual checking, we discovered that the reason for this is that an upstream reaction, {\tt UDPNACETYLMURAMATEDEHYDROG-RXN }, in the Peptidoglycan biosynthesis pathway was reversed, making the entire chain of downstream metabolites unproduceable. 
 
-Once this bug was discovered,  we added a new rule to our set of strategies such that
+Once this bug was discovered,  we added a new rule to our set of strategies so that
  if a metabolite is unproducable, the system tries to reverse
 reactions with unknown reversibilities to see if that will
 solve the problem.  
@@ -87,7 +87,7 @@ with experimentally determined nutrient sets, such as Middlebrook growth medium 
 Finally, we then converted 13750 conditional gene essentiality experiments performed by
 Covert et al\cite{covert2004} and for each condition, we recorded
 whether the {\em E. coli} model's predictions of growth were
-consistent or inconsistent with the experimental results. as shown in Listing~\ref{listing:biolog-experiment}.
+consistent or inconsistent with the experimental results. as shown in Listing~\ref{listing:biolog-experiments}.
 
 \begin{lstlisting}[label={listing:biolog-experiments},caption={{\em E. coli} conditional essentiality experiments}]
 (experiment in_vivo_EG11074_ala-D_nh4 
