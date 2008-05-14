@@ -213,8 +213,11 @@
    (format nil "~A" x)
    (format nil "~A" y)))
 
+(defun sort-facts (set)
+  (sort set #'alphalessp))
+
 (defun sort-fact-sets (sets)
-  (sort (mapcar #'(lambda (set) (sort set #'alphalessp)) sets) #'alphalessp))
+  (sort (mapcar #'sort-facts sets) #'alphalessp))
 
 (defun pp-sets (sets &optional (st t))
   (dolist (set sets)
