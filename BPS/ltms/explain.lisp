@@ -1,3 +1,5 @@
+;; biohacker/trunk/BPS/ltms/explain.lisp
+
 (defun node->fact (node &aux literal)
   (setq literal
 	(cond ((true-node? node) (tms-node-true-literal node))

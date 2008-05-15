@@ -1,3 +1,4 @@
+;; nd-pathway-rules.lisp
 (rule ((:INTERN (enzyme ?enzyme . ?genes)))
       (dolist (?gene ?genes)
 	(rassert! (gene ?gene) :GENE-OF-ENZYME))

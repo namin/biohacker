@@ -1,3 +1,4 @@
+stats.txt
 new system (network-debugger) with new data (ecoli):
 * 1764 / 9854 rules run before experiment
 * 1799 / 9819 rules run for closing network

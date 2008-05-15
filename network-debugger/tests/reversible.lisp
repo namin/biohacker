@@ -1,3 +1,5 @@
+;; biohacker/trunk/network-debugger/tests/reversible.lisp
+
 (network-debugger reversible :debugging t :rules :extended-reactions)
 
 ;; Network
