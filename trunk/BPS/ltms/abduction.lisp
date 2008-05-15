@@ -1,3 +1,4 @@
+;; biohacker/trunk/BPS/ltms/abduction.lisp
 ;; Ex 3, Chapter 10
 
 ; a literal is a unique pair (<node> . <label>)

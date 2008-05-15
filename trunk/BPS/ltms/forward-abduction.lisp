@@ -1,3 +1,4 @@
+;; biohacker/trunk/BPS/ltms/forward-abduction.lisp
 (defun keep-assuming (fact label patterns &key (debugging t) &aux all-assumed)
   (dolist (pattern patterns)
     (dolist (new-fact (fetch pattern))

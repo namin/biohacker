@@ -1,3 +1,4 @@
+;; biohacker/trunk/network-debugger/tests/unknown-enzyme.lisp
 (network-debugger unknown-enzyme :debugging t :growth-patterns ((reaction-enabled ?r) (nutrient ?c) (enzyme-present ?e)) :abducting t)
 
 ;; Network

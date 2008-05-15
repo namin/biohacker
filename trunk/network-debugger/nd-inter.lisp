@@ -1,3 +1,4 @@
+;; nd-inter.lisp
 (defstruct (nd (:PRINT-FUNCTION nd-print-procedure))
   title				  ; Pretty name
   ltre				  ; Pointer to its LTRE

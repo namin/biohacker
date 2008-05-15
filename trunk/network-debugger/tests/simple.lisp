@@ -1,4 +1,4 @@
-(network-debugger simple :debugging t :abducting t)
+(network-debugger simple :debugging t :abducting t :log "~/src/lisp/biohacker/trunk/network-debugger/tests/simple-stats.log" )
 
 ;; Network
 (reaction 

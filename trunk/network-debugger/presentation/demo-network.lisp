@@ -1,3 +1,4 @@
+;; biohacker/trunk/network-debugger/presentation/demo-network.lisp
 (network-debugger demo :debugging t :abducting t :rules :extended-reactions)
 
 (reaction r1 :reactants (c g) :products (a b) :enzymes (e1))

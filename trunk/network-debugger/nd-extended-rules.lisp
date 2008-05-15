@@ -1,3 +1,4 @@
+;; nd-extended-rules.lisp
 (rule ((:INTERN (enzyme ?enzyme . ?genes)))
       (let* ((actual-genes (remove :UNKNOWN ?genes))
 	     (unknown? (find :UNKNOWN ?genes))

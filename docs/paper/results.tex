@@ -61,10 +61,10 @@ that ''the dominant flow restoration mechanism is directionality
 reversals of existing reactions in the respective
 models''\cite{kumar2007}
 
-Once we debugged this problem, we wished to reduce the rich medium to a minimal nutrient set that was still
-capable of producing growth. By applying the abduction mechanism of the underlying TMS, we were able to make the following
-minimal nutrient set prediciton as shown in Listing~\ref{listing:minimalNutrientSet}.
-\begin{lstlisting}[label={listing:minimalNutrientSet},caption={{\em E. coli} predicted minimal nutrient set}]
+Once we debugged this problem, we wished to reduce the rich medium to a nutrient set that was still
+capable of producing growth. By querying the {\tt explain} mechanism of the underlying TMS, we were able to make the following
+sufficient nutrient set prediciton as shown in Listing~\ref{listing:sufficientNutrientSet}.
+\begin{lstlisting}[label={listing:sufficientNutrientSet},caption={{\em E. coli} predicted sufficient nutrient set}]
 (GLN ASN THR LEU VAL ILE TRP PHE TYR CYS MET 
      LYS GLY ARG HIS PRO UDP-GALACTOSE 
      UDP-GLUCOSE RIBULOSE-5P 
@@ -80,7 +80,7 @@ minimal nutrient set prediciton as shown in Listing~\ref{listing:minimalNutrient
      CDP ATP WATER
      DIACETYLCHITOBIOSE-6-PHOSPHATE)
 \end{lstlisting}
-This minimal nutrient set allowed us to focus on reactions and pathways that could produce these compounds starting
+This sufficient nutrient set allowed us to focus on reactions and pathways that could produce these compounds starting
 with experimentally determined nutrient sets, such as Middlebrook growth medium L9, as described in \cite{joyce2006}.
 
 
@@ -115,7 +115,7 @@ consistent or inconsistent with the experimental results. as shown in Listing~\r
 
 \end{lstlisting}
 
-As we discovered, most of the model predictions were false negatives
+We found that most of the model predictions were false negatives
 due to the existence of uninstantiated generic reactions. Inspired by
 the symbolic computational approach to infer novel biochemical
 knowledge described in \cite{McShan2004}, we decided to implement the

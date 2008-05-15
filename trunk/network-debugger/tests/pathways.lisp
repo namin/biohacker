@@ -1,3 +1,4 @@
+;; biohacker/trunk/network-debugger/tests/pathways.lisp
 (network-debugger simple :debugging t :rules :just-pathways)
 
 ;; Network
