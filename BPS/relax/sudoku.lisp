@@ -52,25 +52,22 @@
                                         collect (loop for j from 0 to 2
                                                     collect (name (+ i (* m 3) 1) (+ j (* n 3) 1)))))))))
 
-(defun add-constraint (name net cells)
-  (let ((constraint (build-constraint name net
-                                      #'(lambda (constraint)
-                                          (loop for cell1 in cells
-                                              when (known? cell1)
-                                              do (loop for cell2 in cells
-                                              when (and (not (funcall (network-name-test net) (cell-name cell1) (cell-name cell2)))
-                                                        (member (value cell1) (cell-value cell2) :TEST (network-equality-test net)))
-                                              do (queue-cell cell2 :EXCLUDE (value cell1) constraint)))))))
-    (loop for cell in cells
-        do (add-constraint-cell cell constraint))
-    constraint))
+(defun add-cell-constraints (name net cells)
+  (mapcar #'(lambda (cell1)
+              (let ((cells2 (remove cell1 cells :TEST #'(lambda (x y) (funcall (network-name-test net) (cell-name x) (cell-name y))))))
+                (add-constraint-cell
+                 cell1
+                 (build-constraint (concatenate 'string name (cell-name cell1)) net
+                                   #'(lambda (constraint)
+                                       (when (known? cell1)
+                                         (loop for cell2 in cells2
+                                             when (member (value cell1) (cell-value cell2) :TEST (network-equality-test net))
+                                             do (queue-cell cell2 :EXCLUDE (value cell1) constraint))))))))
+          cells))
   
 (defun add-unit-constraints (name net css)
-  (loop
-      for cs in css
-      for i from 1 to 9
-      do (add-constraint (format nil "~A~A" name i) net
-                         (mapcar #'(lambda (c) (lookup-cell c net)) cs))))
+  (loop for cs in css
+      do (add-cell-constraints name net (mapcar #'(lambda (c) (lookup-cell c net)) cs))))
 
 (defun add-all-constraints (net)
   (add-unit-constraints "row" net (rows))
