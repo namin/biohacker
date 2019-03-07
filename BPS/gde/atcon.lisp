@@ -545,7 +545,7 @@
 
 (defun print-solutions (&optional (atcon *atcon*))
   (dolist (solution (solutions))
-    (format T "~% Cell values for solution ~A")
+    (format T "~%~%Cell values for solution:~%")
     (print-env solution)
     (show-network atcon solution)))
 
