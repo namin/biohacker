@@ -14,7 +14,6 @@
      ))
 
 (defvar *net* nil)
-(setq *net* (create-puzzle *puzzle*))
 
 (defun name (i j)
   (format nil "c~A~A" i j))
@@ -59,7 +58,8 @@
                                           (loop for cell1 in cells
                                               when (known? cell1)
                                               do (loop for cell2 in cells
-                                              when (not (funcall (network-name-test net) (cell-name cell1) (cell-name cell2)))
+                                              when (and (not (funcall (network-name-test net) (cell-name cell1) (cell-name cell2)))
+                                                        (member (value cell1) (cell-value cell2) :TEST (network-equality-test net)))
                                               do (queue-cell cell2 :EXCLUDE (value cell1) constraint)))))))
     (loop for cell in cells
         do (add-constraint-cell cell constraint))
