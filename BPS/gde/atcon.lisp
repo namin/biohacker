@@ -148,7 +148,7 @@
   (defun process-constraint-rules (rule-specs &aux rules 
 				   cells rule-name cell-entry)
     (dolist (rule-spec rule-specs)
-      (unless (cadr rule-specs) (error "No antecedents"))
+      (unless (cadr rule-spec) (error "No antecedents"))
       (setq rule-name (gensym))
       (push `(,rule-name (make-rule :SETS ',(car rule-spec)
 				    :USES (reverse ',(cadr rule-spec))
