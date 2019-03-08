@@ -16,7 +16,7 @@
 (defstruct (timedb (:PREDICATE temporal-database?)
 		   (:PRINT-FUNCTION
 		    (lambda (st str ignore) (declare (ignore ignore))
-		      (format str "<Temporal DB ~A>" (timedb-name st)))))
+		      (format str "<Temporal DB ~A>" (timedb-title st)))))
   (title "")                ;; String for printing
   (debugging nil)          ;; Debugging flag
   (interval-id 0)          ;; Unique ID
@@ -38,7 +38,7 @@
   (< (interval-index x) (interval-index y)))
 
 (defvar *timedb* nil)  ;; Current temporal database
-(defvar *trels-file* "/u/bps/code/relax/allen.lisp")
+(defvar *trels-file* (concatenate 'string (make-bps-path "relax") "allen.lisp"))
 
 (defun in-timedb (new-one) (setq *timedb* new-one))
 
@@ -52,8 +52,8 @@
 	(make-timedb :TITLE title
 		     :NETWORK
 		     (create-network
-		      (format nil "of ~A" name)))
-	:DEBUGGING debugging?)
+		      (format nil "of ~A" title))
+	:DEBUGGING debugging?))
   (load t-file)
   *timedb*)
 
