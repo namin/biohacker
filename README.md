@@ -17,3 +17,8 @@ A metabolic network is defined as the set of biochemical reactions that the enzy
 Because of these issues, reconstructing metabolic networks from annotated genomes is currently a time-consuming, error-prone process.
 
 We develop BioHacker, a debugger for metabolic networks. BioHacker not only detects these issues, but also generates explanations as to where the problems lie and generates hypotheses for how to fix them.
+
+# Building Problem Solvers
+
+The original code can be obtained [here](http://www.cs.cmu.edu/Groups//AI/areas/reasonng/tms/bps/).
+More information about the book [here](http://www.qrg.northwestern.edu/bps/readme.html), including [a fulltext searchable PDF](http://www.qrg.northwestern.edu/bps/BPS-Searchable.pdf).
