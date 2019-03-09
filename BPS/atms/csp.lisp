@@ -26,7 +26,7 @@
                                       (find-var (cadar line) vars)
                                       (cdr line)))
             con-defs)
-    (let ((i (interpretations *atms* vars (atms-assumptions *atms*))))
+    (let ((i (interpretations *atms* vars)))
       (mapcar #'print-env i)
       i)))
 
