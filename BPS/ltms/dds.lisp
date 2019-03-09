@@ -61,7 +61,7 @@
               (when (and (listp answer)
                          (eq (car answer) :LOSERS))
                  (debug-dds "~%    DDS: ~A inconsistent with ~A."
-                  choice (mapcar #'view-node (cdr answer)))
+                  choice (cdr answer))
                  (assert! `(:NOT (:AND ,choice
                                   ,@ (cdr answer)))
                   :DD-SEARCH-NOGOOD)))))))
