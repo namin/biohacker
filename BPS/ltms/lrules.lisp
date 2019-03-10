@@ -281,6 +281,8 @@
 		  (:INTERN (interesting ?r) :VAR ?f3))
 		 (rassert! (:TAXONOMY ?p ?q ?f3) (:RANDOM-TEST ?f1 ?f2))))))
 
-(defun get-rule (num &optional (*LTRE* *LTRE*))
-  (dolist (rule (ltre-rules *LTRE*))
-    (when (= (rule-counter rule) num) (return-from GET-RULE rule))))
+(defun get-rule (num)
+  (map-dbclass #'(lambda (dbclass)
+                   (dolist (rule (dbclass-rules dbclass))
+                     (when (= num (rule-counter rule))
+                       (return-from GET-RULE rule))))))
