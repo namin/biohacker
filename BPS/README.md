@@ -22,9 +22,7 @@ More information about the book [here](http://www.qrg.northwestern.edu/bps/readm
   _Simple Qualitative Process theory system plus examples._
 - `12 & 13 & 14`. [atms](atms)
   _Assumption-based truth maintenance system, inference engine, planner and examples._
-- `16 & 17`. [tgde](tgde)
-  _Assumption-Based Constraint Languages, and Tiny Diagnosis Engine_
-- [gde](gde)
+- `16 & 17`. [gde](gde)
   _General Diagnostic Engine, ATMS-based constraint language plus examples._
 - `18`. [relax](relax)
   _Symbolic relaxation system and examples._
