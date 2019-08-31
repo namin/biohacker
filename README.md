@@ -18,7 +18,4 @@ Because of these issues, reconstructing metabolic networks from annotated genome
 
 We develop BioHacker, a debugger for metabolic networks. BioHacker not only detects these issues, but also generates explanations as to where the problems lie and generates hypotheses for how to fix them.
 
-# Building Problem Solvers
-
-The original code can be obtained [here](http://www.cs.cmu.edu/Groups//AI/areas/reasonng/tms/bps/).
-More information about the book [here](http://www.qrg.northwestern.edu/bps/readme.html), including [a fulltext searchable PDF](http://www.qrg.northwestern.edu/bps/BPS-Searchable.pdf).
+BioHacker is based on the wonderful book _[Building Problem Solvers](BPS)_.
