@@ -16,11 +16,11 @@ More information about the book [here](http://www.qrg.northwestern.edu/bps/readm
   _General Diagnostic Engine, ATMS-based constraint language plus examples._
 -	[jtms](jtms)
   _Justification-based TMS, inference engine, symbolic integration system and examples._
--	[ltms]
+-	[ltms](ltms)
   _Logic-based TMS, inference engine and examples._
--	[relax]
+-	[relax](relax)
   _Symbolic relaxation system and examples._
--	[tcon]
+-	[tcon](tcon)
   _Constraint language and examples._
 -	[tgizmo](tgizmo)
   _Simple Qualitative Process theory system plus examples._
