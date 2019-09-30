@@ -19,12 +19,21 @@
 (defmacro debug-dds (str &rest args)
   `(if *debug-dds* (format t ,str ,@ args)))
 
+(defun assert-choices! (choice-sets)
+  (loop for choices in choice-sets do
+        (assert! `(:OR ,@choices) :CHOICE))
+  choice-sets)
+
+(defun prune (choice-sets)
+  (sort (mapcar #'(lambda (choices) (remove-if #'false? choices)) choice-sets) #'< :key #'length))
+
 (defun DD-Search (choice-sets end &aux answer marker choices)
   (when (null choice-sets)
     (debug-dds "~%    DDS: Found solution.")
     (eval end)
     (return-from DD-Search nil))
   (setq marker (list 'DDS (car choice-sets)))
+  (setq choice-sets (prune choice-sets))
   (setq choices (car choice-sets))
   (dolist (choice choices)
     (debug-dds "~%    DDS: Considering ~A..." choice)
