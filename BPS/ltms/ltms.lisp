@@ -385,7 +385,7 @@
 
 ;;; Boolean Constraint Propagation.
 
-(eval-when (:load-toplevel :compile-toplevel :evaluate)
+(eval-when (:load-toplevel :compile-toplevel :execute)
   (proclaim '(special *clauses-to-check*)))
 
 (defun check-clauses (ltms *clauses-to-check*)
@@ -559,7 +559,7 @@
 	(setf (tms-node-mark node) mark)))))
 
 ;;; Simple user interface
-(eval-when (:load-toplevel :compile-toplevel :evaluate)
+(eval-when (:load-toplevel :compile-toplevel :execute)
   (proclaim '(special *contra-assumptions*)))
 
 (defun ask-user-handler (contradictions ltms)
