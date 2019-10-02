@@ -1,5 +1,3 @@
-(bps-load-file (make-bps-path "relax") "waltzer" :action :compile)
-
 (defvar *puzzle*
   '#(
      #(4 0 0 0 0 0 8 0 5)
@@ -81,9 +79,9 @@
     (fire-constraints net)
     net))
 
-(setq *net* (sudoku-solve *puzzle*))
-;; warning: this is slow!
-(show-search *net*)
+(defun prune (cells)
+  (sort cells #'<
+        :key #'(lambda (cell) (length (cell-value cell)))))
 
 (defun solution (net)
   (apply #'vector
@@ -92,4 +90,9 @@
                             (loop for j from 1 to 9
                                 collect (value (lookup-cell (name i j) net)))))))
 
-(solution *net*)
+(defun solve-sudoku (puzzle)
+  (setq *net* (sudoku-solve puzzle))
+  (show-search *net* #'prune)
+  (solution *net*))
+
+;;(solve-sudoku *puzzle*)

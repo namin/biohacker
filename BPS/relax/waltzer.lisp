@@ -309,9 +309,10 @@
 
 ;;; Network search procedure.
 
-(defun search-network (net consistent-proc contra-proc)
+(defun search-network (net consistent-proc contra-proc &optional prune)
   (labels
-   ((search-thru-plunkable-cells (cells indent)
+     ((search-thru-plunkable-cells (cells indent)
+     (let ((cells (if prune (funcall prune (copy-list cells)) cells)))
      (cond ((eq (network-status net) :OVERCONSTRAINED)
 	    (funcall contra-proc net))
 	   ((determined? net) (funcall consistent-proc net))
@@ -324,7 +325,7 @@
 	      (pick (car cells) val :SEARCH)
 	      (fire-constraints net)
 	      (search-thru-plunkable-cells (cdr cells) (concatenate 'string indent " "))
-	      (pop-network net))))))
+	      (pop-network net)))))))
   (when (determined? net)
 	(funcall consistent-proc net)
 	(return-from search-network net))
@@ -344,5 +345,5 @@
 	  (network-title net)
 	  (cell-name (network-contradiction-reason net))))
 
-(defun show-search (net)
-  (search-network net (function say-solution) (function say-contradiction)))
+(defun show-search (net &optional prune)
+  (search-network net (function say-solution) (function say-contradiction) prune))
