@@ -35,25 +35,23 @@
   (as-symbol (format nil "C~A~A" i j)))
 
 (defun rows ()
-  (loop
-      for i from 1 to 9
-      collect (loop for j from 1 to 9
-                  collect (name i j))))
+  (loop for i from 1 to 9 collect
+  (loop for j from 1 to 9 collect
+  (name i j))))
 
 (defun cols ()
-  (loop
-      for i from 1 to 9
-      collect (loop for j from 1 to 9
-                  collect (name j i))))
+  (loop for i from 1 to 9 collect
+  (loop for j from 1 to 9 collect
+  (name j i))))
 
 (defun units ()
-    (apply #'concatenate 'list
-     (loop for m from 0 to 2
-         collect (loop for n from 0 to 2
-                     collect (apply #'concatenate 'list
-                                    (loop for i from 0 to 2
-                                        collect (loop for j from 0 to 2
-                                                    collect (name (+ i (* m 3) 1) (+ j (* n 3) 1)))))))))
+  (apply #'concatenate 'list
+  (loop for m from 0 to 2 collect
+  (loop for n from 0 to 2 collect
+  (apply #'concatenate 'list
+  (loop for i from 0 to 2 collect
+  (loop for j from 0 to 2 collect
+  (name (+ i (* m 3) 1) (+ j (* n 3) 1)))))))))
 
 (defun lookup-cell (i j)
   ;;(eval `(>> ,(name i j) s))
