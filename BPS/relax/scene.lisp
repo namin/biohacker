@@ -27,17 +27,11 @@
 ;;;; Interface
 
 ;; Some default values
-(defvar *scene-file* 
-  #+ILS "/u/bps/code/relax/cube"
-  #+PARC "virgo:/virgo/dekleer/bps/code/relax/cube"
-  #+MCL "Macintosh HD:BPS:relax:cube"
-  #+ACLPC "e:\\code\\relax\\cube")
+(defvar *scene-file*
+    (make-bps-source-file-name (make-bps-path "relax") "cube"))
 
 (defvar *jcatalog-file* 
-  #+ILS "/u/bps/code/relax/jcatalog.lisp"
-  #+PARC "virgo:/virgo/dekleer/bps/code/relax/jcatalog.lisp"
-  #+MCL "Macintosh HD:BPS:relax:jcatalog.lisp"
-  #+ACLPC "e:\\code\\relax\\jcatalog.lsp")
+    (make-bps-source-file-name (make-bps-path "relax") "jcatalog"))
 
 (defun analyze-scene (scene jcatalog)
   (setq *scene-file* scene)
