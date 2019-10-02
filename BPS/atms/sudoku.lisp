@@ -133,5 +133,5 @@
   (assert (= (length *solutions*) 1))
   (show-solution (car *solutions*) *vars*))
 
-(solve-sudoku *easy-puzzle*)
+;;(solve-sudoku *easy-puzzle*)
 ;;(solve-sudoku *puzzle*)
