@@ -41,41 +41,38 @@
      (list (tms-create-node *atms* (list (name i j) x)))))))))
 
 (defun rows ()
-  (loop
-      for i from 1 to 9
-      collect (loop for j from 1 to 9
-                  collect (name i j))))
+  (loop for i from 1 to 9 collect
+  (loop for j from 1 to 9 collect
+  (name i j))))
 
 (defun cols ()
-  (loop
-      for i from 1 to 9
-      collect (loop for j from 1 to 9
-                  collect (name j i))))
+  (loop for i from 1 to 9 collect
+  (loop for j from 1 to 9 collect
+  (name j i))))
 
 (defun units ()
-    (apply #'concatenate 'list
-     (loop for m from 0 to 2
-         collect (loop for n from 0 to 2
-                     collect (apply #'concatenate 'list
-                                    (loop for i from 0 to 2
-                                        collect (loop for j from 0 to 2
-                                                    collect (name (+ i (* m 3) 1) (+ j (* n 3) 1)))))))))
+  (apply #'concatenate 'list
+  (loop for m from 0 to 2 collect
+  (loop for n from 0 to 2 collect
+  (apply #'concatenate 'list
+  (loop for i from 0 to 2 collect
+  (loop for j from 0 to 2 collect
+  (name (+ i (* m 3) 1) (+ j (* n 3) 1)))))))))
 
 (defun add-cell-constraints (reason cs)
   (let ((get #'(lambda (x v) (let ((d (list (elt cs (- x 1)) v)))
                  (find-if #'(lambda (n) (equal d (tms-node-datum n))) (atms-nodes *atms*))))))
-    (loop for i from 1 to 9
-        do (loop for j from 1 to 9
-               when (not (= i j))
-               do (loop for v from 1 to 9
-                      do
-                        (let ((a (funcall get i v)) (b (funcall get j v)))
-                          (when (and a b)
-                            (nogood-nodes reason (list a b)))))))))
+    (loop for i from 1 to 9 do
+    (loop for j from 1 to 9
+     when (not (= i j)) do
+    (loop for v from 1 to 9 do
+          (let ((a (funcall get i v)) (b (funcall get j v)))
+            (when (and a b)
+              (nogood-nodes reason (list a b)))))))))
 
 (defun add-unit-constraints (name css)
-  (loop for cs in css
-      do (add-cell-constraints name cs)))
+  (loop for cs in css do
+      (add-cell-constraints name cs)))
 
 (defun add-all-constraints ()
   (add-unit-constraints 'CONFLICT-ROW (rows))
@@ -85,8 +82,8 @@
 (defun prune (vss env)
   (sort
    (loop for vs in vss collect
-         (loop for v in vs
-             when (node-consistent-with? v env) collect v))
+   (loop for v in vs
+       when (node-consistent-with? v env) collect v))
    #'< :key #'length))
 
 (defun interpretations (atms choice-sets)
@@ -100,16 +97,16 @@
     (if choice-sets (return-from interpretations nil)
       (setq *solutions* (list (atms-empty-env atms))))))
 
-(defun get-depth-solutions1 (solution choice-sets
-				      &aux new-solution)
+(defun get-depth-solutions1 (solution choice-sets &aux new-solution)
   (cond ((null choice-sets)
 	   (push solution *solutions*))
 	((env-nogood? solution)) ;something died.
 	(t (dolist (choice (car choice-sets))
 	     (setq new-solution (cons-env choice solution))
 	     (unless (env-nogood? new-solution)
-	       (get-depth-solutions1 new-solution
-                               (prune (cdr choice-sets) new-solution)))))))
+	       (get-depth-solutions1
+          new-solution
+          (prune (cdr choice-sets) new-solution)))))))
 
 (defun show-solution (env vars &aux counter)
   (setq counter 0)
