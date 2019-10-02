@@ -91,9 +91,26 @@
   (loop for j from 1 to 9 collect
   (value (lookup-cell (name i j) net)))))))
 
+(defun print-solution (solution)
+  (loop for i from 1 to 9 do
+  (loop for j from 1 to 9 do
+  (format t "~D " (elt (elt solution (- i 1)) (- j 1))))
+  (format t "~%")))
+
+(defvar *solution* nil)
+(defun say-sudoku-solution (net)
+  (unless (determined? net)
+    (error "Say-solution called with unsolved network ~A." (network-title net)))
+  (format t "~% A solution for ~A:" (network-title net))
+  (format t "~%")
+  (setq *solution* (solution net))
+  (print-solution *solution*)
+  (break "Consistent solution"))
+
 (defun solve-sudoku (puzzle)
+  (setq *solution* nil)
   (setq *net* (sudoku-solve puzzle))
-  (show-search *net* #'prune)
-  (solution *net*))
+  (search-network *net* #'say-sudoku-solution #'say-contradiction #'prune)
+  *solution*)
 
 ;;(solve-sudoku *puzzle*)
