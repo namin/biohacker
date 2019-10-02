@@ -55,12 +55,15 @@
                                         collect (loop for j from 0 to 2
                                                     collect (name (+ i (* m 3) 1) (+ j (* n 3) 1)))))))))
 
+(defun lookup-cell (i j)
+  (eval `(>> ,(name i j) s)))
+
 (defun set-puzzle (puzzle)
   (loop for i from 1 to 9 do
   (loop for j from 1 to 9 do
   (let ((x (elt (elt puzzle (- i 1)) (- j 1))))
     (unless (= x 0)
-      (eval `(set-parameter (>> ,(name i j) s) ,x)))))))
+      (set-parameter (lookup-cell i j) x))))))
 
 (defun update-min-unknowns (&optional us0)
   (let ((us (or us0
@@ -116,7 +119,7 @@
 (defun show-solution ()
   (loop for i from 1 to 9 do
   (loop for j from 1 to 9 do
-  (let ((c (eval `(>> ,(name i j) s))))
+  (let ((c (lookup-cell i j)))
     (assert (known? c))
     (format t "~D " (cell-value c))))
   (format t "~%")))
