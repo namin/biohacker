@@ -45,46 +45,44 @@
     (+ 1 n (* m 3))))
 
 (defun calc-unit-check ()
-  (loop for i from 1 to 9
-      do (loop for j from 1 to 9
-             do (format t "~D " (calc-unit i j)))
-         (format t "~%")))
+  (loop for i from 1 to 9 do
+  (loop for j from 1 to 9 do
+      (format t "~D " (calc-unit i j)))
+  (format t "~%")))
 
 (defun rows ()
-  (loop
-      for i from 1 to 9
-      collect (loop for j from 1 to 9
-                  collect (cons i j))))
+  (loop for i from 1 to 9 collect
+  (loop for j from 1 to 9 collect
+        (cons i j))))
 
 (defun cols ()
-  (loop
-      for i from 1 to 9
-      collect (loop for j from 1 to 9
-                  collect (cons j i))))
+  (loop for i from 1 to 9 collect
+  (loop for j from 1 to 9 collect
+      (cons j i))))
 
 (defun units ()
-    (apply #'concatenate 'list
-     (loop for m from 0 to 2
-         collect (loop for n from 0 to 2
-                     collect (apply #'concatenate 'list
-                                    (loop for i from 0 to 2
-                                        collect (loop for j from 0 to 2
-                                                    collect (cons (+ i (* m 3) 1) (+ j (* n 3) 1)))))))))
+  (apply #'concatenate 'list
+  (loop for m from 0 to 2 collect
+  (loop for n from 0 to 2 collect
+  (apply #'concatenate 'list
+  (loop for i from 0 to 2 collect
+  (loop for j from 0 to 2 collect
+  (cons (+ i (* m 3) 1) (+ j (* n 3) 1)))))))))
 
 (defun sudoku-create-cells ()
   (loop for i from 1 to 9 do
-        (loop for j from 1 to 9 do
-              (create (sudoku-cell-name (cons i j)) 'cell))))
+  (loop for j from 1 to 9 do
+  (create (sudoku-cell-name (cons i j)) 'cell))))
 
 (defun puzzle-parameters (puzzle)
   (loop for i from 1 to 9 do
-        (loop for j from 1 to 9 do
-              (let ((x (elt (elt puzzle (- i 1)) (- j 1)))
-                    (c (lookup-cell (cons i j))))
-                (if (= x 0)
-                    (loop for v from 1 to 9 do
-                          (assume-parameter c v))
-                  (set-parameter c x))))))
+  (loop for j from 1 to 9 do
+  (let ((x (elt (elt puzzle (- i 1)) (- j 1)))
+        (c (lookup-cell (cons i j))))
+    (if (= x 0)
+        (loop for v from 1 to 9 do
+              (assume-parameter c v))
+      (set-parameter c x))))))
 
 (defun add-constraints (reason css)
   (loop for cs in css do
@@ -118,22 +116,24 @@
 
 (defun show-solution (&optional env)
   (loop for i from 1 to 9 do
-        (loop for j from 1 to 9 do
-              (format t "~D " (value-datum (tms-node-datum (unique-car (in-nodes (lookup-cell (cons i j)) env))))))
-        (format t "~%")))
+  (loop for j from 1 to 9 do
+        (format t "~D " (value-datum (tms-node-datum (unique-car (in-nodes (lookup-cell (cons i j)) env))))))
+  (format t "~%")))
 
 (defun create-choice-sets ()
   (loop for c in (atcon-cells *atcon*) do
-        (let ((nodes (in-nodes c)))
-          (if (or (not (= (length nodes) 1)) (and (tms-node-assumption? (car nodes)) (not (true-node? (car nodes)))))
-              (eval `(disjunction ,@(loop for n in nodes collect
-                                          (list c (value-datum (tms-node-datum n))))))))))
+  (let ((nodes (in-nodes c)))
+    (if (or (not (= (length nodes) 1)) (and (tms-node-assumption? (car nodes)) (not (true-node? (car nodes)))))
+        (eval
+         `(disjunction
+           ,@(loop for n in nodes collect
+                   (list c (value-datum (tms-node-datum n))))))))))
 
 (defun prune (vss env)
   (sort
    (loop for vs in vss collect
-         (loop for v in vs
-             when (node-consistent-with? v env) collect v))
+   (loop for v in vs
+    when (node-consistent-with? v env) collect v))
    #'< :key #'length))
 
 (defun interpretations (atms choice-sets)
@@ -150,46 +150,48 @@
 (defun fire-elim-top (&aux op)
   (setq op nil)
   (loop for c in (atcon-cells *atcon*) do
-        (let ((nodes (in-nodes c)))
-          (when (and (= 1 (length nodes)) (tms-node-assumption? (car nodes)) (not (true-node? (car nodes))))
-            (setq op t)
-            (set-parameter c (value-datum (tms-node-datum (car nodes)))))))
+  (let ((nodes (in-nodes c)))
+    (when (and (= 1 (length nodes)) (tms-node-assumption? (car nodes)) (not (true-node? (car nodes))))
+      (setq op t)
+      (set-parameter c (value-datum (tms-node-datum (car nodes)))))))
   op)
 
 (defun all-units ()
   (loop for vss in (list (rows) (cols) (units)) collect
-        (loop for vs in vss collect
-              (mapcar #'lookup-cell vs))))
+  (loop for vs in vss collect
+        (mapcar #'lookup-cell vs))))
 (defvar *units*)
 
 (defun fire-elim (d env)
   (loop for c in (atcon-cells *atcon*) do
-        (let ((nodes (remove-if-not #'(lambda (node) (node-consistent-with? node env)) (cell-nodes c))))
-          (cond ((and
-                  (= 1 (length nodes))
-                  (tms-node-assumption? (car nodes))
-                  (not (in-node? (car nodes) env)))
-                 (format t "Adding node ~A~%" (tms-node-datum (car nodes)))
-                 (setq env (cons-env (car nodes) env)))
-                ((null nodes)
-                 (format t "New nogood stuck on ~A.~%" c)
-                 (return-from fire-elim nil)))))
+  (let ((nodes (remove-if-not #'(lambda (node) (node-consistent-with? node env)) (cell-nodes c))))
+    (cond ((and
+            (= 1 (length nodes))
+            (tms-node-assumption? (car nodes))
+            (not (in-node? (car nodes) env)))
+           (format t "Adding node ~A~%" (tms-node-datum (car nodes)))
+           (setq env (cons-env (car nodes) env)))
+          ((null nodes)
+           (format t "New nogood stuck on ~A.~%" c)
+           (return-from fire-elim nil)))))
   (loop for vss in *units* do
-        (loop for vs in vss do
-              (let ((places (delete nil (mapcar #'(lambda (c)
-                                                    (let ((n (lookup-node c d)))
-                                                      (and (node-consistent-with? n env) n)))
-                                                vs)
-                                    :TEST 'eq)))
-                (cond ((null places)
-                       (format t "New nogood stuck on ~A.~%" d)
-                       (return-from fire-elim nil))
-                      ((and
-                        (null (cdr places))
-                        (tms-node-assumption? (car places))
-                        (not (in-node? (car places) env)))
-                       (format t "Adding place ~A~%" (tms-node-datum (car places)))
-                       (setq env (cons-env (car places) env)))))))
+  (loop for vs in vss do
+        (let ((places (delete
+                       nil
+                       (mapcar #'(lambda (c)
+                                   (let ((n (lookup-node c d)))
+                                     (and (node-consistent-with? n env) n)))
+                               vs)
+                       :TEST 'eq)))
+          (cond ((null places)
+                 (format t "New nogood stuck on ~A.~%" d)
+                 (return-from fire-elim nil))
+                ((and
+                  (null (cdr places))
+                  (tms-node-assumption? (car places))
+                  (not (in-node? (car places) env)))
+                 (format t "Adding place ~A~%" (tms-node-datum (car places)))
+                 (setq env (cons-env (car places) env)))))))
   env)
 
 (defun until-fixedpoint (f a &optional (n 0))
@@ -204,8 +206,7 @@
     (if (not r) r
       (until-noop f (+ n 1)))))
 
-(defun get-depth-solutions1 (solution choice-sets
-				      &aux new-solution)
+(defun get-depth-solutions1 (solution choice-sets &aux new-solution)
   (cond ((null choice-sets)
 	   (push solution *solutions*))
 	((env-nogood? solution)) ;something died.
