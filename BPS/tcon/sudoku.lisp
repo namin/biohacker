@@ -56,7 +56,8 @@
                                                     collect (name (+ i (* m 3) 1) (+ j (* n 3) 1)))))))))
 
 (defun lookup-cell (i j)
-  (eval `(>> ,(name i j) s)))
+  ;;(eval `(>> ,(name i j) s))
+  (nested-lookup (list (name i j)) 's))
 
 (defun set-puzzle (puzzle)
   (loop for i from 1 to 9 do
