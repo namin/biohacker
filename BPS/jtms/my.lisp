@@ -4,3 +4,7 @@
 
 (bps-load-file (make-bps-path "jtms") "jqueens" :action :compile)
 (test-queens 1 8)
+
+(bps-load-file (make-bps-path "jtms") "jtest" :action :compile)
+(shakedown-jtre)
+
