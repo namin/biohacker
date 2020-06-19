@@ -5,3 +5,4 @@
 (bps-load-file (make-bps-path "gde") "diagrams" :action :compile)
 
 (bps-load-file (make-bps-path "gde") "sudoku" :action :compile)
+(solve-sudoku *easy-puzzle*)

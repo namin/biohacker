@@ -3,3 +3,4 @@
 (compile-atre)
 ;;(compile-planner)
 (bps-load-file (make-bps-path "atms") "sudoku" :action :compile)
+
