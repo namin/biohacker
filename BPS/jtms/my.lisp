@@ -8,3 +8,5 @@
 (bps-load-file (make-bps-path "jtms") "jtest" :action :compile)
 (shakedown-jtre)
 
+(bps-load-file (make-bps-path "jtms") "sudoku" :action :compile)
+(solve-sudoku *easy-puzzle* :debugging t)
