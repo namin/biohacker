@@ -2,6 +2,11 @@
 (compile-ltre)
 (bps-load-file (make-bps-path "ltms") "ltms" :action :compile)
 
+(bps-load-file (make-bps-path "ltms") "cltms" :action :compile)
+
+(bps-load-file (make-bps-path "ltms") "ltms-ex" :action :compile)
+(run-tests)
+
 (bps-load-file (make-bps-path "ltms") "dds" :action :compile)
 (Test-DD-search)
 

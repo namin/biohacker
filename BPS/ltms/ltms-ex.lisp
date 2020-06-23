@@ -28,7 +28,7 @@
   (explain-node (find-node *ltms* "r")))
 
 (defun test-formula (&optional complete)
-  (declare (special r s tt u))
+  ;(declare (special r s tt u))
   (setq *ltms* (create-ltms "Formula" :complete complete)
 	r (tms-create-node *ltms* "r")
 	s (tms-create-node *ltms* "s")
@@ -45,7 +45,7 @@
   (test-tax1 3))
 
 (defun test-ask ()
-  (declare (special n1 n2))
+  ;;(declare (special n1 n2))
   (setq *ltms* (create-ltms "Testing asking")
 	n1 (tms-create-node *ltms* "N1" :assumptionp T)
 	n2 (tms-create-node *ltms* "N2" :assumptionp T))
@@ -55,7 +55,7 @@
   (why-nodes *ltms*))
 
 (defun test-avoid-all ()
-	(declare (special n1 n2))
+  ;;(declare (special n1 n2))
   (setq *ltms* (create-ltms "Testing avoid all"
 			    :contradiction-handler 'AVOID-ALL))
   (setq n1 (tms-create-node *ltms* "N1" :assumptionp T)
@@ -66,7 +66,7 @@
   (why-nodes *ltms*))
 
 (defun test1 (&optional (complete T))
-	(declare (special x y))
+  ;;(declare (special x y))
   (setq *ltms* (create-ltms "TEST1" :COMPLETE complete)
 	x (tms-create-node *ltms* "x")
 	y (tms-create-node *ltms* "y"))
@@ -77,7 +77,7 @@
     (error "TEST1 failed")))
 
 (defun test-bug ()
-	(declare (special x y z))
+  ;;(declare (special x y z))
   (setq *ltms* (create-ltms "BUG check"))
   (setq x (tms-create-node *ltms* "x" :assumptionp T)
 	y (tms-create-node *ltms* "y" :assumptionp T)
@@ -92,7 +92,7 @@
   (why-nodes *ltms*))
 
 (defun test-bug1 (&optional (complete T))
-	(declare (special x y z))
+  ;;(declare (special x y z))
   (setq *ltms* (create-ltms "BUG check" :COMPLETE complete))
   (setq x (tms-create-node *ltms* "x" :assumptionp T)
 	y (tms-create-node *ltms* "y" :assumptionp T)
@@ -119,7 +119,7 @@
   (format T "~% ~D prime implicates" (ltms-clause-counter *ltms*)))
 
 (defun test-e (&optional (complete T))
-	(declare (special a b c d e))
+  ;;(declare (special a b c d e))
   (setq *ltms* (create-ltms "example" :complete complete :debugging T)	
 	a (tms-create-node *ltms* "a" :assumptionp T)
 	b (tms-create-node *ltms* "b" :assumptionp T)
@@ -132,7 +132,7 @@
   (compile-formula *ltms* `(:or (:not ,b) (:not ,d) (:not ,e))))
 
 (defun test-remove ()
-	(declare (special a b c))
+  ;;(declare (special a b c))
   (setq *ltms* (create-ltms "Delay" :complete T :debugging T)
 	a (tms-create-node *ltms* "a" :assumptionp T)
 	b (tms-create-node *ltms* "b" :assumptionp T)
@@ -145,7 +145,7 @@
   (why-nodes *ltms*))
 
 (defun test-delay ()
-	(declare (special a b c))
+  ;;(declare (special a b c))
   (setq *ltms* (create-ltms "Delay" :complete T :debugging T)
 	a (tms-create-node *ltms* "a" :assumptionp T)
 	b (tms-create-node *ltms* "b" :assumptionp T)
@@ -211,7 +211,7 @@
 (defun encode-confluences (confluences)
   (dolist (confluence confluences) (confluence confluence)))
 
-(proclaim (special *qvars*))
+;(proclaim (special *qvars*))
 
 (defun qp (confluences)
   (setq *ltms* (create-ltms "QP" :COMPLETE :DELAY)
