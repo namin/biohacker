@@ -23,7 +23,7 @@
   (tms-create-node *ltms* "x" :ASSUMPTIONP t)
   (compile-formula *ltms* `(:OR "x" "y"))
   (compile-formula *ltms* `(:OR (:NOT "y") "z"))
-  (compile-formula *ltms* `(:OR (:NOT "z") "r"))	
+  (compile-formula *ltms* `(:OR (:NOT "z") "r"))
   (enable-assumption (find-node *ltms* "x") :FALSE)
   (explain-node (find-node *ltms* "r")))
 
