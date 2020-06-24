@@ -2,6 +2,11 @@
 (compile-jtre)
 (bps-load-file (make-bps-path "jtms") "jtms" :action :compile)
 
+(bps-load-file (make-bps-path "jtms") "jtms-ex" :action :compile)
+(ex1)
+(ex2)
+(ex3)
+
 (bps-load-file (make-bps-path "jtms") "jqueens" :action :compile)
 (test-queens 1 8)
 

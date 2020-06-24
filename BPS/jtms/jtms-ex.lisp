@@ -21,7 +21,7 @@
   (dolist (just (jtms-justs jtms))
     (if (= num (just-index just)) (return just))))
 
-(declare (special na nb nc nd ne nf ng contra *jtms*))
+(proclaim '(special na nb nc nd ne nf ng contra *jtms*))
 
 (defun ex1 ()
   (setq *jtms* (create-jtms "Simple Example" :debugging T)
