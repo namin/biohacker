@@ -67,16 +67,12 @@
    antecedents
    ))
 
-
-
 (define (tms-node-premise? node)
   (let ([support (tms-node-support node)])
     (and support ;; other than #f everything is true even '()
          (not (equal? support ':ENABLED-ASSUMPTION)) ;; :ENABLED-ASSUMPTION ?
-         (or (false? just-antecedents support) (empty? (just-antecedents support)))
-         )
-    )
-  )
+         (or (false? just-antecedents support) (empty? (just-antecedents support))))))
+
 ;;; Simple utilities:
 
 (define (node-string node)
