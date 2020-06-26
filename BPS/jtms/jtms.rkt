@@ -196,7 +196,7 @@
 			#:ANTECEDENTS antecedents))
 	)
     (push-tms-node-justs! just consequence)
-    (for/list ((node antecedents)) (push-tms-node-consequences! just node))
+    (for ((node antecedents)) (push-tms-node-consequences! just node))
     (push-jtms-justs! just jtms)
     (debugging-jtms jtms
 		    "\nJustifying ~a by ~a using ~a."
@@ -227,7 +227,7 @@
   (let ((jtms (tms-node-jtms node)) (q (list node)))
   (do () ((set! node (pop! q))(null? node))
     (debugging-jtms jtms "\n   Propagating belief in ~a." node)
-    (for/list ((justification (tms-node-consequences node)))
+    (for ((justification (tms-node-consequences node)))
       (when (check-justification justification)
 	(make-node-in (just-consequence justification) justification)
 	(push! (just-consequence justification) q)))) (void)))
@@ -246,7 +246,7 @@
   (set-tms-node-label! conseq ':IN)
   (set-tms-node-support! conseq reason)
   (when enqueuef
-    (for/list ((in-rule (tms-node-in-rules conseq)))
+    (for ((in-rule (tms-node-in-rules conseq)))
       (apply (eval enqueuef) (list in-rule))) ;; verify? 
     (set-tms-node-in-rules! conseq #f)) ;; #f or '() lisp both have nil, racket only #f is false
   (void)
@@ -288,7 +288,7 @@
     (debugging-jtms jtms "\n     retracting belief in ~a." node)
     (set-tms-node-support! node #f)
     (set-tms-node-label! node ':OUT)
-    (when enqueuef (for/list ((out-rule (tms-node-out-rules node))) 
+    (when enqueuef (for ((out-rule (tms-node-out-rules node))) 
 		 (apply (eval enqueuef) (list out-rule)))) ;; map.. 
     (set-tms-node-out-rules! node #f)
     (void)
@@ -313,21 +313,21 @@
 
 (define (find-alternative-support jtms out-queue)
   (debugging-jtms jtms "\n   Looking for alternative supports.")
-  (for/list ((node out-queue))
+  (for ((node out-queue))
     (unless (in-node? node)
-      (for/list ((just (tms-node-justs node)))
+      (for ((just (tms-node-justs node)))
 	(when (check-justification just)
 	  (install-support (just-consequence just)
 				 just)
          
-          ;;(return just) ;; return from for/list((just...
+          ;;(return just) ;; return from for((just...
           ))))) 
 
 ;;; Contradiction handling interface
 (define (check-for-contradictions jtms)
   (let ((contradictions '()))
   (when (jtms-checking-contradictions jtms)
-    (for/list ((cnode (jtms-contradictions jtms)))
+    (for ((cnode (jtms-contradictions jtms)))
       (when (in-node? cnode) (push! cnode contradictions)))
     (unless (empty? contradictions)
 	(apply (eval (jtms-contradiction-handler jtms)) (list jtms contradictions)))
@@ -361,7 +361,7 @@
     (with-contradiction-handler jtms #'(lambda (&rest ignore)
 					 (declare (ignore ignore)) 
 					 (throw 'CONTRADICTION t))
-      (for/list ((assumption (jtms-assumptions jtms)))
+      (for ((assumption (jtms-assumptions jtms)))
 	(cond ((equal? (tms-node-support assumption) ':ENABLED-ASSUMPTION))
 	      ((not (equal? ':DEFAULT (tms-node-assumption? assumption))))
 	      ((catch 'CONTRADICTION (enable-assumption assumption))
@@ -392,7 +392,7 @@
 
 (define (enabled-assumptions jtms)
   (let ((result '()))
-  (for/list ((assumption (jtms-assumptions jtms))) ;; ? last param
+  (for ((assumption (jtms-assumptions jtms))) ;; ? last param
     (when (equal? (tms-node-support assumption) ':ENABLED-ASSUMPTION)
 	(push! assumption result)))
   result
@@ -412,14 +412,14 @@
 		 (node-string node)
 		 (just-informant justification)
                  )
-	 (for/list ((anode (just-antecedents justification)))
+	 (for ((anode (just-antecedents justification)))
 	   (format  "\n  ~a" (node-string anode))))
 	(#t (format "\n~a is OUT." (node-string node))))
   node)
   )
 
 (define (why-nodes jtms)
-  (for/list ((node (jtms-nodes jtms))) (why-node node))
+  (for ((node (jtms-nodes jtms))) (why-node node))
   )
 
 (define *contra-assumptions* '()) ;; rather than proclaim special ? 
