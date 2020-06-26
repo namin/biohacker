@@ -249,7 +249,7 @@
     (when enqueuef
       (for ((in-rule (tms-node-in-rules conseq)))
            (enqueuef in-rule))
-      (set-tms-node-in-rules! conseq #f)) ;; #f or '() lisp both have nil, racket only #f is false
+      (set-tms-node-in-rules! conseq '()))
     (void)
     )
   )
