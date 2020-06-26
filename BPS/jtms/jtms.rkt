@@ -379,7 +379,7 @@
     )
   )
 
-;;Inference engine stub to allow this JTMS to be used stand alone
+;; Inference engine stub to allow this JTMS to be used stand alone
 
 (define (why-node node)
   (let ((justification (tms-node-support node)))
@@ -497,11 +497,8 @@
   (set-just-consequence! just (cons q (just-consequence just))))
 
 (define-syntax-rule (push! val lst) ;;pushes val to list lst at first pos
-  (set! lst (cons val lst))
-  )
+  (set! lst (cons val lst)))
 (define-syntax-rule (pop! lst) ;; pops the first position
   (cond
     ((null? lst) '())
-    (else (let ((popped (car lst))) (set! lst (rest lst)) popped))
-    )
-  )
+    (else (let ((popped (car lst))) (set! lst (rest lst)) popped))))
