@@ -82,11 +82,17 @@
 (define (node-string node)
   (apply (eval (jtms-node-string (tms-node-jtms node))) (list node)))
 
-(define-syntax-rule (debugging-jtms jtms msg node)
-  ()
-  ;;TODO
-  )
-;;debuggin-jtms
+(define-syntax debugging-jtms
+  (syntax-rules ()
+    [(_  jtms msg e* ...)
+     (let ((args (list e* ...)))
+       (let ((args (if (and (not (null? args)) (node? (car args)))
+		       (cons (node-string (car args)) (cdr args))
+		       args)))
+	 (when (jtms-debugging jtms)
+	   (apply printf msg args))))
+     ]))
+
 (define (tms-error string node)
   (error string (node-string node)))
 

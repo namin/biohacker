@@ -1,9 +1,10 @@
-(require "jtms.rkt")
+;;(require "jtms.rkt")
 
 (define j (create-jtms "hello"))
 (tms-create-node j 'a)
 
-(create-jtms "hello again" #:debugging #t)
+(define hello-jtms (create-jtms "hello again" #:debugging #t))
+(debugging-jtms hello-jtms "hello from jtms")
 
 (define (ex1)
   (define *jtms* (create-jtms "Simple Example" #:debugging #t))
