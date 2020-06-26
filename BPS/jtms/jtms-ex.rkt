@@ -15,12 +15,12 @@
   (define ne (tms-create-node *jtms* 'e #:assumptionp #t))
   (define nf (tms-create-node *jtms* 'f #:assumptionp #t))
   (define ng (tms-create-node *jtms* 'g #:assumptionp #t))
-  
+
   (justify-node 'j1 nf (list na nb))
   (justify-node 'j2 nf (list nb nc))
   (justify-node 'j3 nf (list na ne))
   (justify-node 'j4 nf (list nd ne))
-  
+
   (enable-assumption na)
   (enable-assumption nb)
   (enable-assumption nc)
