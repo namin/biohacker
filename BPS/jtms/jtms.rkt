@@ -289,15 +289,14 @@
 
 (define (find-alternative-support jtms out-queue)
   (debugging-jtms jtms "\n   Looking for alternative supports.")
-  (for ((node out-queue))
-       (unless (in-node? node)
-         (for ((just (tms-node-justs node)))
-              (when (check-justification just)
-                (install-support (just-consequence just)
-                                 just)
-
-                ;;(return just) ;; return from for((just...
-                )))))
+  (with-handlers ([just? (lambda (x) x)])
+    (for ((node out-queue))
+	 (unless (in-node? node)
+	   (for ((just (tms-node-justs node)))
+		(when (check-justification just)
+		  (install-support (just-consequence just)
+				   just)
+		  (raise just)))))))
 
 ;;; Contradiction handling interface
 (define (check-for-contradictions jtms)
