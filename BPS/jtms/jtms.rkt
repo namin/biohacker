@@ -308,15 +308,15 @@
 
                 ;;(return just) ;; return from for((just...
                 )))))
-
+
 ;;; Contradiction handling interface
 (define (check-for-contradictions jtms)
   (let ((contradictions '()))
     (when (jtms-checking-contradictions jtms)
       (for ((cnode (jtms-contradictions jtms)))
            (when (in-node? cnode) (push! cnode contradictions)))
-      (unless (empty? contradictions)
-        (apply (eval (jtms-contradiction-handler jtms)) (list jtms contradictions))))))
+      (unless (null? contradictions)
+        ((jtms-contradiction-handler jtms) jtms contradictions)))))
 
 (define-syntax-rule (without-contradiction-check jtms &body body)
   (contradiction-check jtms #f body))
