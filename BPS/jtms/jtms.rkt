@@ -93,9 +93,7 @@
   (error string (node-string node)))
 
 (define (default-node-string n)
-  (format "~a" (tms-node-datum n))
-  )
-
+  (format "~a" (tms-node-datum n)))
 
 (define (create-jtms title
                      #:node-string (node-string default-node-string)
@@ -207,8 +205,8 @@
        (justification-satisfied? just)))
 
 (define (justification-satisfied? just)
-  (andmap in-node? (just-antecedents just))
-  )
+  (andmap in-node? (just-antecedents just)))
+
 (define (install-support conseq just)
   (make-node-in conseq just)
   (propagate-inness conseq))
@@ -239,9 +237,6 @@
       (for ((in-rule (tms-node-in-rules conseq)))
            (enqueuef in-rule))
       (set-tms-node-in-rules! conseq '()))))
-
-
-
 
 ;;; Assumption Manipulation
 (define (retract-assumption node)
