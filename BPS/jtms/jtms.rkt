@@ -278,9 +278,9 @@
          (newvar '() '())
          (conseq #f))
         ((null? js) out-queue)
-      ;;For each justification using the node, check to see if
-      ;;it supports some other node.  If so, forget that node,
-      ;;queue up the node to look for other support, and recurse
+      ;; For each justification using the node, check to see if
+      ;; it supports some other node.  If so, forget that node,
+      ;; queue up the node to look for other support, and recurse
       (set! conseq (just-consequence (car js)))
       (when (equal? (tms-node-support conseq) (car js))
         (make-node-out conseq)
