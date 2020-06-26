@@ -173,18 +173,14 @@
       (debugging-jtms jtms "\nConverting ~a into an assumption" node)
       (set-tms-node-assumption?! node #t)
       (push-jtms-assumptions! node jtms)))
-  (enable-assumption node)
-  (void))
+  (enable-assumption node))
 
 (define (make-contradiction node)
   (let ((jtms (tms-node-jtms node)))
     (unless (tms-node-contradictory? node)
       (set-tms-node-contradictory?! node #t)
       (push-jtms-contradictions! node jtms))
-    (check-for-contradictions jtms)
-    )
-  (void))
-
+    (check-for-contradictions jtms)))
 
 (define (justify-node informant consequence antecedents)
   (let* (
@@ -206,9 +202,7 @@
     (if (or antecedents (out-node? consequence))
         (when (check-justification just) (install-support consequence just))
         (set-tms-node-support! consequence just))
-    (check-for-contradictions jtms)
-    (void))
-  )
+    (check-for-contradictions jtms)))
 
 ;;;;;;;;;;;Support for adding justifications;;;;;;;;;;;;;;;;
 
@@ -231,8 +225,7 @@
       (for ((justification (tms-node-consequences node)))
            (when (check-justification justification)
              (make-node-in (just-consequence justification) justification)
-             (push-just-consequence! justification q))))
-    (void)))
+             (push-just-consequence! justification q))))))
 
 (define (make-node-in conseq reason)
   (let* ((jtms (tms-node-jtms conseq))
@@ -249,10 +242,7 @@
     (when enqueuef
       (for ((in-rule (tms-node-in-rules conseq)))
            (enqueuef in-rule))
-      (set-tms-node-in-rules! conseq '()))
-    (void)
-    )
-  )
+      (set-tms-node-in-rules! conseq '()))))
 
 
 
@@ -264,8 +254,7 @@
       (set! jtms (tms-node-jtms node))
       (debugging-jtms jtms "\n  Retracting assumption ~a." node)
       (make-node-out node)
-      (find-alternative-support jtms (cons node (propagate-outness node jtms))))
-    (void)))
+      (find-alternative-support jtms (cons node (propagate-outness node jtms))))))
 
 (define (enable-assumption node)
   (let ((jtms (tms-node-jtms node)))
@@ -279,8 +268,7 @@
           ((or (equal? (tms-node-support node) ':ENABLED-ASSUMPTION)
                (null? (just-antecedents (tms-node-support node)))))
           (#t (set-tms-node-support! node ':ENABLED-ASSUMPTION)))
-    (check-for-contradictions jtms)
-    (void) ))
+    (check-for-contradictions jtms)))
 
 (define (make-node-out node)
   (let ((jtms 'NA) (enqueuef 'NA))
@@ -291,10 +279,8 @@
     (set-tms-node-label! node ':OUT)
     (when enqueuef (for ((out-rule (tms-node-out-rules node)))
                         (apply (eval enqueuef) (list out-rule)))) ;; map..
-    (set-tms-node-out-rules! node #f)
-    (void)
-    )
-  )
+    (set-tms-node-out-rules! node #f)))
+
 (define (propagate-outness node jtms)
   (let ((out-queue 'NA))
     (debugging-jtms jtms "\n   Propagating disbelief in ~a." node)
@@ -309,8 +295,7 @@
       (when (equal? (tms-node-support conseq) (car js))
         (make-node-out conseq)
         (push! conseq out-queue)
-        (set! newvar (tms-node-consequences conseq))))
-    (void)))
+        (set! newvar (tms-node-consequences conseq))))))
 
 (define (find-alternative-support jtms out-queue)
   (debugging-jtms jtms "\n   Looking for alternative supports.")
@@ -331,9 +316,7 @@
       (for ((cnode (jtms-contradictions jtms)))
            (when (in-node? cnode) (push! cnode contradictions)))
       (unless (empty? contradictions)
-        (apply (eval (jtms-contradiction-handler jtms)) (list jtms contradictions)))
-      )
-    (void)))
+        (apply (eval (jtms-contradiction-handler jtms)) (list jtms contradictions))))))
 
 (define-syntax-rule (without-contradiction-check jtms &body body)
   (contradiction-check jtms #f body))
@@ -385,11 +368,7 @@
               ((in-node? node)
                (set! newvar (just-antecedents (tms-node-support node))))
               )
-        (set-tms-node-mark! node marker)
-        (void))
-      )
-    (void)
-    ))
+        (set-tms-node-mark! node marker)))))
 
 (define (enabled-assumptions jtms)
   (let ((result '()))
@@ -446,9 +425,7 @@
     (not (> the-answer (length *contra-assumptions*))))
     (retract-assumption (nth (1- the-answer)
     *contra-assumptions*)))|#
-    )
-  (void)
-  )
+    ))
 
 (define (print-contra-list nodes)
   (do ((counter 1 (+ 1 counter))
