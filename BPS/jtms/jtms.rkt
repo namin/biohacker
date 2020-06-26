@@ -152,13 +152,13 @@
 			  datum
 			  ':OUT
 			  #f
-			  #f
-			  #f
+			  '()
+			  '()
 			  #f
 			  contradictoryp
 			  assumptionp
-			  #f
-			  #f
+			  '()
+			  '()
 			  jtms)))
       (when assumptionp (push-jtms-assumptions! node jtms))
       (when contradictoryp (push-jtms-contradictions! node jtms))
