@@ -234,16 +234,15 @@
              (push-just-consequence! justification q))))
     (void)))
 
-(define (make-node-in conseq reason )
+(define (make-node-in conseq reason)
   (let* ((jtms (tms-node-jtms conseq))
          (enqueuef (jtms-enqueue-procedure jtms)))
-    (set-tms-node-jtms! conseq jtms)
     (debugging-jtms jtms "\n     Making ~a in via ~a."
                     conseq
                     (if (symbol? reason)
                         reason
                         (cons (just-informant reason)
-                              (map (eval (jtms-node-string jtms)) ;; assuming jtms-node-string gives symbols
+                              (map (jtms-node-string jtms)
                                    (just-antecedents reason)))))
     (set-tms-node-label! conseq ':IN)
     (set-tms-node-support! conseq reason)
