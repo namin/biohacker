@@ -249,9 +249,8 @@
 
 (define (enable-assumption node)
   (let ((jtms (tms-node-jtms node)))
-    ;;(unless (tms-node-assumption? node)
-    ;;(tms-error "Can't enable the non-assumption ~a" node) tms-error not implemented
-    ;;)
+    (unless (tms-node-assumption? node)
+      (error 'enabled-assumption (format "Can't enable the non-assumption ~a" node)))
     (debugging-jtms jtms "\n  Enabling assumption ~a." node)
     (cond (
            (out-node? node) (make-node-in node ':ENABLED-ASSUMPTION)
