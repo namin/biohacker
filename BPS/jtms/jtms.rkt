@@ -248,7 +248,7 @@
     (set-tms-node-support! conseq reason)
     (when enqueuef
       (for ((in-rule (tms-node-in-rules conseq)))
-           (apply (eval enqueuef) (list in-rule))) ;; verify?
+           (enqueuef in-rule))
       (set-tms-node-in-rules! conseq #f)) ;; #f or '() lisp both have nil, racket only #f is false
     (void)
     )
