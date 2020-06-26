@@ -55,13 +55,13 @@
         [(define (write-proc this port mode)
            (fprintf port "<just ~a>" (just-index this)))]
         )
-(define (make-just   #:INDEX (INDEX 0)
-                     #:INFORMANT (informant 'NA)
-                     #:CONSEQUENCE (consequence 'NA)
-                     #:ANTECEDENTS (antecedents 'NA))
+(define (make-just   #:index (index 0)
+                     #:informant informant
+                     #:consequence consequence
+                     #:antecedents antecedents)
 
   (just
-   INDEX
+   index
    informant
    consequence
    antecedents
@@ -190,10 +190,10 @@
   (let* (
          (jtms (tms-node-jtms consequence))
          (_ (set-jtms-just-counter! jtms (+ 1 (jtms-just-counter jtms))))
-         (just (make-just #:INDEX (jtms-just-counter jtms)
-                          #:INFORMANT informant
-                          #:CONSEQUENCE consequence
-                          #:ANTECEDENTS antecedents))
+         (just (make-just #:index (jtms-just-counter jtms)
+                          #:informant informant
+                          #:consequence consequence
+                          #:antecedents antecedents))
          )
     (push-tms-node-justs! just consequence)
     (for ((node antecedents)) (push-tms-node-consequences! just node))
