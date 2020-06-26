@@ -231,7 +231,8 @@
       (for ((justification (tms-node-consequences node)))
            (when (check-justification justification)
              (make-node-in (just-consequence justification) justification)
-             (push! (just-consequence justification) q)))) (void)))
+             (push! (just-consequence justification) q))))
+    (void)))
 
 (define (make-node-in conseq reason )
   (let* ((jtms (tms-node-jtms conseq))
