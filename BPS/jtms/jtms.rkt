@@ -181,27 +181,28 @@
     
 
 (define (justify-node informant consequence antecedents)
-  (set-jtms-just-counter! jtms (+ 1 (jtms-just-counter jtms)))
-  (let (
+  (let* (
         (jtms (tms-node-jtms consequence))
+	(_ (set-jtms-just-counter! jtms (+ 1 (jtms-just-counter jtms))))
         (just (make-just #:INDEX (jtms-just-counter jtms)
 			#:INFORMANT informant
 			#:CONSEQUENCE consequence
 			#:ANTECEDENTS antecedents))
-       ) 
-  (push-tms-node-justs! just consequence)
-  (for/list ((node antecedents)) (push-tms-node-consequences! just node))
-  (push-jtms-justs! just jtms))
+	)
+    (push-tms-node-justs! just consequence)
+    (for/list ((node antecedents)) (push-tms-node-consequences! just node))
+    (push-jtms-justs! just jtms)
   #|(debugging-jtms jtms ;; debugging-jtms not defined yet
-		  "~%Justifying ~A by ~A using ~A."
-		  consequence
-		  informant
-		  (map node-string antecedents))|# ;;
-  (if (or antecedents (out-node? consequence))
+  "~%Justifying ~A by ~A using ~A."
+  consequence
+  informant
+  (map node-string antecedents))|# ;;
+    (if (or antecedents (out-node? consequence))
       (when (check-justification just) (install-support consequence just))
       (set-tms-node-support! consequence just))
-  (check-for-contradictions jtms)
-  (void))
+    (check-for-contradictions jtms)
+    (void))
+    )
   
 ;;;;;;;;;;;Support for adding justifications;;;;;;;;;;;;;;;;
 
