@@ -231,7 +231,7 @@
       (for ((justification (tms-node-consequences node)))
            (when (check-justification justification)
              (make-node-in (just-consequence justification) justification)
-             (push! (just-consequence justification) q))))
+             (push-just-consequence! justification q))))
     (void)))
 
 (define (make-node-in conseq reason )
@@ -491,7 +491,7 @@
                          ;;      (set! current (pop! stack))
                          ;;    (return-from explore-network current)))
                          ((#t) (push! current stack)
-                          (set! current (list-ref (- good? 1) options)))))
+                            (set! current (list-ref (- good? 1) options)))))
               (format "\n>>>")
               (set! choice (read))
               (cond ((or (equal? choice 'q)
@@ -503,27 +503,22 @@
                          "\n Must be q or an integer from 0 to ~a."
                          olen))))))))
 
-
 (define (push-jtms-assumptions! node jtms)
   (set-jtms-assumptions! jtms (cons node (jtms-assumptions jtms))))
-
 (define (push-jtms-contradictions! node jtms)
   (set-jtms-contradictions! jtms (cons node (jtms-contradictions jtms))))
-
 (define (push-jtms-nodes! node jtms)
   (set-jtms-nodes! jtms (cons node (jtms-nodes jtms))))
+(define (push-jtms-justs! just jtms)
+  (set-jtms-justs! jtms (cons just (jtms-justs jtms))))
 
 (define (push-tms-node-justs! node justs)
   (set-tms-node-justs! justs (cons node (tms-node-justs justs))))
 (define (push-tms-node-consequences! just node)
-  (set-tms-node-consequences! node (cons just (tms-node-consequences node)))
-  )
+  (set-tms-node-consequences! node (cons just (tms-node-consequences node))))
 
-(define (push-jtms-justs! just jtms)
-  (set-jtms-justs! jtms (cons just (jtms-justs jtms)))
-  )
-
-
+(define (push-just-consequence! just q)
+  (set-just-consequence! just (cons q (just-consequence just))))
 
 (define-syntax-rule (push! val lst) ;;pushes val to list lst at first pos
   (set! lst (cons val lst))
