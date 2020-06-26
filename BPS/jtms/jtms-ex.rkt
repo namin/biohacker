@@ -26,6 +26,9 @@
   (enable-assumption nc)
   (enable-assumption nd)
 
+  (define contra (tms-create-node *jtms* 'Loser #:contradictoryp #t))
+  (justify-node 'j5 contra (list ne nf))
+
   )
 
 (ex1)
