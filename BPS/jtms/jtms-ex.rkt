@@ -1,4 +1,6 @@
-;;(require "jtms.rkt")
+#lang racket
+
+(require "jtms.rkt")
 
 (define j (create-jtms "hello"))
 (tms-create-node j 'a)

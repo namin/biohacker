@@ -80,7 +80,7 @@
 ;;; Simple utilities:
 
 (define (node-string node)
-  (apply (eval (jtms-node-string (tms-node-jtms node))) (list node)))
+  ((jtms-node-string (tms-node-jtms node)) node))
 
 (define-syntax debugging-jtms
   (syntax-rules ()
