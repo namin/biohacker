@@ -477,7 +477,7 @@
                (options '())
                (olen 0)
                (done? #f))
-              (done? current)
+              ((done? current))
             (why-node current)
             (set! options (when (just? (tms-node-support current)) ;;
                             (just-antecedents (tms-node-support current))))
