@@ -104,7 +104,7 @@
 (define (create-jtms title
 		     #:node-string (node-string default-node-string)
 		     #:debugging (debugging #f)
-		     #:checking-contradictions (checking-contradictions #f)
+		     #:checking-contradictions (checking-contradictions #t)
 		     #:contradiction-handler (contradiction-handler ask-user-handler)
 		     #:enqueue-procedure (enqueue-procedure #f))
   (jtms
@@ -224,13 +224,14 @@
   (propagate-inness conseq))
 
 (define (propagate-inness node)
-  (let ((jtms (tms-node-jtms node)) (q (list node)))
-  (do () ((set! node (pop! q))(null? node))
-    (debugging-jtms jtms "\n   Propagating belief in ~a." node)
-    (for ((justification (tms-node-consequences node)))
-      (when (check-justification justification)
-	(make-node-in (just-consequence justification) justification)
-	(push! (just-consequence justification) q)))) (void)))
+  (let ((jtms (tms-node-jtms node))
+	(q (list node)))
+    (do () ((begin (set! node (pop! q)) (null? node)))
+      (debugging-jtms jtms "\n   Propagating belief in ~a." node)
+      (for ((justification (tms-node-consequences node)))
+	   (when (check-justification justification)
+	     (make-node-in (just-consequence justification) justification)
+	     (push! (just-consequence justification) q)))) (void)))
 
 (define (make-node-in conseq reason )
   (let* ((jtms (tms-node-jtms conseq))
@@ -528,7 +529,7 @@
   )
 (define-syntax-rule (pop! lst) ;; pops the first position
   (cond
-    ((null? lst) null) 
+    ((null? lst) '()) 
     (else (let ((popped (car lst))) (set! lst (rest lst)) popped))
     )
    )

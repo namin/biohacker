@@ -25,6 +25,7 @@
   (enable-assumption nb)
   (enable-assumption nc)
   (enable-assumption nd)
+
   )
 
 (ex1)
