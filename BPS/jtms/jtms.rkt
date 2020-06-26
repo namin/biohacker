@@ -278,7 +278,7 @@
     (set-tms-node-support! node #f)
     (set-tms-node-label! node ':OUT)
     (when enqueuef (for ((out-rule (tms-node-out-rules node)))
-                        (apply (eval enqueuef) (list out-rule)))) ;; map..
+                        (enqueuef out-rule)))
     (set-tms-node-out-rules! node #f)))
 
 (define (propagate-outness node jtms)
