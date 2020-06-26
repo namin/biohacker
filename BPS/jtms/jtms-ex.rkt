@@ -1,3 +1,5 @@
+(require "jtms.rkt")
+
 (define j (create-jtms "hello"))
 (tms-create-node j 'a)
 
@@ -18,8 +20,10 @@
   (justify-node 'j3 nf (list na ne))
   (justify-node 'j4 nf (list nd ne))
   
-
-  (jtms-justs *jtms*)
+  (enable-assumption na)
+  (enable-assumption nb)
+  (enable-assumption nc)
+  (enable-assumption nd)
   )
 
 (ex1)

@@ -227,8 +227,8 @@
 	(push! (just-consequence justification) q)))) (void)))
 
 (define (make-node-in conseq reason )
-  (let ((jtms (tms-node-jtms conseq))
-        (enqueuef (jtms-enqueue-procedure jtms)))
+  (let* ((jtms (tms-node-jtms conseq))
+	 (enqueuef (jtms-enqueue-procedure jtms)))
   (set-tms-node-jtms! jtms conseq)
   #|(debugging-jtms jtms "~%     Making ~A in via ~A." ;; debugging not defined yet
 	     conseq
