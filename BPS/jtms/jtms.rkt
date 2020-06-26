@@ -86,7 +86,7 @@
   (syntax-rules ()
     [(_  jtms msg e* ...)
      (let ((args (list e* ...)))
-       (let ((args (if (and (not (null? args)) (node? (car args)))
+       (let ((args (if (and (not (null? args)) (tms-node? (car args)))
 		       (cons (node-string (car args)) (cdr args))
 		       args)))
 	 (when (jtms-debugging jtms)
@@ -170,7 +170,7 @@
 (define (assume-node node)
   (let ((jtms (tms-node-jtms node)))
   (unless (or (tms-node-assumption? node) (tms-node-premise? node))
-    ;;(debugging-jtms jtms "~%Converting ~A into an assumption" node) ;; debuggin-jtms not defined till now
+    (debugging-jtms jtms "\nConverting ~a into an assumption" node)
     (set-tms-node-assumption?! node #t)
     (push-jtms-assumptions! node jtms)))
   (enable-assumption node)
@@ -198,11 +198,11 @@
     (push-tms-node-justs! just consequence)
     (for/list ((node antecedents)) (push-tms-node-consequences! just node))
     (push-jtms-justs! just jtms)
-  #|(debugging-jtms jtms ;; debugging-jtms not defined yet
-  "~%Justifying ~A by ~A using ~A."
-  consequence
-  informant
-  (map node-string antecedents))|# ;;
+    (debugging-jtms jtms
+		    "\nJustifying ~a by ~a using ~a."
+		    consequence
+		    informant
+		    (map node-string antecedents))
     (if (or antecedents (out-node? consequence))
       (when (check-justification just) (install-support consequence just))
       (set-tms-node-support! consequence just))
@@ -226,7 +226,7 @@
 (define (propagate-inness node)
   (let ((jtms (tms-node-jtms node)) (q (list node)))
   (do () ((set! node (pop! q))(null? node))
-    ;;(debugging-jtms jtms "~%   Propagating belief in ~A." node) debugging not define
+    (debugging-jtms jtms "\n   Propagating belief in ~a." node)
     (for/list ((justification (tms-node-consequences node)))
       (when (check-justification justification)
 	(make-node-in (just-consequence justification) justification)
@@ -236,13 +236,13 @@
   (let* ((jtms (tms-node-jtms conseq))
 	 (enqueuef (jtms-enqueue-procedure jtms)))
   (set-tms-node-jtms! conseq jtms)
-  #|(debugging-jtms jtms "~%     Making ~A in via ~A." ;; debugging not defined yet
-	     conseq
-	     (if (symbol? reason)
-		 reason
-		 (cons (just-informant reason)
-		    (map (eval (jtms-node-string jtms)) ;; assuming jtms-node-string gives symbols
-			       (just-antecedents reason)))))|#
+  (debugging-jtms jtms "\n     Making ~a in via ~a."
+		  conseq
+		  (if (symbol? reason)
+		      reason
+		      (cons (just-informant reason)
+			    (map (eval (jtms-node-string jtms)) ;; assuming jtms-node-string gives symbols
+				 (just-antecedents reason)))))
   (set-tms-node-label! conseq ':IN)
   (set-tms-node-support! conseq reason)
   (when enqueuef
@@ -261,7 +261,7 @@
   (let ((jtms #f))
   (when (equal? (tms-node-support node) ':ENABLED-ASSUMPTION)
     (set! jtms (tms-node-jtms node))
-    ;;(debugging-jtms jtms "~%  Retracting assumption ~A." node)
+    (debugging-jtms jtms "\n  Retracting assumption ~a." node)
     (make-node-out node)
     (find-alternative-support jtms (cons node (propagate-outness node jtms))))
   (void)))
@@ -269,9 +269,9 @@
 (define (enable-assumption node)
   (let ((jtms (tms-node-jtms node)))
   ;;(unless (tms-node-assumption? node) 
-    ;;(tms-error "Can't enable the non-assumption ~A" node) tms-error not implemented
+    ;;(tms-error "Can't enable the non-assumption ~a" node) tms-error not implemented
     ;;)
-  ;;(debugging-jtms jtms "~%  Enabling assumption ~A." node)
+    (debugging-jtms jtms "\n  Enabling assumption ~a." node)
   (cond (
          (out-node? node) (make-node-in node ':ENABLED-ASSUMPTION)
 	                  (propagate-inness node))
@@ -285,7 +285,7 @@
   (let ((jtms 'NA) (enqueuef 'NA))
     (set! jtms (tms-node-jtms node))
     (set! enqueuef (jtms-enqueue-procedure jtms))
-   ;; (debugging-jtms jtms "~%     retracting belief in ~a." node)
+    (debugging-jtms jtms "\n     retracting belief in ~a." node)
     (set-tms-node-support! node #f)
     (set-tms-node-label! node ':OUT)
     (when enqueuef (for/list ((out-rule (tms-node-out-rules node))) 
@@ -296,7 +296,7 @@
 )
   (define (propagate-outness node jtms) 
     (let ((out-queue 'NA))
-    ;;(debugging-jtms jtms "~%   Propagating disbelief in ~A." node)
+      (debugging-jtms jtms "\n   Propagating disbelief in ~a." node)
     (do ((js (tms-node-consequences node) (append (cdr js) newvar)) 
        (newvar '() '())
        (conseq #f))
@@ -312,7 +312,7 @@
     (void)))
 
 (define (find-alternative-support jtms out-queue)
-  ;;(debugging-jtms jtms "~%   Looking for alternative supports.")
+  (debugging-jtms jtms "\n   Looking for alternative supports.")
   (for/list ((node out-queue))
     (unless (in-node? node)
       (for/list ((just (tms-node-justs node)))
@@ -405,16 +405,16 @@
   (let ((justification (tms-node-support node)))
     (cond
       ((equal?  justification ':ENABLED-ASSUMPTION)
-	 (format "~%~A is an enabled assumption"
+	 (format "\n~a is an enabled assumption"
 		 (node-string node)))
 	(justification ;; right condition? 
-	 (format "~%~A is IN via ~A on"
+	 (format "\n~a is IN via ~a on"
 		 (node-string node)
 		 (just-informant justification)
                  )
 	 (for/list ((anode (just-antecedents justification)))
-	   (format  "~%  ~A" (node-string anode))))
-	(#t (format "~%~A is OUT." (node-string node))))
+	   (format  "\n  ~a" (node-string anode))))
+	(#t (format "\n~a is OUT." (node-string node))))
   node)
   )
 
@@ -436,10 +436,10 @@
 	  (break "JTMS contradiction break"))]|#
 
   (unless *contra-assumptions*
-  (tms-error "~%There is a flaw in the universe...~A" contra-node))
-  (format  "~%Contradiction found: ~A" (node-string contra-node))
+  (tms-error "\nThere is a flaw in the universe...~a" contra-node))
+  (format  "\nContradiction found: ~a" (node-string contra-node))
   (print-contra-list *contra-assumptions*)
-  (format "~%Call (TMS-ANSWER <number>) to retract assumption.")
+  (format "\nCall (TMS-ANSWER <number>) to retract assumption.")
   #|(if (and (integer? the-answer)
 	   (> the-answer 0)
 	   (not (> the-answer (length *contra-assumptions*))))
@@ -453,7 +453,7 @@
   (do ((counter 1 (+ 1 counter))
        (nn nodes (cdr nn)))
       ((null? nn))
-     (println (format "~%~A ~A" counter
+     (println (format "\n~a ~a" counter
              (node-string (car nn)))))
 )
 
@@ -462,14 +462,14 @@
       (if (> num 0)
 	  (if (not (> num (length *contra-assumptions*)))
 	      (raise 'tms-contradiction-handler num) ;; verify this
-	      (format "~%Ignoring answer, too big."))
-	  (format "~%Ignoring answer, too small"))
-      (format "~%Ignoring answer, must be an integer.")))
+	      (format "\nIgnoring answer, too big."))
+	  (format "\nIgnoring answer, too small"))
+      (format "\nIgnoring answer, must be an integer.")))
 
 (define (explore-network node)
   (cond 
     ((not (in-node? node))
-	  (format  "~% Sorry, ~A not believed." (node-string node)) ;; print? before format
+	  (format  "\n Sorry, ~a not believed." (node-string node)) ;; print? before format
 	  node)
     (else (do ((stack '())
        (current node)
@@ -490,7 +490,7 @@
 			  ;;    (return-from explore-network current)))
 		       ((#t) (push! current stack)
 			  (set! current (list-ref (- good? 1) options)))))
-	  (format "~%>>>")
+	  (format "\n>>>")
 	  (set! choice (read))
 	  (cond ((or (equal? choice 'q)
 		     (and (integer? choice)
@@ -498,7 +498,7 @@
 			  (>= choice 0))
 		 (set! good? choice))
 		(#t (format 
-		    "~% Must be q or an integer from 0 to ~D."
+		    "\n Must be q or an integer from 0 to ~a."
 		    olen))))))))
 
 
