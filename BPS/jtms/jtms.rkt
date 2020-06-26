@@ -229,7 +229,7 @@
 (define (make-node-in conseq reason )
   (let* ((jtms (tms-node-jtms conseq))
 	 (enqueuef (jtms-enqueue-procedure jtms)))
-  (set-tms-node-jtms! jtms conseq)
+  (set-tms-node-jtms! conseq jtms)
   #|(debugging-jtms jtms "~%     Making ~A in via ~A." ;; debugging not defined yet
 	     conseq
 	     (if (symbol? reason)
