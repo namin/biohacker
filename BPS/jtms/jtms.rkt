@@ -306,40 +306,52 @@
       (unless (null? contradictions)
         ((jtms-contradiction-handler jtms) jtms contradictions)))))
 
-(define-syntax-rule (without-contradiction-check jtms &body body)
-  (contradiction-check jtms #f body))
+(define-syntax contradiction-check
+  (syntax-rules ()
+    [(_ jtms flag body ...)
+     (let* ((jtmsv jtms)
+	    (old-value (jtms-checking-contradictions jtms)))
+       (begin
+	 (set-jtms-checking-contradictions! jtms flag)
+	 (let ((r (begin body ...)))
+	   (set-jtms-checking-contradictions! jtms flag)
+	   r)))]))
 
-(define-syntax-rule (with-contradiction-check jtms &body body) ;;&body=&rest how in racket?
-  (contradiction-check jtms #t body))
+(define-syntax without-contradiction-check
+  (syntax-rules ()
+    [(_ jtms body ...)
+     (contradiction-check jtms #f body ...)]))
 
-#|(define (contradiction-check jtms flag body) ;; '(let *... )?
-(let ((jtmsv (gensym)) (old-value (gensym)))
-`(let* ((,jtmsv ,jtms) ;; ??
-(,old-value (jtms-checking-contradictions ,jtmsv)))
-(unwind-protect
-(progn (setf (jtms-checking-contradictions ,jtmsv) ,flag) ,@body)
-(setf (jtms-checking-contradictions ,jtmsv) ,old-value)))))|#
+(define-syntax with-contradiction-check
+  (syntax-rules ()
+    [(_ jtms body ...)
+     (contradiction-check jtms #t body ...)]))
 
-(define-syntax-rule (with-contradiction-handler jtms handler &body body) ;; ?'
-  (let ((jtmsv (gensym)) (old-handler (gensym)))
-    `(let* ((,jtmsv ,jtms)
-            (,old-handler (jtms-contradiction-handler ,jtmsv)))
-       (unwind-protect
-        (progn (setf (jtms-contradiction-handler ,jtmsv) ,handler) ,@body)
-        (setf (jtms-contradiction-handler ,jtmsv) ,old-handler)))))
+(define-syntax with-contradiction-handler
+  (syntax-rules ()
+    [(_ jtms handler body ...)
+     (let* ((jtmsv jtms)
+	    (old-handler (jtms-contradiction-handler jtmsv)))
+       (begin
+	 (set-jtms-contradiction-handler! jtmsv handler)
+	 (let ((r body ...))
+	 (set-jtms-contradiction-handler! jtmsv old-handler))))]))
 
-#|(define (default-assumptions jtms)
-(with-contradiction-check jtms  ;; body optional arg not present
-(with-contradiction-handler jtms #'(lambda (&rest ignore)
-(declare (ignore ignore))
-(throw 'CONTRADICTION t))
-(for ((assumption (jtms-assumptions jtms)))
-(cond ((equal? (tms-node-support assumption) ':ENABLED-ASSUMPTION))
-((not (equal? ':DEFAULT (tms-node-assumption? assumption))))
-((catch 'CONTRADICTION (enable-assumption assumption))
-(retract-assumption assumption))))))
+(struct contradiction-signal ())
 
-)|#
+(define (default-assumptions jtms)
+  (with-contradiction-check
+   jtms
+   (with-contradiction-handler
+    jtms
+    (lambda () (raise (contradiction-signal)))
+    (for ((assumption (jtms-assumptions jtms)))
+	 (cond ((eq? (tms-node-support assumption) ':ENABLED-ASSUMPTION))
+	       ((not (eq? ':DEFAULT (tms-node-assumption? assumption))))
+	       ((with-handlers
+		 ([contradiction-signal?
+		   (lambda (x) (retract-assumption assumption))])
+		(enable-assumption assumption))))))))
 
 ;;; Well-founded support inqueries
 (define (supporting-justification-for-node node) (tms-node-support node))
