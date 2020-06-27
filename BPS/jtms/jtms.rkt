@@ -263,15 +263,14 @@
     (check-for-contradictions jtms)))
 
 (define (make-node-out node)
-  (let ((jtms 'NA) (enqueuef 'NA))
-    (set! jtms (tms-node-jtms node))
-    (set! enqueuef (jtms-enqueue-procedure jtms))
-    (debugging-jtms jtms "\n     retracting belief in ~a." node)
-    (set-tms-node-support! node #f)
-    (set-tms-node-label! node ':OUT)
-    (when enqueuef (for ((out-rule (tms-node-out-rules node)))
-                        (enqueuef out-rule)))
-    (set-tms-node-out-rules! node #f)))
+  (define jtms (tms-node-jtms node))
+  (define enqueuef (jtms-enqueue-procedure jtms))
+  (debugging-jtms jtms "\n     retracting belief in ~a." node)
+  (set-tms-node-support! node #f)
+  (set-tms-node-label! node ':OUT)
+  (when enqueuef (for ((out-rule (tms-node-out-rules node)))
+		      (enqueuef out-rule)))
+  (set-tms-node-out-rules! node #f))
 
 (define (propagate-outness node jtms)
   (let ((out-queue 'NA))
@@ -279,7 +278,7 @@
     (do ((js (tms-node-consequences node) (append (cdr js) newvar))
          (newvar '() '())
          (conseq #f))
-        ((null? js) out-queue)
+        ((and (null? js) (null? out-queue)))
       ;; For each justification using the node, check to see if
       ;; it supports some other node.  If so, forget that node,
       ;; queue up the node to look for other support, and recurse
