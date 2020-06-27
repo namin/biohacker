@@ -401,17 +401,12 @@
       (error 'handle-one-contradiction (format "\nThere is a flaw in the universe...~a" contra-node)))
   (printf  "\nContradiction found: ~a" (node-string contra-node))
   (print-contra-list *contra-assumptions*)
-  (printf "\nCall (tms-answer <number>) to retract assumption.")
-  (let ((the-answer #f))
-    (set! the-answer
-	  (with-handlers
-	   ([tms-contradiction-handler? (lambda (x) (tms-contradiction-handler-answer x))])
-	   (break-thread (current-thread))))
+  (printf "\nPick the <number> to retract assumption. ")
+  (let ((the-answer (read)))
     (when (and (integer? the-answer)
 	       (> the-answer 0)
 	       (not (> the-answer (length *contra-assumptions*))))
-      (retract-assumption (list-ref (- the-answer 1)
-				    *contra-assumptions*)))))
+      (retract-assumption (list-ref *contra-assumptions* (- the-answer 1))))))
 
 (define (print-contra-list nodes)
   (do ((counter 1 (+ 1 counter))
@@ -420,13 +415,23 @@
     (printf "\n~a ~a\n" counter (node-string (car nn)))))
 
 (define (tms-answer num)
-  (if (integer? num)
-      (if (> num 0)
-          (if (not (> num (length *contra-assumptions*)))
-              (raise (tms-contradiction-handler num))
-              (format "\nIgnoring answer, too big."))
-          (format "\nIgnoring answer, too small"))
-      (format "\nIgnoring answer, must be an integer.")))
+  (let ((the-answer
+	 (if (integer? num)
+	     (if (> num 0)
+		 (if (not (> num (length *contra-assumptions*)))
+		     num
+		     (begin
+		       (printf "\nIgnoring answer, too big.")
+		       #f))
+		 (begin
+		   (printf "\nIgnoring answer, too small")
+		   #f))
+	     (begin
+	       (printf "\nIgnoring answer, must be an integer.")
+	       #f))))
+    (if the-answer
+	the-answer
+	(tms-answer (read)))))
 
 (define (explore-network node)
   (cond
@@ -454,7 +459,7 @@
 		          (set! current (pop! stack))
 			  (raise current)))
 		     ((#t) (push! current stack)
-		      (set! current (list-ref (- good? 1) options)))))
+		      (set! current (list-ref options (- good? 1))))))
 	  (printf "\n>>>")
 	  (set! choice (read))
 	  (cond ((or (equal? choice 'q)
