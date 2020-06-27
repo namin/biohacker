@@ -432,37 +432,40 @@
 (define (explore-network node)
   (cond
     ((not (in-node? node))
-     (format  "\n Sorry, ~a not believed." (node-string node)) ;; print? before format
+     (printf "\n Sorry, ~a not believed." (node-string node))
      node)
-    (else (do ((stack '())
-               (current node)
-               (options '())
-               (olen 0)
-               (done? #f))
-              ((done? current))
-            (why-node current)
-            (set! options (when (just? (tms-node-support current)) ;;
-                            (just-antecedents (tms-node-support current))))
-            (set! olen (length options))
-            (do ((good? #f)
-                 (choice 0))
-                (good? (case (good?)
-                         ;;((q) (return-from explore-network current)) ;;return-from?
-                         ;;((0) (if stack
-                         ;;      (set! current (pop! stack))
-                         ;;    (return-from explore-network current)))
-                         ((#t) (push! current stack)
-                            (set! current (list-ref (- good? 1) options)))))
-              (format "\n>>>")
-              (set! choice (read))
-              (cond ((or (equal? choice 'q)
-                         (and (integer? choice)
-                              (<= choice olen))
-                         (>= choice 0))
-                     (set! good? choice))
-                    (#t (format
-                         "\n Must be q or an integer from 0 to ~a."
-                         olen))))))))
+    (else
+     (with-handlers
+      ([tms-node? (lambda (x) x)])
+      (do ((stack '())
+	   (current node)
+	   (options '())
+	   (olen 0)
+	   (done? #f))
+	  ((done? current))
+	(why-node current)
+	(set! options (when (just? (tms-node-support current)) ;;
+			(just-antecedents (tms-node-support current))))
+	(set! olen (length options))
+	(do ((good? #f)
+	     (choice 0))
+	    (good? (case (good?)
+		     ((q) (raise current))
+		     ((0) (if stack
+		          (set! current (pop! stack))
+			  (raise current)))
+		     ((#t) (push! current stack)
+		      (set! current (list-ref (- good? 1) options)))))
+	  (printf "\n>>>")
+	  (set! choice (read))
+	  (cond ((or (equal? choice 'q)
+		     (and (integer? choice)
+			  (<= choice olen))
+		     (>= choice 0))
+		 (set! good? choice))
+		(#t (printf
+		     "\n Must be q or an integer from 0 to ~a."
+		     olen)))))))))
 
 (define (push-jtms-assumptions! node jtms)
   (set-jtms-assumptions! jtms (cons node (jtms-assumptions jtms))))
