@@ -417,7 +417,7 @@
   (do ((counter 1 (+ 1 counter))
        (nn nodes (cdr nn)))
       ((null? nn))
-    ("\n~a ~a\n" counter (node-string (car nn)))))
+    (printf "\n~a ~a\n" counter (node-string (car nn)))))
 
 (define (tms-answer num)
   (if (integer? num)
