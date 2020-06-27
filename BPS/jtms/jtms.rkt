@@ -67,6 +67,8 @@
    antecedents
    ))
 
+(struct tms-contradiction-handler (answer))
+
 (define (tms-node-premise? node)
   (let ([support (tms-node-support node)])
     (and support ;; other than #f everything is true even '()
@@ -394,21 +396,22 @@
   (check-for-contradictions jtms))
 
 (define (handle-one-contradiction contra-node)
-  (let  ([*contra-assumptions* (assumptions-of-node contra-node)])
-    #|[the-answer (catch 'tms-contradiction-handler
-    (break "JTMS contradiction break"))]|#
-
+  (set! *contra-assumptions* (assumptions-of-node contra-node))
     (unless *contra-assumptions*
-      (tms-error "\nThere is a flaw in the universe...~a" contra-node))
-    (format  "\nContradiction found: ~a" (node-string contra-node))
-    (print-contra-list *contra-assumptions*)
-    (format "\nCall (TMS-ANSWER <number>) to retract assumption.")
-    #|(if (and (integer? the-answer)
-    (> the-answer 0)
-    (not (> the-answer (length *contra-assumptions*))))
-    (retract-assumption (nth (1- the-answer)
-    *contra-assumptions*)))|#
-    ))
+      (error 'handle-one-contradiction (format "\nThere is a flaw in the universe...~a" contra-node)))
+  (printf  "\nContradiction found: ~a" (node-string contra-node))
+  (print-contra-list *contra-assumptions*)
+  (printf "\nCall (tms-answer <number>) to retract assumption.")
+  (let ((the-answer #f))
+    (set! the-answer
+	  (with-handlers
+	   ([tms-contradiction-handler? (lambda (x) (tms-contradiction-handler-answer x))])
+	   (break-thread (current-thread))))
+    (when (and (integer? the-answer)
+	       (> the-answer 0)
+	       (not (> the-answer (length *contra-assumptions*))))
+      (retract-assumption (list-ref (- the-answer 1)
+				    *contra-assumptions*)))))
 
 (define (print-contra-list nodes)
   (do ((counter 1 (+ 1 counter))
@@ -420,7 +423,7 @@
   (if (integer? num)
       (if (> num 0)
           (if (not (> num (length *contra-assumptions*)))
-              (raise 'tms-contradiction-handler num) ;; verify this
+              (raise (tms-contradiction-handler num))
               (format "\nIgnoring answer, too big."))
           (format "\nIgnoring answer, too small"))
       (format "\nIgnoring answer, must be an integer.")))
