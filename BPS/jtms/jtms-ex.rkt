@@ -28,6 +28,9 @@
   (enable-assumption nc)
   (enable-assumption nd)
 
+  (explore-network ng)
+  (explore-network nf)
+
   (define contra (tms-create-node *jtms* 'Loser #:contradictoryp #t))
   (justify-node 'j5 contra (list ne nf))
 

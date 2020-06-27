@@ -372,22 +372,20 @@
   (let ((justification (tms-node-support node)))
     (cond
       ((equal?  justification ':ENABLED-ASSUMPTION)
-       (format "\n~a is an enabled assumption"
+       (printf "\n~a is an enabled assumption"
                (node-string node)))
       (justification ;; right condition?
-       (format "\n~a is IN via ~a on"
+       (printf "\n~a is IN via ~a on"
                (node-string node)
                (just-informant justification)
                )
        (for ((anode (just-antecedents justification)))
-            (format  "\n  ~a" (node-string anode))))
-      (#t (format "\n~a is OUT." (node-string node))))
-    node)
-  )
+            (printf  "\n  ~a" (node-string anode))))
+      (#t (printf "\n~a is OUT." (node-string node))))
+    node))
 
 (define (why-nodes jtms)
-  (for ((node (jtms-nodes jtms))) (why-node node))
-  )
+  (for ((node (jtms-nodes jtms))) (why-node node)))
 
 (define *contra-assumptions* '())
 
@@ -442,16 +440,16 @@
 	   (options '())
 	   (olen 0)
 	   (done? #f))
-	  ((done? current))
+	  ((or done? (null? current)))
 	(why-node current)
-	(set! options (when (just? (tms-node-support current)) ;;
+	(set! options (when (just? (tms-node-support current))
 			(just-antecedents (tms-node-support current))))
 	(set! olen (length options))
 	(do ((good? #f)
 	     (choice 0))
-	    (good? (case (good?)
+	    (good? (case good?
 		     ((q) (raise current))
-		     ((0) (if stack
+		     ((0) (if (not (null? stack))
 		          (set! current (pop! stack))
 			  (raise current)))
 		     ((#t) (push! current stack)
