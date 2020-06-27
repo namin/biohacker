@@ -67,8 +67,6 @@
    antecedents
    ))
 
-(struct tms-contradiction-handler (answer))
-
 (define (tms-node-premise? node)
   (let ([support (tms-node-support node)])
     (and support ;; other than #f everything is true even '()
