@@ -19,16 +19,16 @@
   (define ng (tms-create-node *jtms* 'g #:assumptionp #t))
 
   (justify-node 'j1 nf (list na nb))
-  (justify-node 'j2 nf (list nb nc))
-  (justify-node 'j3 nf (list na ne))
-  (justify-node 'j4 nf (list nd ne))
+  (justify-node 'j2 ne (list nb nc))
+  (justify-node 'j3 ng (list na ne))
+  (justify-node 'j4 ng (list nd ne))
 
   (enable-assumption na)
   (enable-assumption nb)
   (enable-assumption nc)
   (enable-assumption nd)
 
-  (explore-network ng)
+  ;;(explore-network ng)
   ;;(explore-network nf)
 
   (define contra (tms-create-node *jtms* 'Loser #:contradictoryp #t))
