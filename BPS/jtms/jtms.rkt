@@ -341,7 +341,7 @@
 (retract-assumption assumption))))))
 
 )|#
-
+
 ;;; Well-founded support inqueries
 (define (supporting-justification-for-node node) (tms-node-support node))
 
@@ -361,12 +361,10 @@
 
 (define (enabled-assumptions jtms)
   (let ((result '()))
-    (for ((assumption (jtms-assumptions jtms))) ;; ? last param
+    (for ((assumption (jtms-assumptions jtms)))
          (when (equal? (tms-node-support assumption) ':ENABLED-ASSUMPTION)
            (push! assumption result)))
-    result
-    )
-  )
+    result))
 
 ;; Inference engine stub to allow this JTMS to be used stand alone
 
@@ -391,13 +389,11 @@
   (for ((node (jtms-nodes jtms))) (why-node node))
   )
 
-(define *contra-assumptions* '()) ;; rather than proclaim special ?
-;; proclaim '(special *contra-assumptions*)
+(define *contra-assumptions* '())
 
 (define (ask-user-handler jtms contradiction)
   (handle-one-contradiction (car contradiction))
-  (check-for-contradictions jtms)
-  )
+  (check-for-contradictions jtms))
 
 (define (handle-one-contradiction contra-node)
   (let  ([*contra-assumptions* (assumptions-of-node contra-node)])
