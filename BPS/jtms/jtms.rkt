@@ -221,7 +221,7 @@
       (for ((justification (tms-node-consequences node)))
            (when (check-justification justification)
              (make-node-in (just-consequence justification) justification)
-             (push-just-consequence! justification q))))))
+             (push! (just-consequence justification) q))))))
 
 (define (make-node-in conseq reason)
   (let* ((jtms (tms-node-jtms conseq))
@@ -273,12 +273,12 @@
   (set-tms-node-out-rules! node #f))
 
 (define (propagate-outness node jtms)
-  (let ((out-queue 'NA))
+  (let ((out-queue '()))
     (debugging-jtms jtms "\n   Propagating disbelief in ~a." node)
     (do ((js (tms-node-consequences node) (append (cdr js) newvar))
          (newvar '() '())
          (conseq #f))
-        ((and (null? js) (null? out-queue)))
+        ((null? js) out-queue)
       ;; For each justification using the node, check to see if
       ;; it supports some other node.  If so, forget that node,
       ;; queue up the node to look for other support, and recurse
@@ -483,9 +483,6 @@
   (set-tms-node-justs! justs (cons node (tms-node-justs justs))))
 (define (push-tms-node-consequences! just node)
   (set-tms-node-consequences! node (cons just (tms-node-consequences node))))
-
-(define (push-just-consequence! just q)
-  (set-just-consequence! just (cons q (just-consequence just))))
 
 (define-syntax-rule (push! val lst) ;;pushes val to list lst at first pos
   (set! lst (cons val lst)))
