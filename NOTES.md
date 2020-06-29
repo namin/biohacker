@@ -33,7 +33,7 @@
 - problem statement 1 (real!)
   - given two ontologies
   - given the synonyms
-  - automatically infer a mapping between them
+  - automatically infer a mapping between the ontologies
   - perhaps propose multiple mappings and need to choose among them
   - can use concrete/abstract data to do so
   - simple question:
