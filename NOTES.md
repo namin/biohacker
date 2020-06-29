@@ -68,6 +68,7 @@
 - what higher-level reasoning would it enable?
 - augment jtms with beliefs: https://arxiv.org/pdf/1304.3084.pdf
 - augment ltms with beliefs: https://aaaipress.org/Papers/Symposia/Fall/1993/FS-93-01/FS93-01-019.pdf
+- go ontology explorer: https://www.ebi.ac.uk/QuickGO/
 
 # Random Ideas
 
