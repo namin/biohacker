@@ -8,7 +8,8 @@
   - BPS/ltms/jtms.lisp to BPS/ltms/jtms.rkt
   - BPS/ltms/jtms-ex.lisp to BPS/ltms/jtms-ex.rkt
 
-- TODO(namin): show how to run the racket code.
+- Done(namin): show how to run the racket code.
+  - [BPS/RACKET.md](BPS/RACKET.md)
 
 # JTMS in mediKanren
 
