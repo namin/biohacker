@@ -18,7 +18,7 @@
     - then can infer that any drug which uprelates gene 1 also uprelates gene 2, and maybe does more...
   - different ontologies
     - traverse two ontologies simultaenously
-    - that are at different leevls of resolution
+    - that are at different levels of resolution
       - needs to understand the relationship between the two
       - e.g. create a mapping between the two
         - map between concepts or predicates
