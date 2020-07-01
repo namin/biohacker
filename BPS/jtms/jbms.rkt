@@ -2,7 +2,7 @@
 
 (provide (all-defined-out))
 
-(struct jtms
+(struct jbms
         (
          title ;;nil)
          node-counter ;;0)             ;; unique namer for nodes.
@@ -20,7 +20,7 @@
         #:mutable
         #:methods gen:custom-write
         [(define (write-proc this port mode)
-           (fprintf port "<jtms ~a>" (jtms-title this)))]
+           (fprintf port "<jbms ~a>" (jbms-title this)))]
         ;;#:transparent
         )
 
@@ -37,7 +37,7 @@
          assumption? ;;nil)     ;; Flag marking it as an assumption.
          in-rules ;;nil)	;; Rules that should be triggered when node goes in
          out-rules ;;nil)	;; Rules that should be triggered when node goes out
-         jtms ;;nil))           ;; The JTMS in which this node appears.
+         jbms ;;nil))           ;; The JBMS in which this node appears.
          )
         #:mutable
         #:methods gen:custom-write
@@ -76,16 +76,16 @@
 ;;; Simple utilities:
 
 (define (node-string node)
-  ((jtms-node-string (tms-node-jtms node)) node))
+  ((jbms-node-string (tms-node-jbms node)) node))
 
-(define-syntax debugging-jtms
+(define-syntax debugging-jbms
   (syntax-rules ()
-    [(_  jtms msg e* ...)
+    [(_  jbms msg e* ...)
      (let ((args (list e* ...)))
        (let ((args (if (and (not (null? args)) (tms-node? (car args)))
                        (cons (node-string (car args)) (cdr args))
                        args)))
-         (when (jtms-debugging jtms)
+         (when (jbms-debugging jbms)
            (apply printf msg args))))
      ]))
 
@@ -95,13 +95,13 @@
 (define (default-node-string n)
   (format "~a" (tms-node-datum n)))
 
-(define (create-jtms title
+(define (create-jbms title
                      #:node-string (node-string default-node-string)
                      #:debugging (debugging #f)
                      #:checking-contradictions (checking-contradictions #t)
                      #:contradiction-handler (contradiction-handler ask-user-handler)
                      #:enqueue-procedure (enqueue-procedure #f))
-  (jtms
+  (jbms
    title
    0
    0
@@ -115,33 +115,33 @@
    contradiction-handler
    enqueue-procedure))
 
-(define (change-jtms jtms
+(define (change-jbms jbms
                      #:contradiction-handler (contradiction-handler #f)
                      #:node-string (node-string #f)
                      #:enqueue-procedure (enqueue-procedure #f)
                      #:debugging (debugging #f)
                      #:checking-contradictions (checking-contradictions #f)
                      )
-  (when node-string (set-jtms-node-string! jtms node-string))
-  (when  debugging (set-jtms-debugging! jtms debugging))
+  (when node-string (set-jbms-node-string! jbms node-string))
+  (when  debugging (set-jbms-debugging! jbms debugging))
   (when checking-contradictions
-    (set-jtms-checking-contradictions! jtms
+    (set-jbms-checking-contradictions! jbms
                                        checking-contradictions))
   (when contradiction-handler
-    (set-jtms-contradiction-handler! jtms contradiction-handler))
+    (set-jbms-contradiction-handler! jbms contradiction-handler))
   (when enqueue-procedure
-    (set-jtms-enqueue-procedure! jtms enqueue-procedure)))
+    (set-jbms-enqueue-procedure! jbms enqueue-procedure)))
 
 ;;;;; Basic inference-engine interface ;;;;;;
 
 (define  (in-node? node) (equal? (tms-node-label node) ':IN))
 (define  (out-node? node) (equal? (tms-node-label node) ':OUT))
 
-(define (tms-create-node jtms datum
+(define (tms-create-node jbms datum
                          #:assumptionp (assumptionp #f)
                          #:contradictoryp (contradictoryp #f))
-  (let ((counter (+ 1 (jtms-node-counter jtms))))
-    (set-jtms-node-counter! jtms (+ counter 1))
+  (let ((counter (+ 1 (jbms-node-counter jbms))))
+    (set-jbms-node-counter! jbms (+ counter 1))
     (let ((node (tms-node counter
                           datum
                           ':OUT
@@ -153,42 +153,42 @@
                           assumptionp
                           '()
                           '()
-                          jtms)))
-      (when assumptionp (push-jtms-assumptions! node jtms))
-      (when contradictoryp (push-jtms-contradictions! node jtms))
-      (push-jtms-nodes! node jtms)
+                          jbms)))
+      (when assumptionp (push-jbms-assumptions! node jbms))
+      (when contradictoryp (push-jbms-contradictions! node jbms))
+      (push-jbms-nodes! node jbms)
       node)))
 
 ;;; Converts a regular node to an assumption and enables it.
 
 (define (assume-node node)
-  (let ((jtms (tms-node-jtms node)))
+  (let ((jbms (tms-node-jbms node)))
     (unless (or (tms-node-assumption? node) (tms-node-premise? node))
-      (debugging-jtms jtms "\nConverting ~a into an assumption" node)
+      (debugging-jbms jbms "\nConverting ~a into an assumption" node)
       (set-tms-node-assumption?! node #t)
-      (push-jtms-assumptions! node jtms)))
+      (push-jbms-assumptions! node jbms)))
   (enable-assumption node))
 
 (define (make-contradiction node)
-  (let ((jtms (tms-node-jtms node)))
+  (let ((jbms (tms-node-jbms node)))
     (unless (tms-node-contradictory? node)
       (set-tms-node-contradictory?! node #t)
-      (push-jtms-contradictions! node jtms))
-    (check-for-contradictions jtms)))
+      (push-jbms-contradictions! node jbms))
+    (check-for-contradictions jbms)))
 
 (define (justify-node informant consequence antecedents)
   (let* (
-         (jtms (tms-node-jtms consequence))
-         (_ (set-jtms-just-counter! jtms (+ 1 (jtms-just-counter jtms))))
-         (just (make-just #:index (jtms-just-counter jtms)
+         (jbms (tms-node-jbms consequence))
+         (_ (set-jbms-just-counter! jbms (+ 1 (jbms-just-counter jbms))))
+         (just (make-just #:index (jbms-just-counter jbms)
                           #:informant informant
                           #:consequence consequence
                           #:antecedents antecedents))
          )
     (push-tms-node-justs! just consequence)
     (for ((node antecedents)) (push-tms-node-consequences! just node))
-    (push-jtms-justs! just jtms)
-    (debugging-jtms jtms
+    (push-jbms-justs! just jbms)
+    (debugging-jbms jbms
                     "\nJustifying ~a by ~a using ~a."
                     consequence
                     informant
@@ -196,7 +196,7 @@
     (if (or antecedents (out-node? consequence))
         (when (check-justification just) (install-support consequence just))
         (set-tms-node-support! consequence just))
-    (check-for-contradictions jtms)))
+    (check-for-contradictions jbms)))
 
 ;;;;;;;;;;;Support for adding justifications;;;;;;;;;;;;;;;;
 
@@ -212,24 +212,24 @@
   (propagate-inness conseq))
 
 (define (propagate-inness node)
-  (let ((jtms (tms-node-jtms node))
+  (let ((jbms (tms-node-jbms node))
         (q (list node)))
     (do () ((begin (set! node (pop! q)) (null? node)))
-      (debugging-jtms jtms "\n   Propagating belief in ~a." node)
+      (debugging-jbms jbms "\n   Propagating belief in ~a." node)
       (for ((justification (tms-node-consequences node)))
            (when (check-justification justification)
              (make-node-in (just-consequence justification) justification)
              (push! (just-consequence justification) q))))))
 
 (define (make-node-in conseq reason)
-  (let* ((jtms (tms-node-jtms conseq))
-         (enqueuef (jtms-enqueue-procedure jtms)))
-    (debugging-jtms jtms "\n     Making ~a in via ~a."
+  (let* ((jbms (tms-node-jbms conseq))
+         (enqueuef (jbms-enqueue-procedure jbms)))
+    (debugging-jbms jbms "\n     Making ~a in via ~a."
                     conseq
                     (if (symbol? reason)
                         reason
                         (cons (just-informant reason)
-                              (map (jtms-node-string jtms)
+                              (map (jbms-node-string jbms)
                                    (just-antecedents reason)))))
     (set-tms-node-label! conseq ':IN)
     (set-tms-node-support! conseq reason)
@@ -240,39 +240,39 @@
 
 ;;; Assumption Manipulation
 (define (retract-assumption node)
-  (let ((jtms #f))
+  (let ((jbms #f))
     (when (equal? (tms-node-support node) ':ENABLED-ASSUMPTION)
-      (set! jtms (tms-node-jtms node))
-      (debugging-jtms jtms "\n  Retracting assumption ~a." node)
+      (set! jbms (tms-node-jbms node))
+      (debugging-jbms jbms "\n  Retracting assumption ~a." node)
       (make-node-out node)
-      (find-alternative-support jtms (cons node (propagate-outness node jtms))))))
+      (find-alternative-support jbms (cons node (propagate-outness node jbms))))))
 
 (define (enable-assumption node)
-  (let ((jtms (tms-node-jtms node)))
+  (let ((jbms (tms-node-jbms node)))
     (unless (tms-node-assumption? node)
       (error 'enabled-assumption (format "Can't enable the non-assumption ~a" node)))
-    (debugging-jtms jtms "\n  Enabling assumption ~a." node)
+    (debugging-jbms jbms "\n  Enabling assumption ~a." node)
     (cond (
            (out-node? node) (make-node-in node ':ENABLED-ASSUMPTION)
            (propagate-inness node))
           ((or (equal? (tms-node-support node) ':ENABLED-ASSUMPTION)
                (null? (just-antecedents (tms-node-support node)))))
           (#t (set-tms-node-support! node ':ENABLED-ASSUMPTION)))
-    (check-for-contradictions jtms)))
+    (check-for-contradictions jbms)))
 
 (define (make-node-out node)
-  (define jtms (tms-node-jtms node))
-  (define enqueuef (jtms-enqueue-procedure jtms))
-  (debugging-jtms jtms "\n     retracting belief in ~a." node)
+  (define jbms (tms-node-jbms node))
+  (define enqueuef (jbms-enqueue-procedure jbms))
+  (debugging-jbms jbms "\n     retracting belief in ~a." node)
   (set-tms-node-support! node #f)
   (set-tms-node-label! node ':OUT)
   (when enqueuef (for ((out-rule (tms-node-out-rules node)))
                       (enqueuef out-rule)))
   (set-tms-node-out-rules! node #f))
 
-(define (propagate-outness node jtms)
+(define (propagate-outness node jbms)
   (let ((out-queue '()))
-    (debugging-jtms jtms "\n   Propagating disbelief in ~a." node)
+    (debugging-jbms jbms "\n   Propagating disbelief in ~a." node)
     (do ((js (tms-node-consequences node) (append (cdr js) newvar))
          (newvar '() '())
          (conseq #f))
@@ -286,8 +286,8 @@
         (push! conseq out-queue)
         (set! newvar (tms-node-consequences conseq))))))
 
-(define (find-alternative-support jtms out-queue)
-  (debugging-jtms jtms "\n   Looking for alternative supports.")
+(define (find-alternative-support jbms out-queue)
+  (debugging-jbms jbms "\n   Looking for alternative supports.")
   (with-handlers ([just? (lambda (x) x)])
     (for ((node out-queue))
          (unless (in-node? node)
@@ -298,54 +298,54 @@
                   (raise just)))))))
 
 ;;; Contradiction handling interface
-(define (check-for-contradictions jtms)
+(define (check-for-contradictions jbms)
   (let ((contradictions '()))
-    (when (jtms-checking-contradictions jtms)
-      (for ((cnode (jtms-contradictions jtms)))
+    (when (jbms-checking-contradictions jbms)
+      (for ((cnode (jbms-contradictions jbms)))
            (when (in-node? cnode) (push! cnode contradictions)))
       (unless (null? contradictions)
-        ((jtms-contradiction-handler jtms) jtms contradictions)))))
+        ((jbms-contradiction-handler jbms) jbms contradictions)))))
 
 (define-syntax contradiction-check
   (syntax-rules ()
-    [(_ jtms flag body ...)
-     (let* ((jtmsv jtms)
-            (old-value (jtms-checking-contradictions jtms)))
+    [(_ jbms flag body ...)
+     (let* ((jbmsv jbms)
+            (old-value (jbms-checking-contradictions jbms)))
        (begin
-         (set-jtms-checking-contradictions! jtms flag)
+         (set-jbms-checking-contradictions! jbms flag)
          (let ((r (begin body ...)))
-           (set-jtms-checking-contradictions! jtms flag)
+           (set-jbms-checking-contradictions! jbms flag)
            r)))]))
 
 (define-syntax without-contradiction-check
   (syntax-rules ()
-    [(_ jtms body ...)
-     (contradiction-check jtms #f body ...)]))
+    [(_ jbms body ...)
+     (contradiction-check jbms #f body ...)]))
 
 (define-syntax with-contradiction-check
   (syntax-rules ()
-    [(_ jtms body ...)
-     (contradiction-check jtms #t body ...)]))
+    [(_ jbms body ...)
+     (contradiction-check jbms #t body ...)]))
 
 (define-syntax with-contradiction-handler
   (syntax-rules ()
-    [(_ jtms handler body ...)
-     (let* ((jtmsv jtms)
-            (old-handler (jtms-contradiction-handler jtmsv)))
+    [(_ jbms handler body ...)
+     (let* ((jbmsv jbms)
+            (old-handler (jbms-contradiction-handler jbmsv)))
        (begin
-         (set-jtms-contradiction-handler! jtmsv handler)
+         (set-jbms-contradiction-handler! jbmsv handler)
          (let ((r body ...))
-         (set-jtms-contradiction-handler! jtmsv old-handler))))]))
+         (set-jbms-contradiction-handler! jbmsv old-handler))))]))
 
 (struct contradiction-signal ())
 
-(define (default-assumptions jtms)
+(define (default-assumptions jbms)
   (with-contradiction-check
-   jtms
+   jbms
    (with-contradiction-handler
-    jtms
+    jbms
     (lambda () (raise (contradiction-signal)))
-    (for ((assumption (jtms-assumptions jtms)))
+    (for ((assumption (jbms-assumptions jbms)))
          (cond ((eq? (tms-node-support assumption) ':ENABLED-ASSUMPTION))
                ((not (eq? ':DEFAULT (tms-node-assumption? assumption))))
                ((with-handlers
@@ -370,14 +370,14 @@
               )
         (set-tms-node-mark! node marker)))))
 
-(define (enabled-assumptions jtms)
+(define (enabled-assumptions jbms)
   (let ((result '()))
-    (for ((assumption (jtms-assumptions jtms)))
+    (for ((assumption (jbms-assumptions jbms)))
          (when (equal? (tms-node-support assumption) ':ENABLED-ASSUMPTION)
            (push! assumption result)))
     result))
 
-;; Inference engine stub to allow this JTMS to be used stand alone
+;; Inference engine stub to allow this JBMS to be used stand alone
 
 (define (why-node node)
   (let ((justification (tms-node-support node)))
@@ -395,14 +395,14 @@
       (#t (printf "\n~a is OUT." (node-string node))))
     node))
 
-(define (why-nodes jtms)
-  (for ((node (jtms-nodes jtms))) (why-node node)))
+(define (why-nodes jbms)
+  (for ((node (jbms-nodes jbms))) (why-node node)))
 
 (define *contra-assumptions* '())
 
-(define (ask-user-handler jtms contradiction)
+(define (ask-user-handler jbms contradiction)
   (handle-one-contradiction (car contradiction))
-  (check-for-contradictions jtms))
+  (check-for-contradictions jbms))
 
 (define (handle-one-contradiction contra-node)
   (set! *contra-assumptions* (assumptions-of-node contra-node))
@@ -480,14 +480,14 @@
                      "\n Must be q or an integer from 0 to ~a."
                      olen)))))))))
 
-(define (push-jtms-assumptions! node jtms)
-  (set-jtms-assumptions! jtms (cons node (jtms-assumptions jtms))))
-(define (push-jtms-contradictions! node jtms)
-  (set-jtms-contradictions! jtms (cons node (jtms-contradictions jtms))))
-(define (push-jtms-nodes! node jtms)
-  (set-jtms-nodes! jtms (cons node (jtms-nodes jtms))))
-(define (push-jtms-justs! just jtms)
-  (set-jtms-justs! jtms (cons just (jtms-justs jtms))))
+(define (push-jbms-assumptions! node jbms)
+  (set-jbms-assumptions! jbms (cons node (jbms-assumptions jbms))))
+(define (push-jbms-contradictions! node jbms)
+  (set-jbms-contradictions! jbms (cons node (jbms-contradictions jbms))))
+(define (push-jbms-nodes! node jbms)
+  (set-jbms-nodes! jbms (cons node (jbms-nodes jbms))))
+(define (push-jbms-justs! just jbms)
+  (set-jbms-justs! jbms (cons just (jbms-justs jbms))))
 
 (define (push-tms-node-justs! node justs)
   (set-tms-node-justs! justs (cons node (tms-node-justs justs))))
