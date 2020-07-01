@@ -16,6 +16,8 @@ oplus = orthonalplus
 )
 |#
 
+;; TODO: make beliefes in sync with inference
+
 (struct interval
         (s p)
         #:transparent)
