@@ -267,7 +267,7 @@
   (set-tms-node-support! node #f)
   (set-tms-node-label! node ':OUT)
   (when enqueuef (for ((out-rule (tms-node-out-rules node)))
-		      (enqueuef out-rule)))
+                      (enqueuef out-rule)))
   (set-tms-node-out-rules! node #f))
 
 (define (propagate-outness node jtms)
@@ -290,12 +290,12 @@
   (debugging-jtms jtms "\n   Looking for alternative supports.")
   (with-handlers ([just? (lambda (x) x)])
     (for ((node out-queue))
-	 (unless (in-node? node)
-	   (for ((just (tms-node-justs node)))
-		(when (check-justification just)
-		  (install-support (just-consequence just)
-				   just)
-		  (raise just)))))))
+         (unless (in-node? node)
+           (for ((just (tms-node-justs node)))
+                (when (check-justification just)
+                  (install-support (just-consequence just)
+                                   just)
+                  (raise just)))))))
 
 ;;; Contradiction handling interface
 (define (check-for-contradictions jtms)
@@ -310,12 +310,12 @@
   (syntax-rules ()
     [(_ jtms flag body ...)
      (let* ((jtmsv jtms)
-	    (old-value (jtms-checking-contradictions jtms)))
+            (old-value (jtms-checking-contradictions jtms)))
        (begin
-	 (set-jtms-checking-contradictions! jtms flag)
-	 (let ((r (begin body ...)))
-	   (set-jtms-checking-contradictions! jtms flag)
-	   r)))]))
+         (set-jtms-checking-contradictions! jtms flag)
+         (let ((r (begin body ...)))
+           (set-jtms-checking-contradictions! jtms flag)
+           r)))]))
 
 (define-syntax without-contradiction-check
   (syntax-rules ()
@@ -331,11 +331,11 @@
   (syntax-rules ()
     [(_ jtms handler body ...)
      (let* ((jtmsv jtms)
-	    (old-handler (jtms-contradiction-handler jtmsv)))
+            (old-handler (jtms-contradiction-handler jtmsv)))
        (begin
-	 (set-jtms-contradiction-handler! jtmsv handler)
-	 (let ((r body ...))
-	 (set-jtms-contradiction-handler! jtmsv old-handler))))]))
+         (set-jtms-contradiction-handler! jtmsv handler)
+         (let ((r body ...))
+         (set-jtms-contradiction-handler! jtmsv old-handler))))]))
 
 (struct contradiction-signal ())
 
@@ -346,12 +346,12 @@
     jtms
     (lambda () (raise (contradiction-signal)))
     (for ((assumption (jtms-assumptions jtms)))
-	 (cond ((eq? (tms-node-support assumption) ':ENABLED-ASSUMPTION))
-	       ((not (eq? ':DEFAULT (tms-node-assumption? assumption))))
-	       ((with-handlers
-		 ([contradiction-signal?
-		   (lambda (x) (retract-assumption assumption))])
-		(enable-assumption assumption))))))))
+         (cond ((eq? (tms-node-support assumption) ':ENABLED-ASSUMPTION))
+               ((not (eq? ':DEFAULT (tms-node-assumption? assumption))))
+               ((with-handlers
+                 ([contradiction-signal?
+                   (lambda (x) (retract-assumption assumption))])
+                (enable-assumption assumption))))))))
 
 ;;; Well-founded support inqueries
 (define (supporting-justification-for-node node) (tms-node-support node))
@@ -413,8 +413,8 @@
   (printf "\nPick the <number> to retract assumption. ")
   (let ((the-answer (read)))
     (when (and (integer? the-answer)
-	       (> the-answer 0)
-	       (not (> the-answer (length *contra-assumptions*))))
+               (> the-answer 0)
+               (not (> the-answer (length *contra-assumptions*))))
       (retract-assumption (list-ref *contra-assumptions* (- the-answer 1))))))
 
 (define (print-contra-list nodes)
@@ -425,22 +425,22 @@
 
 (define (tms-answer num)
   (let ((the-answer
-	 (if (integer? num)
-	     (if (> num 0)
-		 (if (not (> num (length *contra-assumptions*)))
-		     num
-		     (begin
-		       (printf "\nIgnoring answer, too big.")
-		       #f))
-		 (begin
-		   (printf "\nIgnoring answer, too small")
-		   #f))
-	     (begin
-	       (printf "\nIgnoring answer, must be an integer.")
-	       #f))))
+         (if (integer? num)
+             (if (> num 0)
+                 (if (not (> num (length *contra-assumptions*)))
+                     num
+                     (begin
+                       (printf "\nIgnoring answer, too big.")
+                       #f))
+                 (begin
+                   (printf "\nIgnoring answer, too small")
+                   #f))
+             (begin
+               (printf "\nIgnoring answer, must be an integer.")
+               #f))))
     (if the-answer
-	the-answer
-	(tms-answer (read)))))
+        the-answer
+        (tms-answer (read)))))
 
 (define (explore-network node)
   (cond
@@ -451,34 +451,34 @@
      (with-handlers
       ([tms-node? (lambda (x) x)])
       (do ((stack '())
-	   (current node)
-	   (options '())
-	   (olen 0)
-	   (done? #f))
-	  ((or done? (null? current)))
-	(why-node current)
-	(set! options (when (just? (tms-node-support current))
-			(just-antecedents (tms-node-support current))))
-	(set! olen (length options))
-	(do ((good? #f)
-	     (choice 0))
-	    (good? (case good?
-		     ((q) (raise current))
-		     ((0) (if (not (null? stack))
-		          (set! current (pop! stack))
-			  (raise current)))
-		     ((#t) (push! current stack)
-		      (set! current (list-ref options (- good? 1))))))
-	  (printf "\n>>>")
-	  (set! choice (read))
-	  (cond ((or (equal? choice 'q)
-		     (and (integer? choice)
-			  (<= choice olen))
-		     (>= choice 0))
-		 (set! good? choice))
-		(#t (printf
-		     "\n Must be q or an integer from 0 to ~a."
-		     olen)))))))))
+           (current node)
+           (options '())
+           (olen 0)
+           (done? #f))
+          ((or done? (null? current)))
+        (why-node current)
+        (set! options (when (just? (tms-node-support current))
+                        (just-antecedents (tms-node-support current))))
+        (set! olen (length options))
+        (do ((good? #f)
+             (choice 0))
+            (good? (case good?
+                     ((q) (raise current))
+                     ((0) (if (not (null? stack))
+                          (set! current (pop! stack))
+                          (raise current)))
+                     ((#t) (push! current stack)
+                      (set! current (list-ref options (- good? 1))))))
+          (printf "\n>>>")
+          (set! choice (read))
+          (cond ((or (equal? choice 'q)
+                     (and (integer? choice)
+                          (<= choice olen))
+                     (>= choice 0))
+                 (set! good? choice))
+                (#t (printf
+                     "\n Must be q or an integer from 0 to ~a."
+                     olen)))))))))
 
 (define (push-jtms-assumptions! node jtms)
   (set-jtms-assumptions! jtms (cons node (jtms-assumptions jtms))))
