@@ -76,3 +76,62 @@
 
 - pattern-directed chess
 - reflection that uses a tms to guide its reasoning
+
+
+# References to Dempster-Shafer Theory
+
+Dempster-Shafer Theory
+Glenn Shafer
+http://www.glennshafer.com/assets/downloads/articles/article48.pdf
+
+Dempster-Shafer Theory chapter (see 4.3 for Dempster's Combination Rule)
+http://www.blutner.de/uncert/DSTh.pdf
+
+Dempster-Shafer Theory slides
+http://www.blutner.de/uncert/Dempster-Shafer.pdf
+
+Combination of Evidence in Dempster-Shafer Theory, 2002
+Kari Sentz, Scott Ferson
+https://www.researchgate.net/publication/235419085_Combination_of_Evidence_in_Dempster-Shafer_Theory
+
+Dempster's Rule of Combination
+DEVELOPMENT OF A COMMON EDUCATIONAL AND TRAINING INFRASTRUCTURE
+for the Integration of Remote Sensing, Digital Processing of Satellite Imagery,
+Photointerpretation and GIS Methods, Techniques and Applications'
+CO-ORDINATOR
+NATIONAL TECHNICAL UNIVERSITY OF ATHENS,
+LABORATORY OF REMOTE SENSING
+Scientist in charge: Prof. D. ROKOS
+http://portal.survey.ntua.gr/main/labs/rsens/DeCETI/IRIT/MSI-FUSION/node183.html
+
+On the behavior of Dempster’s rule of combination, 2011
+Jean Dezert, Albena Tchamova.
+hal-00577983v1
+https://hal.archives-ouvertes.fr/file/index/docid/577983/filename/OnBehaviorOfDSRule.pdf
+
+A Simple View of the Dempster-Shafer Theory of Evidence and its Implication for the Rule of Combination, 1986
+Lotfi A. Zadeh
+http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.98.6349
+
+The Unnormalized Dempster’s Rule of Combination: a New Justification from the Least Commitment Principleand some Extensions, May 7, 2010
+Frederic Pichon, Thierry Denoeux
+https://www.lgi2a.univ-artois.fr/~pichon/pdf/jar_final.pdf
+
+Overview of Dempster-Shafer and Belief Function Tracking Method
+Erik Blasch, Jean Dezert, B Pannetier
+Advances and Applications of DSmT for Information Fusion. Collected Works. Volume 4
+http://fs.unm.edu/OverviewDempsterShafer.pdf
+
+An Introduction to Bayesian and Dempster-Shafer Data Fusion, 2005
+Don Koks, Subhash Challa
+http://robotics.caltech.edu/~jerma/research_papers/BayesChapmanKolmogorov.pdf
+
+A Mathematical Theory of Evidence turns 40. International Journal of Approximate Reasoning 79 7-25. December 2016.
+Glenn Shafer
+http://www.glennshafer.com/assets/downloads/MathTheoryofEvidence-turns-40.pdf
+
+http://www.glennshafer.com/books/amte.html
+
+Perform Dempster's Rule of Combination
+Code Golf
+https://codegolf.stackexchange.com/questions/94719/perform-dempsters-rule-of-combination
