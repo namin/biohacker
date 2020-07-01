@@ -6,11 +6,11 @@
 
 (oplus (interval 0 1) (interval 0 1))
 
-(oplus (interval 0 1) (interval 0.3 0.5)) ;; does not make sense?
+(oplus (interval 0 1) (interval 0.3 0.5)) ;; [0 1] is like the neutral element: 0 means no support, 1 means not true
 
 (oplus (interval 0.01 0.99) (interval 0.3 0.5)) ;; consistent
 
-(oplus (interval 0.5 1) (interval 0.5 1)) ;; div by zero :(
+(oplus (interval 0.5 1) (interval 0.5 1)) ;; div by zero but not following invariant
 
 (define j (create-jbms "hello" #:debugging #t))
 (define na (tms-create-node j 'a #:belief (interval 0.1 0.6)))

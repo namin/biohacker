@@ -4,10 +4,10 @@
 
 #|
 from https://arxiv.org/pdf/1304.3084.pdf
-[s(A) p(A)]
+[s(A) s(A^)]
 s(A) support for A, evidence for A
-p(A) = (1 - s(not A)) evidence for not A is evidence against A
-invariant s(A) <= p(A)?
+s(A^) = evidence for not A, evidence against A
+invariant 0 <= S(A) + s(A^) <= 1
 
 oplus = orthonalplus
 (a b) oplus (c d) = (
