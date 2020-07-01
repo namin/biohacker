@@ -21,7 +21,7 @@
 (enable-assumption na) ;; still have to attacth the belief for now
 (enable-assumption nb)
 (why-node nf)
-(tms-node-belief nf) ;; TODO: need to updateo
-(tms-node-belief na) ;; TODO: need to updateo
-(tms-node-belief nb) ;; TODO: need to updateo
+(tms-node-belief nf)
+(tms-node-belief na)
+(tms-node-belief nb)
 (combine-beliefs nf na nb)
