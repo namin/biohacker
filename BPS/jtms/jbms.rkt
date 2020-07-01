@@ -17,6 +17,7 @@ oplus = orthonalplus
 |#
 
 ;; TODO: make beliefes in sync with inference
+;; see cyclic example
 
 (struct interval
         (s p)
