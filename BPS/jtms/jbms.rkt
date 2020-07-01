@@ -31,6 +31,12 @@ oplus = orthonalplus
 
 (define default-belief (interval 0 1))
 
+(define (combine-beliefs . nodes)
+  (if (null? (cdr nodes))
+      (tms-node-belief (car nodes))
+      (oplus (tms-node-belief (car nodes))
+             (apply combine-beliefs (cdr nodes)))))
+
 (struct jbms
         (
          title ;;nil)
@@ -226,8 +232,8 @@ oplus = orthonalplus
                     consequence
                     informant
                     (map node-string antecedents))
-    (if (or antecedents (out-node? consequence))
-        (when (check-justification just) (install-support consequence just))
+    (if (or (not (null? antecedents)) (out-node? consequence))
+        (when (check-justification just) (install-support consequence just antecedents))
         (set-tms-node-support! consequence just))
     (check-for-contradictions jbms)))
 
@@ -240,7 +246,7 @@ oplus = orthonalplus
 (define (justification-satisfied? just)
   (andmap in-node? (just-antecedents just)))
 
-(define (install-support conseq just)
+(define (install-support conseq just #:antecedent (antecedents '()))
   (make-node-in conseq just)
   (propagate-inness conseq))
 
@@ -264,6 +270,9 @@ oplus = orthonalplus
                         (cons (just-informant reason)
                               (map (jbms-node-string jbms)
                                    (just-antecedents reason)))))
+    (unless (symbol? reason)
+      (set-tms-node-belief! conseq
+                            (apply combine-beliefs (cons conseq (just-antecedents reason)))))
     (set-tms-node-label! conseq ':IN)
     (set-tms-node-support! conseq reason)
     (when enqueuef
@@ -327,7 +336,8 @@ oplus = orthonalplus
            (for ((just (tms-node-justs node)))
                 (when (check-justification just)
                   (install-support (just-consequence just)
-                                   just)
+                                   just
+                                   (list node))
                   (raise just)))))))
 
 ;;; Contradiction handling interface

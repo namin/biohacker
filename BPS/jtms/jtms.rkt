@@ -193,7 +193,7 @@
                     consequence
                     informant
                     (map node-string antecedents))
-    (if (or antecedents (out-node? consequence))
+    (if (or (not (null? antecedents)) (out-node? consequence))
         (when (check-justification just) (install-support consequence just))
         (set-tms-node-support! consequence just))
     (check-for-contradictions jtms)))
