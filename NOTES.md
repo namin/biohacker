@@ -35,6 +35,7 @@
   - given two ontologies
   - given the synonyms
   - automatically infer a mapping between the ontologies
+    - that is find the closest cross links
   - perhaps propose multiple mappings and need to choose among them
   - can use concrete/abstract data to do so
   - simple question:
