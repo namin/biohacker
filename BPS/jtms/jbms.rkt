@@ -2,6 +2,35 @@
 
 (provide (all-defined-out))
 
+#|
+from https://arxiv.org/pdf/1304.3084.pdf
+[s(A) p(A)]
+s(A) support for A, evidence for A
+p(A) = (1 - s(not A)) evidence for not A is evidence against A
+invariant s(A) <= p(A)?
+
+oplus = orthonalplus
+(a b) oplus (c d) = (
+  (1 - (a^c^ / (1 - (ad + bc))))
+  (1 - (b^d^ / (1 - (ad + bc)))) 
+)
+|#
+
+(struct interval
+        (s p)
+        #:transparent)
+
+(define (oplus i1 i2)
+  (let ((a (interval-s i1))
+        (b (interval-p i1))
+        (c (interval-s i2))
+        (d (interval-p i2)))
+    (let ((denom (- 1 (+ (* a d) (* b c)))))
+      (interval (- 1 (/ (* (- 1 a) (- 1 c)) denom))
+                (- 1 (/ (* (- 1 b) (- 1 d)) denom))))))
+
+(define default-belief (interval 0 1))
+
 (struct jbms
         (
          title ;;nil)
@@ -35,6 +64,7 @@
          mark ;;nil)            ;; Marker for sweep algorithms
          contradictory? ;;nil)  ;; Flag marking it as contradictory
          assumption? ;;nil)     ;; Flag marking it as an assumption.
+         belief                 ;; Dempster-Shafer belief
          in-rules ;;nil)	;; Rules that should be triggered when node goes in
          out-rules ;;nil)	;; Rules that should be triggered when node goes out
          jbms ;;nil))           ;; The JBMS in which this node appears.
@@ -138,8 +168,10 @@
 (define  (out-node? node) (equal? (tms-node-label node) ':OUT))
 
 (define (tms-create-node jbms datum
+                         #:belief (belief #f)
                          #:assumptionp (assumptionp #f)
                          #:contradictoryp (contradictoryp #f))
+  (let ((assumptionp (or assumptionp belief)))
   (let ((counter (+ 1 (jbms-node-counter jbms))))
     (set-jbms-node-counter! jbms (+ counter 1))
     (let ((node (tms-node counter
@@ -151,13 +183,14 @@
                           #f
                           contradictoryp
                           assumptionp
+                          belief
                           '()
                           '()
                           jbms)))
       (when assumptionp (push-jbms-assumptions! node jbms))
       (when contradictoryp (push-jbms-contradictions! node jbms))
       (push-jbms-nodes! node jbms)
-      node)))
+      node))))
 
 ;;; Converts a regular node to an assumption and enables it.
 
