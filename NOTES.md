@@ -184,6 +184,7 @@ https://dl.acm.org/doi/10.1111/j.1467-8640.2012.00421.x
 - TODO: rename interval to belief, since not interval.
 
 - These are two coarse grains:
+  - `(assume-node node)` (shortcut)
   - `(enable-assumption node)`
   - `(retract-assumption node)`
 - Instead we want to have
@@ -191,3 +192,13 @@ https://dl.acm.org/doi/10.1111/j.1467-8640.2012.00421.x
    - `(unfix-belief node)`         ;; turning off the manual intervention
    - `(update-belief node belief)` ;; this is an internal update based on propagation
 
+- We have
+  - `(make-contradiction node)`
+- Instead
+  - `(make-contradiction node treshhold)`
+  - we also want to change thresshold
+
+- We have
+  - `(in-node? node)`
+  - `(out-node? node)`
+- Instead covered by `true?` and `false?` above.
