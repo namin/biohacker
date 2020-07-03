@@ -147,3 +147,10 @@ https://dl.acm.org/doi/10.1111/j.1467-8640.2012.00421.x
 - not like bayesian reasoning on counterintuitive reasons, but lots of similarity still
 - unsmooth vs smooth?
 
+- Should we keep both truth/false and DS?
+  - DS is compatible with this is true, this is false.
+  - You can reprensent true [1 0] and false [0 1].
+- in a JBMS, who drives the inference?
+  - the beliefs can do it
+- What is the propagation algorithm?
+
