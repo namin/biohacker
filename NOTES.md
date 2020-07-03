@@ -150,7 +150,28 @@ https://dl.acm.org/doi/10.1111/j.1467-8640.2012.00421.x
 - Should we keep both truth/false and DS?
   - DS is compatible with this is true, this is false.
   - You can reprensent true [1 0] and false [0 1].
+  - Default belief is [0 0] (completely undecided).
+  - A contradiction is an explicit marked contradory node that is almost true (no room for it to be false). Something should only be flagged a contradiction if it's absolutely true. Though interesting to examine our belief in a contradiction at any point.
 - in a JBMS, who drives the inference?
   - the beliefs can do it
 - What is the propagation algorithm?
 
+- we either say we have a fixed belief for a note
+- or we leave the node to be decided by what implies it
+
+- Inference in JTMS
+  - enable-assumption called propagate-inness
+
+## 2.5.1 Queries of https://arxiv.org/pdf/1304.3084.pdf
+
+- true? = belief+(node) > *belief-threshold*
+- false? = belief-(node) > *belief-threshold•
+- unknown? = belief+(node) < *belief-threshold* and belief-(node) < *belief-threshold*
+- absolutely-true? = belief+(node) = 1.0
+- absolutely-false? = belief-(node) = 1.0
+- absolutely-unknown? = belief+(node) = 0.0 and belief-(node) = 0.0
+- support-for = belief+(node)
+- support-against = belief-( node)
+- possible-true = 1  - belief-(node) ;; flipped from paper with next
+- possible-false = 1 - belief+(node)
+- belief-uncertainty = 1 - belief-(node) - belief+(node)
