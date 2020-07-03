@@ -181,6 +181,14 @@ https://dl.acm.org/doi/10.1111/j.1467-8640.2012.00421.x
 - In order to avoid cycles from being problematic, what's the solution?
 - We need to recognize when we have reached a fixed point so we can stop the circular propagation, even then it might not make sense. (stretch goal)
 
+- Are we going to assign beliefs to our implications?
+  - If not, we can use oplus for justifications.
+- In mediKanren, an implication would be a multi-hop chain of reasoning.
+  - If A -1> B, B -2> C implies A -3> C.
+  - Example: If A upregulates B, B upregulates C, then A upregulates C.
+  - And downregulates has a parity flipping behavior.
+  - If A downregulates B, B downregulates C, then A upregulates C.
+  
 - TODO: rename interval to belief, since not interval.
 
 - These are two coarse grains:
@@ -202,3 +210,8 @@ https://dl.acm.org/doi/10.1111/j.1467-8640.2012.00421.x
   - `(in-node? node)`
   - `(out-node? node)`
 - Instead covered by `true?` and `false?` above.
+
+- We have
+  - `(justify-node informant consequent antecedents)`
+  - `(supporting-justification-for-node node)`
+  - `(assumptions-of-node node)`
