@@ -175,3 +175,19 @@ https://dl.acm.org/doi/10.1111/j.1467-8640.2012.00421.x
 - possible-true = 1  - belief-(node) ;; flipped from paper with next
 - possible-false = 1 - belief+(node)
 - belief-uncertainty = 1 - belief-(node) - belief+(node)
+
+- If we have A & B -> C and D -> A, when adding the latter, we can influence the former.
+- This suggests we need to propagate every time.
+- In order to avoid cycles from being problematic, what's the solution?
+- We need to recognize when we have reached a fixed point so we can stop the circular propagation, even then it might not make sense. (stretch goal)
+
+- TODO: rename interval to belief, since not interval.
+
+- These are two coarse grains:
+  - `(enable-assumption node)`
+  - `(retract-assumption node)`
+- Instead we want to have
+   - `(fix-belief node belief)`    ;; this is like a manual intervention
+   - `(unfix-belief node)`         ;; turning off the manual intervention
+   - `(update-belief node belief)` ;; this is an internal update based on propagation
+
