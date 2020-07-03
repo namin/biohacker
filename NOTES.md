@@ -190,6 +190,7 @@ https://dl.acm.org/doi/10.1111/j.1467-8640.2012.00421.x
   - If A downregulates B, B downregulates C, then A upregulates C.
   - More general rules describe arbitrary graph shapes. The motif implies something somewhere else in the graph.
   - See https://github.com/NCATS-Tangerine/translator-testing-framework/blob/master/features/medikanren-tests.feature
+    - https://github.com/NCATS-Tangerine/translator-testing-framework/blob/master/features/medikanren-tests.feature#L144-L167
 - With a BMS, we could do these ad-hoc rules more formally, and perhaps help triaging.
   
 - TODO: rename interval to belief, since not interval.
