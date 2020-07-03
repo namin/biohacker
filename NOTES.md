@@ -135,3 +135,11 @@ http://www.glennshafer.com/books/amte.html
 Perform Dempster's Rule of Combination
 Code Golf
 https://codegolf.stackexchange.com/questions/94719/perform-dempsters-rule-of-combination
+
+## Notes on Dempster-Shafer and Appliation to JTMS
+
+- monotonically tightening
+- rule of combination: serial constraining, commutative, each operand acts as a filter
+- so overall necessarily constraining the possibility space
+- not like bayesian reasoning on counterintuitive reasons, but lots of similarity still
+- unsmooth vs smooth?
