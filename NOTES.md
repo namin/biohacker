@@ -136,6 +136,9 @@ Perform Dempster's Rule of Combination
 Code Golf
 https://codegolf.stackexchange.com/questions/94719/perform-dempsters-rule-of-combination
 
+Dempster's Rule As Seen By Little Colored Balls
+https://dl.acm.org/doi/10.1111/j.1467-8640.2012.00421.x
+
 ## Notes on Dempster-Shafer and Appliation to JTMS
 
 - monotonically tightening
@@ -143,3 +146,4 @@ https://codegolf.stackexchange.com/questions/94719/perform-dempsters-rule-of-com
 - so overall necessarily constraining the possibility space
 - not like bayesian reasoning on counterintuitive reasons, but lots of similarity still
 - unsmooth vs smooth?
+
