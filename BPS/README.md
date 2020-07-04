@@ -2,7 +2,7 @@
 by Ken Forbus and Johan de Kleer
 
 The original code can be obtained [here](http://www.cs.cmu.edu/Groups//AI/areas/reasonng/tms/bps/).
-More information about the book [here](http://www.qrg.northwestern.edu/bps/readme.html), including [a fulltext searchable PDF](http://www.qrg.northwestern.edu/bps/BPS-Searchable.pdf).
+More information about the book [here](http://www.qrg.northwestern.edu/bps/readme.html), including [a fulltext searchable PDF](http://www.qrg.northwestern.edu/bps/BPS-Searchable.pdf)
 
 ## TOC
 
@@ -28,3 +28,10 @@ More information about the book [here](http://www.qrg.northwestern.edu/bps/readm
   _Symbolic relaxation system and examples._
 - `15`. [tcon](tcon)
   _Constraint language and examples._
+
+## Resources for Common Lisp
+
+- [Common Lisp the Language, 2nd Edition](https://www.cs.cmu.edu/Groups/AI/html/cltl/cltl2.html)
+  - an excellent reference by Guy Steele
+- [Practical Common Lisp](http://www.gigamonkeys.com/book)
+  - a clear tutorial by Peter Seibel
