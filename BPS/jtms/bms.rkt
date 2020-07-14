@@ -85,6 +85,9 @@
           node-string ;;nil)
           contradiction-handler ;;nil)
           enqueue-procedure ;;nil)
+          belief-threshold ;; belief-threshold for true?,....
+          tolerance ;; delta tolerance for updating node belief
+          belief_diff ;; function for computing difference between beliefs
           )
          #:mutable #:methods
          gen:custom-write [(define (write-proc this port mode)
@@ -166,12 +169,24 @@
    (format "~a"
            (tms-node-datum n)))
 
+(define (default-belief_diff i1 i2) ;; simple cartesian difference
+  (let* ((s_diff (- (interval-s i1) (interval-s i2)))
+         (p_diff (- (interval-p i1) (interval-p i2)))
+         )
+    (sqrt (+ (expt s_diff 2) (expt p_diff 2)))
+    )
+  )
+
  (define (create-jbms title
                       #:node-string (node-string default-node-string)
                       #:debugging (debugging #f)
                       #:checking-contradictions (checking-contradictions #t)
                       #:contradiction-handler (contradiction-handler ask-user-handler)
-                      #:enqueue-procedure (enqueue-procedure #f))
+                      #:enqueue-procedure (enqueue-procedure #f)
+                      #:belief-threshold (belief-threshold 0.0001)
+                      #:tolerance (tolerance 0.0001)
+                      #:belief_diff (belief_diff default-belief_diff)
+                      )
    (jbms title
          0
          0
@@ -183,14 +198,22 @@
          checking-contradictions
          node-string
          contradiction-handler
-         enqueue-procedure))
+         enqueue-procedure
+         belief-threshold
+         tolerance
+         belief_diff
+         ))
 
  (define (change-jbms jbms
                       #:contradiction-handler (contradiction-handler #f)
                       #:node-string  (node-string #f)
                       #:enqueue-procedure (enqueue-procedure #f)
                       #:debugging  (debugging #f)
-                      #:checking-contradictions (checking-contradictions #f))
+                      #:checking-contradictions (checking-contradictions #f)
+                      #:belief-threshold (belief-threshold #f)
+                      #:tolerance (tolerance #f)
+                      #:belief_diff (belief_diff #f)
+                      )
    (when node-string
      (set-jbms-node-string! jbms node-string))
    (when debugging
@@ -200,7 +223,14 @@
    (when contradiction-handler
      (set-jbms-contradiction-handler! jbms contradiction-handler))
    (when enqueue-procedure
-     (set-jbms-enqueue-procedure! jbms enqueue-procedure)))
+     (set-jbms-enqueue-procedure! jbms enqueue-procedure))
+   (when belief-threshold
+     (set-jbms-belief-threshold! jbms belief-threshold))
+   (when tolerance
+     (set-jbms-tolerance! jbms tolerance))
+   (when belief_diff
+     (set-jbms-belief_diff! jbms belief_diff))
+   )
 
  ;;;;; Basic inference-engine interface ;;;;;;
 
@@ -279,14 +309,29 @@
                      informant
                      (map node-string antecedents))
      (if (not (null? antecedents))
-         (install-support consequence just #:antecedent antecedents)
+         (when (check-justification just)(install-support consequence just #:antecedent antecedents))
        (set-tms-node-support! consequence just))
      (check-for-contradictions jbms)))
 
  ;;;;;;;;;;;Support for adding justifications;;;;;;;;;;;;;;;;
 
- (define (check-justification just)
-   #t)
+(define (check-justification justification)
+  (displayln justification)
+  (let* ((initial_belief (tms-node-belief (just-consequence justification)))
+        (support_lend (impli (andi (for/list ((ante (just-antecedents justification))) (tms-node-belief ante))) (just-belief justification)))
+        (new_belief
+         (cond
+           ((just-support justification) (oplus support_lend (ominus initial_belief  (just-support justification))))
+          (else  oplus initial_belief support_lend))
+         )
+        (belief-diff (jbms-belief_diff (tms-node-jbms (just-consequence justification))))
+        (tolerance (jbms-tolerance (tms-node-jbms (just-consequence justification))))
+        )
+    
+    (displayln (format " Difference is ~A" (belief-diff new_belief initial_belief)))
+    (>= (belief-diff new_belief initial_belief) tolerance)
+    )
+  )
 
  (define (justification-satisfied? just)
    (andmap in-node?
@@ -691,3 +736,56 @@
             (set! lst
                   (rest lst))
             popped))))
+
+;;;Queries;;;;;
+;;;;;;;;;;;;;;;
+
+(define (true? node)
+  (> (interval-s (tms-node-belief node)) (jbms-belief-threshold (tms-node-jbms node))))
+
+(define (false? node)
+  (> (interval-p (tms-node-belief node)) (jbms-belief-threshold (tms-node-jbms node))))
+
+(define (unknown? node)
+  (and
+   (< (interval-s (tms-node-belief node)) (jbms-belief-threshold (tms-node-jbms node)))
+   (< (interval-p (tms-node-belief node)) (jbms-belief-threshold (tms-node-jbms node)))
+   ))
+
+(define (absolutely-true? node)
+  (define *jbms* (tms-node-jbms node))
+  (<= (abs (- (interval-s (tms-node-belief node)) 1.0)) (jbms-belief-threshold *jbms*)))
+
+(define (absolutely-false? node)
+  (define *jbms* (tms-node-jbms node))
+  (<= (abs (- (interval-p (tms-node-belief node)) 1.0)) (jbms-belief-threshold *jbms*)))
+
+(define (absolutely-unknown? node)
+  (define *jbms* (tms-node-jbms node))
+  (define threshold (jbms-belief-threshold *jbms*))
+  (and
+   (<= (abs (- (interval-s (tms-node-belief node)) 0.0)) threshold)
+   (<= (abs (- (interval-p (tms-node-belief node)) 0.0)) threshold)
+   ))
+
+(define (support-for? node)
+  (interval-s (tms-node-belief node))
+  )
+
+(define (support-against? node)
+  (interval-p (tms-node-belief node))
+  )
+
+(define (possible-true node)
+  (- 1 (support-against? node))
+  )
+
+(define (possible-false node)
+  (- 1 (support-for? node))
+  )
+
+(define (belief-uncertainty node)
+  (- 1 (+ (support-against? node) (support-for? node)))
+  )
+
+   
