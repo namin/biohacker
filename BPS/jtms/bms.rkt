@@ -316,7 +316,6 @@
  ;;;;;;;;;;;Support for adding justifications;;;;;;;;;;;;;;;;
 
 (define (check-justification justification)
-  (displayln justification)
   (let* ((initial_belief (tms-node-belief (just-consequence justification)))
         (support_lend (impli (andi (for/list ((ante (just-antecedents justification))) (tms-node-belief ante))) (just-belief justification)))
         (new_belief
@@ -326,11 +325,13 @@
          )
         (belief-diff (jbms-belief_diff (tms-node-jbms (just-consequence justification))))
         (tolerance (jbms-tolerance (tms-node-jbms (just-consequence justification))))
+        (*jbms* (tms-node-jbms (just-consequence justification)))
         )
     
-    (displayln (format " Difference is ~A" (belief-diff new_belief initial_belief)))
+    (debugging-jbms *jbms* "\nDifference is ~A" (belief-diff new_belief initial_belief))
     (>= (belief-diff new_belief initial_belief) tolerance)
     )
+  
   )
 
  (define (justification-satisfied? just)

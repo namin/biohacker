@@ -64,6 +64,7 @@
   (justify-node 'j1 nc (list nb) (interval 0.4 0))
   (justify-node 'j2 nd (list nc) (interval 0.6 0))
   (justify-node 'j3 nb (list nd) (interval 0.5 0))
+  (display "\n")
   (displayln (getinfo nb nc nd))
   )
   
