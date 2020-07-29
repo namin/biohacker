@@ -180,3 +180,164 @@
 (define  (true-node? node) (equal? (tms-node-label node) ':TRUE))
 (define  (false-node? node) (equal? (tms-node-label node) ':FALSE))
 
+;; TODO Apoorv
+(define (set-truth node value reason)
+  (match-define (list ltms enqueuef) (list (tms-node-ltms node) (ltms-enqueue-procedure ltms)))
+  (debugging-ltms
+    ltms "~%  Setting ~A to ~A, via ~A." node value reason)
+  (set-tms-node-support! node reason)
+  (set-tms-node-label! node value)
+  (case value ;figure out which set of rules to queue up
+    ((':TRUE) (when enqueuef
+	     (for ((rule (tms-node-true-rules node)))
+	       (enqueuef rule))
+	     (set-tms-node-true-rules! node nil)
+	   (for ((clause (tms-node-true-clauses node)))
+	     (set-clause-sats! clause (+ 1 (clause-sats clause))))
+	   (for ((clause (tms-node-false-clauses node)))
+             (set-clause-pvs! clause (- (clause-pvs clause) 1))
+	     (if (< (clause-pvs clause) 2)
+		 (push clause *clauses-to-check*))))
+    ((':FALSE) (when enqueuef
+	      (for ((rule (tms-node-false-rules node)))
+		(enqueuef rule)))
+	    (set-tms-node-false-rules! node '())
+	   (for ((clause (tms-node-false-clauses node)))
+	     (set-clause-stats! clause  (+ 1 (clause-sats clause))))
+	    (for ((clause (tms-node-true-clauses node)))
+              (set-clause-pvs! clause (- (clause-pvs clause) 1))
+              (if (< (clause-pvs clause) 2)
+		  (push clause *clauses-to-check*)))))))
+
+;;; Retracting an assumption ;;;;;;;;
+(define (propagate-unknownness in-node)
+  (match-define (node old-value node2 unknown-queue ltms) (#f #f #f '() #f))
+  (set! ltms (tms-node-ltms in-node))
+  (do ((forget-queue (cons in-node '()) (append forget-queue new_))
+       (new_ '() '()))
+      ((empty? forget-queue) unknown-queue)
+    (set! forget-queue  (cdr forget-queue))
+    (rplacd forget-queue unknown-queue)
+    (set! unknown-queue forget-queue)
+    (set! node (car unknown-queue))
+    (debugging-ltms ltms "~% Retracting ~A." node)
+    (set! old-value (tms-node-label node))
+    (set! (tms-node-label node) ':UNKNOWN)
+    (set! (tms-node-support node) '())
+    (for ((clause (ecase old-value
+			(':TRUE (tms-node-false-clauses node))
+			(':FALSE (tms-node-true-clauses node)))))
+      (set-clause-pvs! clause (+ 1 (clause-pvs clause)))
+      (when (= (clause-pvs clause) 2)
+        (set! node2 (clause-consequent clause))
+        (when (is-true node2)
+          (push node2 new_))))
+    (when (is-true (ltms-complete ltms))
+      (propagate-more-unknownness old-value node ltms))))
+
+
+(define (clause-consequent clause)
+  (with-handlers ((ret (lambda (x) x)))
+    (for ((term-pair (clause-literals clause)))
+    (when (equal? (tms-node-label (car term-pair)) (cdr term-pair))
+      (raise (when (equal? clause (tms-node-support (car term-pair)))
+		  (car term-pair)))))))
+
+(define (find-alternative-support ltms nodes)
+  (for ((node nodes))
+    (when (unknown-node? node)
+      (check-clauses ltms (tms-node-true-clauses node))
+      (check-clauses ltms (tms-node-false-clauses node))))
+  (when (equal? #t (ltms-complete ltms)) (ipia ltms))) ;; ipia defined in cltms
+
+;;; Contradiction handling interface.
+(define (check-for-contradictions ltms)
+  (define violated-clauses #f)
+  (set! violated-clauses
+	(filter (lambda (c) (violated-clause? c))
+		       (ltms-violated-clauses ltms)))
+  (set-ltms-violated-clauses! ltms violated-clauses) ;; Cache them.
+  (when violated-clauses (contradiction-handler ltms violated-clauses)))
+
+ (define (contradiction-handler ltms violated-clauses)
+   (with-handlers ((ret (lambda (x) x)))
+   (cond ((not (ltms-checking-contradictions ltms))
+          ;; Update cache of violated clauses
+          (set-ltms-pending-contradictions! ltms
+                (filter (lambda (c) (violated-clause? c))
+                   (ltms-pending-contradictions ltms)))
+          (for ((vc violated-clauses))
+             (when (violated-clause? vc)
+                (pushnew vc (ltms-pending-contradictions ltms)))))
+         (#t (for ((handler (ltms-contradiction-handlers ltms)))
+              (when (handler violated-clauses ltms) (raise #t)))))))
+
+
+ (define-syntax without-contradiction-check
+   (syntax-rules ()
+                 [(_ ltms body ...)
+                  (contradiction-check ltms #f body ...)]))
+
+ (define-syntax with-contradiction-check
+   (syntax-rules ()
+                 [(_ ltms body ...)
+                  (contradiction-check ltms #t body ...)]))
+
+
+
+(define-syntax contradiction-check
+  (syntax-rules()
+    ((_ ltms flag body ...)
+     (let* ((.ltms. ltms)
+            (.old-value. (ltms-checking-contradictions .ltms.)))
+       (begin
+         (let ((r (begin body ...)))
+           (set-ltms-checking-contradictions! .ltms. flag)
+           r
+           ))
+         (set-ltms-checking-contradictions! .ltms. .old-value.)
+           )))))
+
+(define-syntax with-contradiction-handler
+  (syntax-rules()
+    ((_ ltms handler body ...)
+     (let ((.ltms. ltms))
+       (begin
+         (let ((r (begin body ...)))
+           (push-ltms-contradiction-handlers! handler .ltms.)
+           r))
+       (pop-ltms-contradiction-handlers! .ltms.)))))
+
+(define-syntax with-assumptions
+  (syntax-rules()
+    ((_ assumption-values body ...)
+     ;; Allows assumptions to be made safely, and retracted properly
+     ;; even if non-local exits occur.
+     (begin
+       (let ((r (begin body ...)))
+         (for ((av assumption-values))
+           (enable-assumption (car av) (cdr av)))
+         r))
+      (for ((av assumption-values)) (retract-assumption (car av))))))
+
+
+;;;; Add-on utilities for easier lisp to racket translation;;;;;;;
+(define (ret x)
+  #t)
+(define (is-true X)
+  (and X (not (empty? X))))
+  
+(define-syntax-rule (rplacd lst cdr-val)
+  (set! lst (cons (car lst) cdr-val)))
+
+(define-syntax-rule (push val lst)
+  (set! lst (cons val lst)))
+
+(define-syntax-rule (pushnew val lst)
+  (unless (member? val lst) (set! lst (cons val lst))))
+
+(define (push-ltms-contradiction-handlers! handler ltms)
+  (set-ltms-contradiction-handler! ltms (cons handler (ltms-contradiction-handler ltms))))
+
+(define (pop-ltms-contradiction-handlers! ltms)
+  (set-ltms-contradiction-handler! ltms (cdr (ltms-contradiction-handler ltms))))
