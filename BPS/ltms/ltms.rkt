@@ -113,12 +113,12 @@
 
 (define-syntax violated-clause?
   (syntax rules ()
-    [(_ clause ...)
+    [(_ clause)
      (= (clause-pvs clause) 0)]))
 
 (define-syntax walk-clauses
   (syntax rules ()
-     [(_ ltms f ...)
+     [(_ ltms f)
       (if (ltms-complete ltms)
           (walk-trie f (ltms-clauses ltms))
           (map f (ltms-clauses ltms)))]))
@@ -179,6 +179,8 @@
 (define  (known-node? node) (not (equal? (tms-node-label node) ':UNKNOWN)))
 (define  (true-node? node) (equal? (tms-node-label node) ':TRUE))
 (define  (false-node? node) (equal? (tms-node-label node) ':FALSE))
+
+;;; INSERT THE REST OF CODE HERE
 
 ;; TODO Apoorv
 (define (set-truth node value reason)
@@ -296,7 +298,7 @@
            r
            ))
          (set-ltms-checking-contradictions! .ltms. .old-value.)
-           )))))
+           ))))
 
 (define-syntax with-contradiction-handler
   (syntax-rules()
@@ -481,7 +483,6 @@
               (cond
                 ((true-node? node) (format "~A ~A ~A" (incf *line-count*) (node-string node) antecedents))
                 (else (format "~A (:NOT ~A) ~A" (incf *line-count*) (node-string node) antecedents)))
-                
 	   (pretty-print-clause (tms-node-support node))
 	   (set-tms-node-mark node *line-count*))))
 
