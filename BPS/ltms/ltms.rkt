@@ -1,3 +1,6 @@
+#|
+Code translated from BPS ltms.lisp http://www.qrg.northwestern.edu/BPS/ltms/ltms.lisp
+|#
 #lang racket
 
 (provide (all-defined-out))
@@ -12,7 +15,7 @@
          debugging ;;nil)              ;; debugging flag
          checking-contradictions ;;#t)  ;; For external systems
          node-string ;;nil)
-         contradiction-handler ;;nil)
+         contradiction-handlers ;;nil)
          pending-contradictions ;;nil)
          enqueue-procedure ;;nil)
          complete ;;nil)
@@ -62,7 +65,7 @@
         #:mutable
         #:methods gen:custom-write
         [(define (write-proc this port mode)
-           (fprintf port "<Clause ~d>" (just-index this)))]
+           (fprintf port "<Clause ~d>" (clause-index this)))]
         )
 
 (define (make-clause #:index (index 0)
@@ -85,6 +88,10 @@
 
 ;;; Simple utilities:
 
+(define (walk-trie . opt)
+  void
+  ;; TODO in cltms.lisp
+  )
 (define (node-string node)
   ((ltms-node-string (tms-node-ltms node)) node))
 
@@ -112,12 +119,12 @@
   (clause-literals clause))
 
 (define-syntax violated-clause?
-  (syntax rules ()
+  (syntax-rules ()
     [(_ clause)
      (= (clause-pvs clause) 0)]))
 
 (define-syntax walk-clauses
-  (syntax rules ()
+  (syntax-rules ()
      [(_ ltms f)
       (if (ltms-complete ltms)
           (walk-trie f (ltms-clauses ltms))
@@ -153,26 +160,26 @@
    0))
 
 (define (change-ltms ltms
-                     #:contradiction-handler (contradiction-handler #f contra?)
+                     #:contradiction-handler (contradiction-handler #f)
                      #:node-string (node-string #f)
                      #:enqueue-procedure (enqueue-procedure #f)
-                     #:debugging (debugging #f debugging?)
-                     #:checking-contradictions (checking-contradictions #f checking?)
-                     #:complete (complete #f complete?)
-                     #:delay-sat (delay-sat #f delay-sat?)
+                     #:debugging (debugging #f)
+                     #:checking-contradictions (checking-contradictions #f)
+                     #:complete (complete #f)
+                     #:delay-sat (delay-sat #f)
                      )
   (when node-string (set-ltms-node-string! ltms node-string))
-  (when  debugging? (set-ltms-debugging! ltms debugging))
-  (when checking?
+  (when  debugging (set-ltms-debugging! ltms debugging))
+  (when checking-contradictions
     (set-ltms-checking-contradictions! ltms
                                        checking-contradictions))
-  (when contra?
-    (set-ltms-contradiction-handler! ltms contradiction-handler))
+  (when contradiction-handler
+    (set-ltms-contradiction-handlers! ltms contradiction-handler))
   (when enqueue-procedure
     (set-ltms-enqueue-procedure! ltms enqueue-procedure))
-   (when complete?
+   (when complete
     (set-ltms-complete! ltms complete))
-   (when delay-sat?
+   (when delay-sat
     (set-ltms-delay-sat! ltms delay-sat)))
 
 (define  (unknown-node? node) (equal? (tms-node-label node) ':UNKNOWN))
@@ -180,9 +187,322 @@
 (define  (true-node? node) (equal? (tms-node-label node) ':TRUE))
 (define  (false-node? node) (equal? (tms-node-label node) ':FALSE))
 
-;;; INSERT THE REST OF CODE HERE
 
-;; TODO Apoorv
+;;; TODO Apoorv
+
+(define (tms-create-node ltms datum #:assumptionp assumptionp)
+  (when (and (ltms-nodes ltms) (hash-ref  (ltms-nodes ltms) datum #f))
+    (ltms-error "Two nodes with same datum:" datum))
+  (set-ltms-node-counter! (+ 1 (ltms-node-counter ltms)))
+  (let ((node (tms-node  (ltms-node-counter ltms)
+                         datum
+                         ':UNKNOWN
+                         '()
+                         '()
+                         '()
+                         '()
+                         assumptionp
+                         '()
+                         '()
+                         ltms
+                         '()
+                         '())))
+    (set-tms-node-true-literal! node (cons node ':TRUE))
+    (set-tms-node-false-literal! node (cons node ':FALSE))
+    (when (ltms-nodes ltms) ;; Insert if locally caching
+       (hash-set! (ltms-nodes ltms) datum node))
+    (when (and (ltms-complete ltms)
+	       (> (ltms-node-counter ltms) (ltms-cons-size ltms)))
+      (set-ltms-conses! ltms '())
+      (set-ltms-cons-size! ltms (+ 50 (ltms-cons-size ltms)))
+      (for ((i (ltms-cons-size ltms)))
+        (define lst (ltms-conses ltms))
+	(push '(()) lst) ;; may be (list #f)
+        (set-ltms-conses! ltms lst)
+    node))))
+
+(define (enable-assumption node label)
+  (cond ((not (tms-node-assumption? node))
+	 (ltms-error "Can't enable the non-assumption ~A" node))
+	((equal? (tms-node-label node) label)
+	 (set-tms-node-support! node ':ENABLED-ASSUMPTION))
+	((equal? (tms-node-label node) ':UNKNOWN)
+	 (top-set-truth node label ':ENABLED-ASSUMPTION))
+	(else (ltms-error "Can't set an already set node" node))))
+
+(define (convert-to-assumption node)
+  (unless (tms-node-assumption? node)
+    (debugging-ltms (tms-node-ltms node)
+		    "~%Converting ~A into an assumption" node)
+    (set-tms-node-assumption?! node #t)))
+
+
+(define (retract-assumption node)
+  (when (and (known-node? node)
+	     (equal? (tms-node-support node) ':ENABLED-ASSUMPTION))
+    (find-alternative-support (tms-node-ltms node)
+			      (propagate-unknownness node))))
+
+;;; Adding formulas to the LTMS.
+
+(define (add-formula ltms formula (informant #f))
+  (cond
+    (informant (set! informant (list ':IMPLIED-BY formula informant)))
+    (else (set! informant (list ':IMPLIED-BY formula))))
+  (for ((clause (normalize ltms formula)))
+    (set! clause (simplify-clause clause))
+    (unless (equal? ':TRUE clause)
+	(add-clause-internal clause informant #t)))
+  (check-for-contradictions ltms))
+
+(define (simplify-clause literals)
+  (with-handlers ((ret (lambda (x) x)))
+    (set! literals (sort-clause literals))
+    (do ((tail literals next)
+         (next (cdr literals) (cdr next)))
+        ((null? next) literals)
+      (cond ((not (equal? (caar tail) (caar next))))
+            ((not (equal? (cdar tail) (cdar next)))
+             (raise ':TRUE))
+            (else (rplacd tail (cdr next)))))))
+
+
+(define (sort-clause literals)
+   (sort  literals ;; Avoids shared structure bugs.
+        < #:key (lambda (n) (tms-node-index (car n)))))
+
+(define *ltms* #f) 
+(define (normalize *ltms* exp_) (normalize-1 exp_ #f))
+
+(define (normalize-1 exp_ negate_) ;; TODO Apoorv
+  (case (and (list? exp_) (car exp_))
+    ((':IMPLIES) (if negate_
+		  (append (normalize-1 (cadr exp_) #f)
+			 (normalize-1 (caddr exp_) #t))
+		  (disjoin (normalize-1 (cadr exp_) #t)
+			   (normalize-1 (caddr exp_) #f))))
+    ((':IFF) (normalize-iff exp_ negate_))
+    ((':OR) (if negate_ (normalize-conjunction exp_ #t)
+	     (normalize-disjunction exp_ #f)))
+    ((':AND) (if negate_ (normalize-disjunction exp_ #t)
+	             (normalize-conjunction exp_ #f)))
+    ((':NOT) (normalize-1 (cadr exp_) (not negate_)))
+    ((':TAXONOMY) (normalize-tax exp_ negate_))
+    (else (if negate `((,(tms-node-false-literal (find-node *ltms* exp))))
+	          `((,(tms-node-true-literal (find-node *ltms* exp))))))))
+
+
+(define (normalize-tax exp_ negate_) ;;TODO Apoorv
+  (normalize-1 `(':AND (':OR ,@(cdr exp_)) ;one must be true
+                 ;; The list is copied above to prevent very nasty bugs, since
+                 ;; the rest of normalize side effects structure continually for
+                 ;; efficiency.
+                 ,@(do ((firsts (cdr exp_) (cdr firsts))
+		       (rests (cddr exp_) (cdr rests))
+		       (result '()))
+		      ((null? rests) result)
+		    (for ((other rests))
+		      (push `(':NOT (':AND ,(car firsts) ,other))
+			    result))))
+	       negate_))
+
+(define (normalize-conjunction exp_ negate_) ;; TODO Apoorv
+  (map (lambda (sub) (normalize-1 sub negate_)) (cdr exp_)))
+
+
+(define (normalize-iff exp_ negate_) ;; TODO Apoorv
+  (append (normalize-1 `(':IMPLIES ,(cadr exp_) ,(caddr exp_)) negate_)
+	 (normalize-1 `(':IMPLIES ,(caddr exp_) ,(cadr exp_)) negate_)))
+
+(define (normalize-disjunction exp_ negate_) ;; TODO Apoorv
+  (with-handlers ((ret (lambda (x) x)))
+                  (unless (cdr exp_)
+                    (raise (list '())))
+                  (do ((result (normalize-1 (cadr exp_) negate_))
+                       (rest_ (cddr exp_) (cdr rest_)))
+                      ((null? rest_) result)
+                    (set! result (disjoin (normalize-1 (car rest) negate) result)))))
+
+
+(define (disjoin conj1 conj2) ;; ? 
+  (with-handlers ((ret (lambda (x) x)))
+    (unless (or conj1 conj2) (raise disjoin '()))
+    (map (lambda (disj1)
+                (map (lambda (disj2) (append disj1 disj2))
+                        conj2))
+            conj1)))
+
+(define (find-node ltms name)
+  (cond ((tms-node? name) name)
+	((when (ltms-nodes ltms) (hash-ref  (ltms-nodes ltms) name #f)) (hash-ref (ltms-nodes ltms) name ) )
+	((tms-create-node ltms name))))
+
+(define-syntax compile-formula ;; ?? 
+  (syntax-rules ()
+    ((_ run-tms e* ...)
+     (let* ((args (list e* ...)) (f (car args)) (informant (cdr args)) (ltms #f))
+       (set! ltms (create-ltms f))
+       (add-formula ltms (expand-formula f))
+       (generate-code ltms run-tms (when informant `(':IMPLIED-BY ,f ,informant)))))))
+
+
+;;;;
+
+(define (generate-code ltms run-tms informant) ;; ?? 
+  (match-define (list result bound datum) (#f #f #f))
+  (hash-map (ltms-nodes ltms) (lambda (ignore symbol)
+	       (when (or (tms-node-true-clauses symbol)
+			 (tms-node-false-clauses symbol))
+		 (set! datum (tms-node-datum symbol))
+		 (when (list? datum)
+		   (set-tms-node-mark! symbol datum)
+		   (set-tms-node-datum! symbol
+			 (string->symbol (format  "~A" (cadr datum))))
+		   (push symbol bound))))
+	   )
+  (walk-clauses ltms
+		(lambda (clause)
+                  (let ((ps '()) (ns '()))
+		    (for ((lit (clause-literals clause)))
+		      (if (equal? (cdr lit) ':TRUE)
+			  (push (tms-node-datum (car lit)) ps)
+			  (push (tms-node-datum (car lit)) ns)))
+		    (push (add-clause ps ns informant)
+			  result))))
+  (map (lambda (s) ((tms-node-datum s) (find-node run-tms (tms-node-mark s)))) bound)
+  result)
+
+(define (macroexpand x) ;; ?? 
+  void
+  )
+
+(define (expand-formula x) ;; ??? 
+  (set! x (macroexpand x))
+  (cond ((not (list? x)) x)
+	((case (macroexpand (car x))
+	   ((QUOTE) (partial (cadr x)))
+	   ((LIST) (map expand-formula (cdr x)))
+	   ((LIST*) (if (cddr x)
+		      (cons (expand-formula (cadr x))
+			    (expand-formula `(LIST* .,(cddr x))))
+		      (expand-formula (cadr x))))
+	   ((CONS) (cons (expand-formula (cadr x))
+		       (map expand-formula (caddr x))))))
+	((#t) x)))
+
+
+(define (partial x)
+  (cond ((null? x) x)
+	((keyword? x) x)
+	((not (list? x)) (string->symbol x)) ;; Convert anything to symbol ? 
+	(else (cons (partial (car x)) (partial (cdr x))))))
+
+;;; Adding clauses
+
+(define (add-clause true-nodes false-nodes (informant #f))
+  (add-clause-internal (append (map tms-node-true-literal true-nodes)
+			      (map tms-node-false-literal false-nodes))
+		       informant
+		       #f))
+
+
+(define (full-add-clause ltms literals informant)
+  void
+  ;; Given in cltms
+  )
+
+(define (add-clause-internal literals informant internal)
+  (define ltms #f)
+  (set! ltms (tms-node-ltms
+	       (or (caar literals)
+		   (ltms-error "Total contradiction: Null clause" informant))))
+  (if (ltms-complete ltms)
+      (full-add-clause ltms literals informant)
+      (begin
+       (let ((lst (ltms-clauses ltms)))
+         (push (bcp-add-clause ltms literals informant) lst)
+         (set-ltms-clauses! ltms lst))))
+  (unless internal (check-for-contradictions ltms)))
+
+(define (bcp-add-clause ltms literals informant (index #t))
+  (match-define (list  cl label) (list #f #f))
+  (set-ltms-clause-counter! ltms (+ 1 ltms-clause-counter ltms))
+  (set! cl (make-clause #:index (ltms-clause-counter ltms)
+			#:literals literals
+			#:informant informant
+			#:length (length literals)))
+  (for ((term literals))
+    (set! label (tms-node-label (car term)))
+    (when (equal? ':UNKNOWN label)
+	(set-clause-pvs! cl (+ 1 (clause-pvs cl))))
+    (case (cdr term)
+      ((':TRUE)
+	(when index (insert-true-clause cl (car term)))
+	(when (equal? label ':TRUE)
+	  (set-clause-sats! (+ 1 (clause-sats cl)))
+          (set-clause-pvs! (+ 1 clause-pvs cl))))
+      ((':FALSE)
+       (when index (insert-false-clause cl (car term)))
+       (when (equal? label ':FALSE)
+	 (set-clause-sats! (+ 1 (clause-sats cl)))
+          (set-clause-pvs! (+ 1 clause-pvs cl))))))
+  (when index (check-clauses ltms (list cl)))
+  cl)
+
+(define (insert-true-clause cl node)
+  (define lst (tms-node-true-clauses node))
+  (push cl lst)
+  (set-tms-node-true-clauses! node lst))
+
+(define (insert-false-clause cl node)
+ (define lst (tms-node-false-clauses node))
+  (push cl lst)
+  (set-tms-node-false-clauses! node lst))
+
+(define (add-nogood culprit sign assumptions (informant 'NOGOOD))
+  (match-define (list trues falses) (#f #f))
+  (for ((a assumptions))
+    (case (if (equal? a culprit) sign (tms-node-label a))
+      ((':TRUE) (push a falses))
+      ((':FALSE) (push a trues)))
+    )
+    (add-clause trues falses informant)
+    )
+
+(define *clauses-to-check* '())
+
+(define (check-clauses ltms *clauses-to-check*)
+  (debugging-ltms ltms "~% Beginning propagation...")
+  (do () ((null? *clauses-to-check*))
+    (check-clause ltms (pop *clauses-to-check*))))
+
+(define (check-clause ltms clause)
+  (define unknown-pair #f)
+  (cond ((violated-clause? clause)
+         (define lst (ltms-violated-clauses ltms))
+	 (pushnew clause lst)
+         (set-ltms-violated-clauses! ltms lst)
+	((= (clause-pvs clause) 1)
+	 ;; Exactly one term of the clause remains that can
+	 ;; satisfy the clause, so deduce that term
+	 (set! unknown-pair (find-unknown-pair clause))
+	 (when unknown-pair ;must check, because it might have other
+	   (set-truth (car unknown-pair) ; support
+		      (cdr unknown-pair) clause))))))
+
+
+(define (find-unknown-pair clause)
+  (with-handlers ((ret (lambda (x) x)))
+    (for ((term-pair (clause-literals clause)))
+      (when (unknown-node? (car term-pair)) (raise term-pair)))))
+
+
+(define (top-set-truth node value reason)
+  (define *clauses-to-check* #f)
+  (set-truth node value reason)
+  (check-clauses (tms-node-ltms node) *clauses-to-check*)
+  (check-for-contradictions (tms-node-ltms node)))
+
 (define (set-truth node value reason)
   (match-define (list ltms enqueuef) (list (tms-node-ltms node) (ltms-enqueue-procedure ltms)))
   (debugging-ltms
@@ -193,27 +513,37 @@
     ((':TRUE) (when enqueuef
 	     (for ((rule (tms-node-true-rules node)))
 	       (enqueuef rule))
-	     (set-tms-node-true-rules! node nil)
+	     (set-tms-node-true-rules! node '())
 	   (for ((clause (tms-node-true-clauses node)))
 	     (set-clause-sats! clause (+ 1 (clause-sats clause))))
 	   (for ((clause (tms-node-false-clauses node)))
              (set-clause-pvs! clause (- (clause-pvs clause) 1))
-	     (if (< (clause-pvs clause) 2)
+	     (when (< (clause-pvs clause) 2)
 		 (push clause *clauses-to-check*))))
     ((':FALSE) (when enqueuef
 	      (for ((rule (tms-node-false-rules node)))
 		(enqueuef rule)))
 	    (set-tms-node-false-rules! node '())
 	   (for ((clause (tms-node-false-clauses node)))
-	     (set-clause-stats! clause  (+ 1 (clause-sats clause))))
+	     (set-clause-sats! clause  (+ 1 (clause-sats clause))))
 	    (for ((clause (tms-node-true-clauses node)))
               (set-clause-pvs! clause (- (clause-pvs clause) 1))
-              (if (< (clause-pvs clause) 2)
+              (when (< (clause-pvs clause) 2)
 		  (push clause *clauses-to-check*)))))))
 
 ;;; Retracting an assumption ;;;;;;;;
+(define (propagate-more-unknownness old-value node ltms)
+  void
+  ;; Given in cltms.lisp
+  )
+
+(define (ipia ltms)
+  void
+  ;; Given in cltms.lisp
+  )
+
 (define (propagate-unknownness in-node)
-  (match-define (node old-value node2 unknown-queue ltms) (#f #f #f '() #f))
+  (match-define (list node old-value node2 unknown-queue ltms) (list #f #f #f '() #f))
   (set! ltms (tms-node-ltms in-node))
   (do ((forget-queue (cons in-node '()) (append forget-queue new_))
        (new_ '() '()))
@@ -224,11 +554,11 @@
     (set! node (car unknown-queue))
     (debugging-ltms ltms "~% Retracting ~A." node)
     (set! old-value (tms-node-label node))
-    (set! (tms-node-label node) ':UNKNOWN)
-    (set! (tms-node-support node) '())
-    (for ((clause (ecase old-value
-			(':TRUE (tms-node-false-clauses node))
-			(':FALSE (tms-node-true-clauses node)))))
+    (set-tms-node-label! node ':UNKNOWN)
+    (set-tms-node-support! node '())
+    (for ((clause (case old-value
+			((':TRUE) (tms-node-false-clauses node))
+			((':FALSE) (tms-node-true-clauses node)))))
       (set-clause-pvs! clause (+ 1 (clause-pvs clause)))
       (when (= (clause-pvs clause) 2)
         (set! node2 (clause-consequent clause))
@@ -270,7 +600,9 @@
                    (ltms-pending-contradictions ltms)))
           (for ((vc violated-clauses))
              (when (violated-clause? vc)
-                (pushnew vc (ltms-pending-contradictions ltms)))))
+               (define lst (ltms-pending-contradictions ltms))
+               (pushnew vc lst)
+               (set-ltms-pending-contradictions! ltms lst))))
          (#t (for ((handler (ltms-contradiction-handlers ltms)))
               (when (handler violated-clauses ltms) (raise #t)))))))
 
@@ -311,7 +643,7 @@
        (pop-ltms-contradiction-handlers! .ltms.)))))
 
 (define-syntax with-assumptions
-  (syntax-rules()
+  (syntax-rules ()
     ((_ assumption-values body ...)
      ;; Allows assumptions to be made safely, and retracted properly
      ;; even if non-local exits occur.
@@ -319,8 +651,9 @@
        (let ((r (begin body ...)))
          (for ((av assumption-values))
            (enable-assumption (car av) (cdr av)))
+          (for ((av assumption-values)) (retract-assumption (car av)))
          r))
-      (for ((av assumption-values)) (retract-assumption (car av))))))
+     )))
 
 ;;; Inquiring about well-founded support
 
@@ -341,7 +674,7 @@
 (define (assumptions-of-clause in-clause) 
   (do ((clause-queue (list in-clause)
 		     (append (cdr clause-queue) new-clauses))
-       (mark (list nil)) ;; Doesn't make sense even in ltms.lisp file should be (list nil). To be changes (maybe) after Kat's work
+       (mark (list '())) ;; Doesn't make sense even in ltms.lisp file should be (list nil). To be changes (maybe) after Kat's work
        (node #f) 
        (new-clauses '() '()) 
        (assumptions '()))  
@@ -365,8 +698,9 @@
     (when (violated-clause? contradiction)
 	(handle-one-contradiction contradiction))))
 
+
 (define (handle-one-contradiction violated-clause) ;; TODO Apoorv
-   (let ((*contra-assumptions* (assumptions-of-clause violated-clause))
+#|   (let ((*contra-assumptions* (assumptions-of-clause violated-clause))
          (the-answer #f))
       (when (empty? *contra-assumptions*) (ltms-error "Global contradiction"
                                     violated-clause))
@@ -379,7 +713,9 @@
                "LTMS contradiction break")))
       (when the-answer
         (retract-assumption (list-ref *contra-assumptions* (- the-answer 1))))))
-
+  |#
+  void
+)
 
 (define (print-contra-list nodes)
   (do ((counter 1 (+ 1 counter))
@@ -390,14 +726,16 @@
 
 
 (define (tms-answer num) ;; TODO Apoorv 
-  (if (integer? num)
+ #| (if (integer? num)
       (if (> num 0)
 	  (if (not (> num (length *contra-assumptions*)))
 	      (throw 'tms-contradiction-handler num)
 	      (format  "~%Ignoring answer, too big."))
 	  (format  "~%Ignoring answer, too small"))
       (format  "~%Ignoring answer, must be an integer.")))
-
+  |#
+  void
+  )
 (define (avoid-all contradictions ignore)
   (match-define (list culprits culprit sign) (list '() #f #f)) ;;
   (for ((contradiction contradictions))
@@ -427,9 +765,9 @@
 
 (define (node-consequences node)
   (match-define (list conseq conseqs) (list #f #f))
-  (for ((cl (ecase (tms-node-label node)
-		(':TRUE (tms-node-false-clauses node))
-		(':FALSE (tms-node-true-clauses node)))))
+  (for ((cl (case (tms-node-label node)
+		((':TRUE) (tms-node-false-clauses node))
+		((':FALSE) (tms-node-true-clauses node)))))
     (unless (equal? cl (tms-node-support node))
       (set! conseq (clause-consequent cl))
       (when conseq (push conseq conseqs))))
@@ -472,7 +810,7 @@
 (define (explain-1 node)
   (define antecedents '())
   (cond ((tms-node-mark node))
-	((equal ':ENABLED-ASSUMPTION (tms-node-support node))
+	((equal? ':ENABLED-ASSUMPTION (tms-node-support node))
          (if (true-node? node)
              (format "~A  ~A () Assumption"
                      (incf *line-count*) (node-string node))
@@ -484,7 +822,7 @@
                 ((true-node? node) (format "~A ~A ~A" (incf *line-count*) (node-string node) antecedents))
                 (else (format "~A (:NOT ~A) ~A" (incf *line-count*) (node-string node) antecedents)))
 	   (pretty-print-clause (tms-node-support node))
-	   (set-tms-node-mark node *line-count*))))
+	   (set-tms-node-mark! node *line-count*))))
 
 (define (pretty-print-clauses ltms)
   (walk-clauses ltms (lambda (l)
@@ -510,9 +848,9 @@
 (define (node-show-clauses node)
   (printf (format  "For ~A:" (node-string node)))
   (for ((cl (tms-node-true-clauses node)))
-    (printf (format T "~%")) (pretty-print-clause cl))
+    (printf (format "~%")) (pretty-print-clause cl))
   (for ((cl (tms-node-false-clauses node)))
-    (printf (format T "~%")) (pretty-print-clause cl)))
+    (printf (format "~%")) (pretty-print-clause cl)))
 
 
 (define (explore-network node)
@@ -536,12 +874,12 @@
 	     (show-node-consequences current)
 	     (set! options (node-consequences current))))
       (set! olen (length options))
-      (do ((good? nil)
+      (do ((good? #f)
 	   (choice 0))
 	  (good? (case good?
 		       ((q) (raise current))
 		       ((c) (set! mode ':conseq))
-		       ((a) (setq mode ':ante))
+		       ((a) (set! mode ':ante))
 		       ((0) (unless (empty? stack)
 			      (set! current (pop stack))
 			      (raise current)))
@@ -579,16 +917,16 @@
 
 (define-syntax-rule (pop lst)
   (begin
-    (define popped (car lst))
-  (set! lst (cdr lst))
-  popped
+    (let ((popped (car lst)))
+    (set! lst (cdr lst))
+    popped
   )
-  )
+  ))
 (define-syntax-rule (pushnew val lst)
-  (unless (member? val lst) (set! lst (cons val lst))))
+  (unless (member val lst) (set! lst (cons val lst))))
 
-(define (push-ltms-contradiction-handlers! handler ltms)
-  (set-ltms-contradiction-handler! ltms (cons handler (ltms-contradiction-handler ltms))))
+(define-syntax-rule (push-ltms-contradiction-handlers! handler ltms)
+  (set-ltms-contradiction-handlers! ltms (cons handler (ltms-contradiction-handler ltms))))
 
-(define (pop-ltms-contradiction-handlers! ltms)
-  (set-ltms-contradiction-handler! ltms (cdr (ltms-contradiction-handler ltms))))
+(define-syntax-rule (pop-ltms-contradiction-handlers! ltms)
+  (set-ltms-contradiction-handlers! ltms (cdr (ltms-contradiction-handler ltms))))
