@@ -294,7 +294,7 @@ Code translated from BPS ltms.lisp http://www.qrg.northwestern.edu/BPS/ltms/ltms
 
 
 (define (normalize-tax exp_ negate_) ;;TODO Apoorv
-  (normalize-1 `(':AND (':OR ,@(cdr exp_)) ;one must be true
+  (normalize-1 `(:AND (:OR ,@(cdr exp_)) ;one must be true
                  ;; The list is copied above to prevent very nasty bugs, since
                  ;; the rest of normalize side effects structure continually for
                  ;; efficiency.
@@ -303,7 +303,7 @@ Code translated from BPS ltms.lisp http://www.qrg.northwestern.edu/BPS/ltms/ltms
 		       (result '()))
 		      ((null? rests) result)
 		    (for ((other rests))
-		      (push `(':NOT (':AND ,(car firsts) ,other))
+		      (push `(:NOT (:AND ,(car firsts) ,other))
 			    result))))
 	       negate_))
 
