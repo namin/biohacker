@@ -308,12 +308,12 @@ Code translated from BPS ltms.lisp http://www.qrg.northwestern.edu/BPS/ltms/ltms
 	       negate_))
 
 (define (normalize-conjunction exp_ negate_) ;; TODO Apoorv
-  (map (lambda (sub) (normalize-1 sub negate_)) (cdr exp_)))
+  (combine-elements (map (lambda (sub) (normalize-1 sub negate_)) (cdr exp_))))
 
 
 (define (normalize-iff exp_ negate_) ;; TODO Apoorv
-  (append (normalize-1 `(':IMPLIES ,(cadr exp_) ,(caddr exp_)) negate_)
-	 (normalize-1 `(':IMPLIES ,(caddr exp_) ,(cadr exp_)) negate_)))
+  (append (normalize-1 `(:IMPLIES ,(cadr exp_) ,(caddr exp_)) negate_) ;; define below
+	 (normalize-1 `(:IMPLIES ,(caddr exp_) ,(cadr exp_)) negate_)))
 
 (define (normalize-disjunction exp_ negate_) ;; TODO Apoorv
   (with-handlers ((ret (lambda (x) x)))
@@ -322,7 +322,9 @@ Code translated from BPS ltms.lisp http://www.qrg.northwestern.edu/BPS/ltms/ltms
                   (do ((result (normalize-1 (cadr exp_) negate_))
                        (rest_ (cddr exp_) (cdr rest_)))
                       ((null? rest_) result)
-                    (set! result (disjoin (normalize-1 (car rest_) negate_) result)))))
+                    (set! result (disjoin (normalize-1 (car rest_) negate_) result))))
+  
+  )
 
 
 (define (disjoin conj1 conj2) ;; ? 
@@ -918,7 +920,8 @@ Code translated from BPS ltms.lisp http://www.qrg.northwestern.edu/BPS/ltms/ltms
 
 (define (pretty-print-clauses ltms)
   (walk-clauses ltms (lambda (l)
-                       (pretty-print-clause l))))
+                       (printf "\n")
+                       (pretty-print-clause l) l)))
 
 (define (pretty-print-clause clause)
   (printf (format "(:OR"))
@@ -1005,7 +1008,7 @@ Code translated from BPS ltms.lisp http://www.qrg.northwestern.edu/BPS/ltms/ltms
 
 (define (is-true X)
   (and X (not (empty? X))))
-  
+
 (define-syntax-rule (rplacd lst cdr-val)
   (set! lst (cons (car lst) cdr-val)))
 
@@ -1028,6 +1031,9 @@ Code translated from BPS ltms.lisp http://www.qrg.northwestern.edu/BPS/ltms/ltms
 (define-syntax-rule (pop-ltms-contradiction-handlers! ltms)
   (set-ltms-contradiction-handlers! ltms (cdr (ltms-contradiction-handler ltms))))
 
+(define (combine-elements lst) ;; assuming all elements of lst are themselves lists
+  (apply append lst))
+  
 ;;;;;;;;;;;;;CLTMS
 
 (define (subsumed? lits trie)

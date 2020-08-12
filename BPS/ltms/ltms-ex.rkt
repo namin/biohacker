@@ -15,5 +15,16 @@
   (enable-assumption x ':FALSE)
   (explain-node r)
   )
+(define (test-and)
+  (define ltms_ (create-ltms "LTMS" #:debugging #t))
+  (define-values (ok z x y)
+    (values
+     (tms-create-node ltms_ "ok" #:assumptionp #t)
+     (tms-create-node ltms_ "z" #:assumptionp #t)
+     (tms-create-node ltms_ "x" #:assumptionp #t)
+     (tms-create-node ltms_ "y" #:assumptionp #t)))
+  (add-formula ltms_ `(:IMPLIES ,ok (:IFF ,z (:AND ,x ,y))))
+  (pretty-print-clauses ltms_)
+  )
   
     
