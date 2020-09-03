@@ -18,14 +18,14 @@
  depD (tms-create-node *ltms* "DepD" :ASSUMPTIONP t)
  d (tms-create-node *ltms* "d" :ASSUMPTIONP t)
  )
-(compile-formula *ltms* `(:IMPLIES "DepC" (:IMPLIES "u" "c")))
-(compile-formula *ltms* `(:IMPLIES "DepC" (:IMPLIES "c" "u")))
-(compile-formula *ltms* `(:IMPLIES "DepA" (:IMPLIES "c" "a")))
-(compile-formula *ltms* `(:IMPLIES "DepA" (:IMPLIES "a" "c")))
-(compile-formula *ltms* `(:IMPLIES "DepB" (:IMPLIES "c" "b")))
-(compile-formula *ltms* `(:IMPLIES "DepB" (:IMPLIES "b" "c")))
-(compile-formula *ltms* `(:IMPLIES "DepD" (:IMPLIES "d" (:OR "a" "b"))))
-(compile-formula *ltms* `(:IMPLIES "DepD" (:IMPLIES (:OR "a" "b") "d")))
+(compile-formula *ltms* `(:IMPLIES "DepC" (:AND (:IMPLIES "u" "c")
+                                                (:IMPLIES "c" "u"))))
+(compile-formula *ltms* `(:IMPLIES "DepA" (:AND (:IMPLIES "c" "a")
+                                                (:IMPLIES "a" "c"))))
+(compile-formula *ltms* `(:IMPLIES "DepB" (:AND (:IMPLIES "c" "b")
+                                                (:IMPLIES "b" "c"))))
+(compile-formula *ltms* `(:IMPLIES "DepD" (:AND (:IMPLIES "d" (:OR "a" "b"))
+                                                (:IMPLIES (:OR "a" "b") "d"))))
 (enable-assumption depC :TRUE)
 (enable-assumption depA :TRUE)
 (enable-assumption depB :TRUE)
@@ -41,6 +41,8 @@
 (retract-assumption u)
 (enable-assumption d :TRUE)
 (explain-node u)
+
+(retract-assumption d)
 
 ;; The court U made the order, but rifleman A refuse to fires.
 ;; The prisoner still dies.
