@@ -89,9 +89,6 @@
            (apply printf msg args))))
      ]))
 
-(define (tms-error string node)
-  (error string (node-string node)))
-
 (define (default-node-string n)
   (format "~a" (tms-node-datum n)))
 
