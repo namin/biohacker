@@ -89,6 +89,9 @@
            (apply printf msg args))))
      ]))
 
+(define (tms-error proc string node)
+  (error proc (format string node)))
+
 (define (default-node-string n)
   (format "~a" (tms-node-datum n)))
 
@@ -247,7 +250,7 @@
 (define (enable-assumption node)
   (let ((jtms (tms-node-jtms node)))
     (unless (tms-node-assumption? node)
-      (error 'enabled-assumption (format "Can't enable the non-assumption ~a" node)))
+      (tms-error 'enabled-assumption "Can't enable the non-assumption ~a" node))
     (debugging-jtms jtms "\n  Enabling assumption ~a." node)
     (cond (
            (out-node? node) (make-node-in node ':ENABLED-ASSUMPTION)
@@ -404,7 +407,7 @@
 (define (handle-one-contradiction contra-node)
   (set! *contra-assumptions* (assumptions-of-node contra-node))
     (unless *contra-assumptions*
-      (error 'handle-one-contradiction (format "\nThere is a flaw in the universe...~a" contra-node)))
+      (tms-error 'handle-one-contradiction "\nThere is a flaw in the universe...~a" contra-node))
   (printf  "\nContradiction found: ~a" (node-string contra-node))
   (print-contra-list *contra-assumptions*)
   (printf "\nPick the <number> to retract assumption. ")
