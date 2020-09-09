@@ -272,3 +272,26 @@
     (for ([just (jtms-justs (jtre-jtms *jtre*))])
          (when (= (just-index just) num)
            (raise just))))))
+
+;; jrules
+
+(struct
+ rule
+ (id           ; Unique ID for easy lookup
+  jtre         ; The JTRE it is part of
+  dbclass      ; Dbclass of associated pattern
+  matcher      ; Procedure that performs the match.
+  body         ; Procedure that does the work.
+  )
+  #:mutable
+  #:methods gen:custom-write
+  [(define (write-proc this port mode)
+     (fprintf port "<Rule ~a>" (rule-id this)))]
+  )
+
+(define *file-counter* 0)
+(define *file-prefix* "")
+
+(define (rule-file prefix)
+  (set! *file-couter* 0)
+  (set! *file-prefix* prefix))
