@@ -19,9 +19,6 @@
                       )
  |#
 
- ;; TODO: make beliefes in sync with inference
- ;; see cyclic example
-
  (define (oplus i1 i2)
    (let ((a (interval-s i1))
          (b (interval-p i1))
