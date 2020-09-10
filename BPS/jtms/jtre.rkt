@@ -276,7 +276,7 @@
 ;; jrules
 
 (struct
- rule
+ jrule
  (id           ; Unique ID for easy lookup
   jtre         ; The JTRE it is part of
   dbclass      ; Dbclass of associated pattern
@@ -286,12 +286,22 @@
   #:mutable
   #:methods gen:custom-write
   [(define (write-proc this port mode)
-     (fprintf port "<Rule ~a>" (rule-id this)))]
+     (fprintf port "<Rule ~a>" (jrule-id this)))]
   )
 
 (define *file-counter* 0)
 (define *file-prefix* "")
 
 (define (rule-file prefix)
-  (set! *file-couter* 0)
+  (set! *file-counter* 0)
   (set! *file-prefix* prefix))
+
+;;;; Building and installing rules
+
+(define-syntax rule
+  (syntax-rules ()
+    [(_ triggers body ...)
+     (do-rule triggers (list body ...))]))
+
+(define (do-rule triggers body)
+  'TODO)
