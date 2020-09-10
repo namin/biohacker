@@ -392,6 +392,17 @@
 
 ;;;; Generating the body function
 
+(define-syntax with-pushed-variable-bindings
+  (syntax-rules ()
+    [(_ new-bindings body ...)
+     (let ((old-bound-vars *bound-vars*))
+       (set! *bound-vars*
+             (append new-bindings
+                     (scratcout new-bindings bound-vars)))
+       (let ((r (begin body ...)))
+         (set! *bound-vars* old-bound-vars)
+         r))]))
+
 (define (generate-body-procedure pattern condition var body)
   'TODO)
 
