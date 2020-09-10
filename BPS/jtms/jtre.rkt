@@ -434,7 +434,16 @@
                                   '(tms-node-out-rules trigger-node))))))))))))))
 
 (define (generate-match-procedure pattern var test condition)
-  'TODO)
+  (let-values (((tests binding-specs)
+                 (generate-match-body pattern (pattern-free-variables pattern) test)))
+    `(define (,(generate-rule-procedure-name pattern)
+              p ,@*bound-vars*)
+       ;;first arg, p, is the pattern
+       (if (and ,@tests)
+           (values #t (list ,@(if var '(p) '())
+                            ,@(reverse binding-specs))
+                   ,(if (eq? condition ':intern) #f #t))
+           #f))))
 
 (define (scratchout l1 l2)  ;non-destructive and order-preserving
   ;;(dolist (el1 l1 l2) (setq l2 (remove el1 l2)))
@@ -460,6 +469,9 @@
 
 (define (pattern-free-variables pattern)
   #f)
+
+(define (generate-match-body pattern vars extra-test)
+  'TODO)
 
 ;; misc helpers
 
