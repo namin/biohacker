@@ -65,5 +65,57 @@
    (else (cons (list 'equal? (car tests) (cadr tests))
                (generate-pairwise-tests (cdr tests))))))
 
+;;; Generate a list of explicit tests for matching
+;;; the given pattern. Assumes that the pattern
+;;;    to be tested will be in variable "P".
+;;; Tests are returned in backward order.
+;;; (generate-unify-tests '(foo ?x) nil nil 'P)
+;;;     returns:    '((NULL (CDR (CDR P)))
+;;;                   (EQUAL ?X (CAR (CDR P)))
+;;;                   (CONSP (CDR P))
+;;;                   (EQUAL (QUOTE FOO) (CAR P))
+;;;                   (CONSP P))
+
 (define (generate-unify-tests pattern vars tests path)
-  'TODO)
+  (cond ((null? pattern)
+                ;this is the end
+         (cons `(null? ,path) tests))
+        ((member pattern vars)
+         ;; must see if the pattern has been bound elsewhere,
+         ;; and if it has, test to see if the element here is
+         ;; consistent with that earlier binding.
+         (let ((previous (assoc pattern tests)))
+           (cond (previous ;add this position to test it
+                  ;;(push! path (cdr previous))
+                  (add-assoc-value tests pattern path)
+                  tests)
+                 (else (cons (list pattern path) tests)))))
+        ;; if variable, it must be bound so test
+        ;; against the current value.
+        ((variable? pattern) (cons `(equal ,pattern ,path)
+                                   tests))
+        ;; if not a list, then see if equal
+        ((number? pattern)
+         (cons `(and (number? ,path) (= ,pattern ,path))
+               tests))
+        ((atom? pattern) (cons `(equal? ',pattern ,path) tests))
+        ;; recurse on a list
+        (else (generate-unify-tests (cdr pattern) vars
+                 (generate-unify-tests (car pattern) vars
+                                       ;avoid lisp errors
+                                       (cons `(consp ,path)
+                                             tests)
+                                            ;extend the path
+                                       (list 'car path))
+                 ;extend path in other direction
+                 (list 'cdr path)))))
+
+(define (add-assoc-value tests pattern path)
+  (cond
+   ((null? tests) '())
+   ((equal? (car tests) pattern)
+    (cons (cons (caar tests)
+                (cons path (cdar tests)))
+          (cdr tests)))
+   (else
+    (cons (car tests) (add-assoc-value (cdr tests) pattern path)))))

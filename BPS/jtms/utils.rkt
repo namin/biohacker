@@ -24,3 +24,6 @@
            (if av
                (cdr av)
                x)))))
+
+(define (atom? x)
+  (not (pair? x)))
