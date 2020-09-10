@@ -468,9 +468,12 @@
           (_ (set-jtre-rule-counter! *jtre* id))
           (rule (jrule id *jtre* dbclass matcher body)))
      (set-dbclass-rules! dbclass (cons rule (dbclass-rules dbclass)))
-     (for
-      ([candidate (dbclass-facts dbclass)])
-      (try-rule-on rule candidate)))))
+     (for ([candidate (dbclass-facts dbclass)])
+          (try-rule-on rule candidate)))))
+
+(define (try-rules datum)
+  (for ([rule (dbclass-rules (datum-dbclass datum))])
+       (try-rule-on rule datum)))
 
 (define (try-rule-on (rule datum))
   'TODO)
