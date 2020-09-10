@@ -15,4 +15,12 @@
     (- x 1)))
 
 (define (sublis d x)
-  'TODO)
+  (cond ((null? x) '())
+        ((pair? x)
+         (cons (sublis d (car x))
+               (sublis d (cdr x))))
+        (else
+         (let ((av (assoc x d)))
+           (if av
+               (cdr av)
+               x)))))
