@@ -70,6 +70,16 @@
   (unless (eq? debugging ':nada)
     (set-jtre-debugging! jtre debugging)))
 
+;;;; Running JTRE
+
+(define (uassert! fact [just 'user])
+  (assert! fact just)
+  (run-rules *jtre*))
+
+(define (uassume! fact reason)
+  (assume! fact reason *jtre*)
+  (run-rules *jtre*))
+
 ;; jdata
 
 (struct
