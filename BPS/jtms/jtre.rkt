@@ -1,6 +1,7 @@
 #lang racket
 
 (require "jtms.rkt")
+(require "unify.rkt")
 (provide (all-defined-out))
 
 ;; jinter
@@ -459,11 +460,6 @@
   body
   ;; TODO
   )
-
-;; unify
-
-(define (variable? x)
-  #f)
 
 ;; funify
 
