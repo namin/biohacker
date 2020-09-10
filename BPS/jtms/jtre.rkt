@@ -342,4 +342,73 @@
 ;;;; Details of rule-building
 
 (define (build-rule trigger body)
+  (let-values (((pattern condition var test) (parse-rule-trigger trigger)))
+    (let ((match-procedure
+           (generate-match-procedure pattern var test condition))
+          (body-procedure
+           (generate-body-procedure pattern condition var body)))
+      (push! match-procedure *rule-procedures*)
+      (push! body-procedure *rule-procedures*)
+      `(insert-rule
+        (get-dbclass ,(get-trigger-dbclass pattern))
+        ;; return form to index rule
+        ;; the match function for a rule
+        ,(if *bound-vars*
+             `(lambda (p)
+                (,(car match-procedure) p ,@*bound-vars*))
+             (cadr match-procedure))
+        ;; the body function for rule
+        ,(if (or *bound-vars*
+                 (not (eq? condition ':intern)))
+             (let ((tv (reverse (pattern-free-variables trigger))))
+               (unless (eq? condition ':intern)
+                 (push! 'trigger-node tv))
+               `(lambda ,tv
+                  (,(cadr body-procedure) ,@tv
+                   ,@(scratchout tv *bound-vars*))))
+             (cadr body-procedure))))))
+
+(define (parse-rule-trigger trigger)
+  (values (cadr trigger)
+          (if (member (car trigger) '(:intern :in :out))
+              (car trigger)
+              (error
+               'parse-rule-trigger
+               (format
+                "\n Unknown belief condition ~a in trigger ~a."
+                (car trigger) trigger)))
+          (cadr (member ':var (cddr trigger)))
+          (cadr (member ':test (cddr trigger)))))
+
+(define (get-trigger-dbclass trigger)
+  (cond ((variable? trigger)
+         (if (member trigger *bound-vars*) trigger
+             (error 'get-trigger-dbclass (format "\nTrigger dbclass is unbound -- ~a" trigger))))
+        ((atom? trigger) (list 'quote trigger))
+        (else (get-trigger-dbclass (car trigger)))))
+
+(define (atom? x)
+  (not (pair? x)))
+
+;;;; Generating the body function
+
+(define (generate-body-procedure pattern condition var body)
   'TODO)
+
+(define (generate-match-procedure pattern var test condition)
+  'TODO)
+
+(define (scratchout l1 l2)  ;non-destructive and order-preserving
+  ;;(dolist (el1 l1 l2) (setq l2 (remove el1 l2)))
+  'TODO
+  )
+
+;; unify
+
+(define (variable? x)
+  #f)
+
+;; funify
+
+(define (pattern-free-variables pattern)
+  #f)
