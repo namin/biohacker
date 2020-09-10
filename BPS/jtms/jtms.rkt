@@ -1,5 +1,6 @@
 #lang racket
 
+(require "utils.rkt")
 (provide (all-defined-out))
 
 (struct jtms
@@ -493,10 +494,3 @@
   (set-tms-node-justs! justs (cons node (tms-node-justs justs))))
 (define (push-tms-node-consequences! just node)
   (set-tms-node-consequences! node (cons just (tms-node-consequences node))))
-
-(define-syntax-rule (push! val lst) ;;pushes val to list lst at first pos
-  (set! lst (cons val lst)))
-(define-syntax-rule (pop! lst) ;; pops the first position
-  (cond
-    ((null? lst) '())
-    (else (let ((popped (car lst))) (set! lst (rest lst)) popped))))

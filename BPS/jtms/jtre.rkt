@@ -1,5 +1,6 @@
 #lang racket
 
+(require "utils.rkt")
 (require "jtms.rkt")
 (require "unify.rkt")
 (require "funify.rkt")
@@ -467,9 +468,6 @@
 (define (pattern-free-variables pattern)
   (pattern-free-variables0 pattern *bound-vars*))
 
-;; misc helpers
+(define (generate-match-body pattern vars extra-test)
+  (generate-match-body0 pattern vars extra-test *bound-vars*))
 
-(define-syntax-rule (inc! x)
-  (begin
-    (set! x (+ x 1))
-    (- x 1)))

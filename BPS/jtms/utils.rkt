@@ -1,0 +1,18 @@
+#lang racket
+
+(provide (all-defined-out))
+
+(define-syntax-rule (push! val lst) ;; pushes val to list lst at first pos
+  (set! lst (cons val lst)))
+(define-syntax-rule (pop! lst) ;; pops the first position
+  (cond
+    ((null? lst) '())
+    (else (let ((popped (car lst))) (set! lst (rest lst)) popped))))
+
+(define-syntax-rule (inc! x)
+  (begin
+    (set! x (+ x 1))
+    (- x 1)))
+
+(define (sublis d x)
+  'TODO)
