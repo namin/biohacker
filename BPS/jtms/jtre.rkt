@@ -303,5 +303,43 @@
     [(_ triggers body ...)
      (do-rule triggers (list body ...))]))
 
+(define *rule-procedures* '())
+(define *bound-vars* '())
 (define (do-rule triggers body)
+  (set! *rule-procedures* '())
+  (set! *bound-vars* '())
+  (let ((index-form
+         (build-rule (car triggers)
+                     (subst 'internal-rule
+                            'rule
+                            (make-nested-rule
+                             (cdr triggers) body)))))
+    `(begin ,@*rule-procedures* ,index-form)))
+
+;; TODO?
+(define (subst new old lst)
+  lst)
+
+(define-syntax internal-rule
+  (syntax-rules ()
+    [(_ triggers body ...)
+     (add-internal-rule
+      (car triggers)
+      (make-nested-rule (cdr triggers) (list body ...)))]))
+
+(define (make-nested-rule triggers body)
+  (if (null? triggers)
+      body
+      (add-internal-rule
+       (car triggers)
+       (make-nested-rule (cdr triggers) body))))
+
+(define-syntax add-internal-rule
+  (syntax-rules ()
+    [(_ trigger body)
+     (build-rule trigger body)]))
+
+;;;; Details of rule-building
+
+(define (build-rule trigger body)
   'TODO)
