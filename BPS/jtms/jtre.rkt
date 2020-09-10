@@ -2,6 +2,7 @@
 
 (require "jtms.rkt")
 (require "unify.rkt")
+(require "funify.rkt")
 (provide (all-defined-out))
 
 ;; jinter
@@ -460,14 +461,6 @@
   body
   ;; TODO
   )
-
-;; funify
-
-(define (pattern-free-variables pattern)
-  #f)
-
-(define (generate-match-body pattern vars extra-test)
-  'TODO)
 
 ;; misc helpers
 
