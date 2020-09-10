@@ -484,6 +484,19 @@
          (push! (datum-tms-node datum) bindings))
        (enqueue (cons (jrule-body rule) bindings) *jtre*)))))
 
+(define (run-rules [jtre *jtre*])
+  (with-jtre
+   jtre
+   (let loop ((form (dequeue *jtre*))
+              (counter 0))
+     (if (null? form)
+         (begin
+           (debugging-jtre "\n    ~a rules run." counter)
+           (set-jtre-rules-run! *jtre* (+ counter (jtre-rules-run *jtre*))))
+         (begin
+           (apply (car form) (cdr form))
+           (loop (dequeue *jtre* (+ 1 counter))))))))
+
 (define (rules-waiting? jtre)
   (not (null? (jtre-queue jtre))))
 
