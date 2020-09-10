@@ -12,7 +12,7 @@
 (define-syntax-rule (inc! x)
   (begin
     (set! x (+ x 1))
-    (- x 1)))
+    x))
 
 (define (sublis d x)
   (cond ((null? x) '())

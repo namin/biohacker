@@ -461,6 +461,20 @@
 
 ;;;; Running rules
 
+(define (insert-rule dbclass matcher body)
+  (with-jtre
+   (dbclass-jtre dbclass)
+   (let* ((id (+ 1 (jtre-rule-counter *jtre*)))
+          (_ (set-jtre-rule-counter! *jtre* id))
+          (rule (jrule id *jtre* dbclass matcher body)))
+     (set-dbclass-rules! dbclass (cons rule (dbclass-rules dbclass)))
+     (for
+      ([candidate (dbclass-facts dbclass)])
+      (try-rule-on rule candidate)))))
+
+(define (try-rule-on (rule datum))
+  'TODO)
+
 (define (rules-waiting? jtre)
   (not (null? (jtre-queue jtre))))
 
