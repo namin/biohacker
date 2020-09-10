@@ -398,13 +398,40 @@
      (let ((old-bound-vars *bound-vars*))
        (set! *bound-vars*
              (append new-bindings
-                     (scratcout new-bindings bound-vars)))
+                     (scratchout new-bindings *bound-vars*)))
        (let ((r (begin body ...)))
          (set! *bound-vars* old-bound-vars)
          r))]))
 
 (define (generate-body-procedure pattern condition var body)
-  'TODO)
+  (let ((newly-bound (pattern-free-variables pattern)))
+    (when var (push! var newly-bound))
+    (set! body (with-pushed-variable-bindings
+                newly-bound (fully-expand-body body)))
+    (let ((env (append
+                newly-bound
+                (scratchout newly-bound *bound-vars*))))
+      (unless (eq? condition ':intern)
+        (push! 'trigger-node env))
+      (let ((fname (generate-rule-procedure-name pattern)))
+        `(define (,fname ,@env)
+           ,@(cond ((eq? condition ':intern) body) ;; Just do it
+                   (else ;; Must check and see if the node's belief state
+                         ;; matches the rule's requirements
+                    `((cond
+                       ((,(cond
+                           ((eq? condition ':in) in-node?)
+                           ((eq? condition ':out) out-node?)
+                           (else (error generate-body-procedure
+                                        (format "~a bad condition" condition))))
+                         trigger-node) ,@body)
+                       (else
+                        (push! (list ',fname ,@env)
+                               ,(cond
+                                 ((eq? condition ':in)
+                                  '(tms-node-in-rules trigger-node))
+                                 ((eq? condition ':out)
+                                  '(tms-node-out-rules trigger-node))))))))))))))
 
 (define (generate-match-procedure pattern var test condition)
   'TODO)
@@ -412,6 +439,16 @@
 (define (scratchout l1 l2)  ;non-destructive and order-preserving
   ;;(dolist (el1 l1 l2) (setq l2 (remove el1 l2)))
   'TODO
+  )
+
+(define (generate-rule-procedure-name pattern)
+  (string->symbol (format "~a-~a-~a" *file-prefix* pattern (inc! *file-counter*))))
+
+;;;; Recursive macroexpansion
+
+(define (fully-expand-body body)
+  body
+  ;; TODO
   )
 
 ;; unify
@@ -423,3 +460,10 @@
 
 (define (pattern-free-variables pattern)
   #f)
+
+;; misc helpers
+
+(define-syntax-rule (inc! x)
+  (begin
+    (set! x (+ x 1))
+    (- x 1)))
