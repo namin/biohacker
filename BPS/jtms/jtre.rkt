@@ -65,9 +65,6 @@
                  #:enqueue-procedure
                  (lambda (rule) (enqueue rule j)))))
 
-(define (enqueue rule jtre)
-  'TODO)
-
 ;; jdata
 
 (struct
@@ -461,6 +458,17 @@
   body
   ;; TODO
   )
+
+;;;; Running rules
+
+(define (rules-waiting? jtre)
+  (not (null? (jtre-queue jtre))))
+
+(define (enqueue rule jtre)
+  (set-jtre-queue! jtre (cons rule (jtre-queue jtre))))
+
+(define (dequeue jtre)
+  (set-jtre-queue! jtre (cdr (jtre-queue jtre))))
 
 ;; funify
 
