@@ -65,6 +65,11 @@
                  #:enqueue-procedure
                  (lambda (rule) (enqueue rule j)))))
 
+
+(define (change-jtre jtre #:debugging (debugging ':nada))
+  (unless (eq? debugging ':nada)
+    (set-jtre-debugging! jtre debugging)))
+
 ;; jdata
 
 (struct
