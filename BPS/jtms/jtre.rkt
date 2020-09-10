@@ -450,8 +450,7 @@
 
 (define (scratchout l1 l2)  ;non-destructive and order-preserving
   ;;(dolist (el1 l1 l2) (setq l2 (remove el1 l2)))
-  'TODO
-  )
+  (remove* l1 l2))
 
 (define (generate-rule-procedure-name pattern)
   (string->symbol (format "~a-~a-~a" *file-prefix* pattern (inc! *file-counter*))))
