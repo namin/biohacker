@@ -462,6 +462,11 @@
   ;; TODO
   )
 
+;; funify
+
+(define (pattern-free-variables pattern)
+  (pattern-free-variables0 pattern *bound-vars*))
+
 ;; misc helpers
 
 (define-syntax-rule (inc! x)
