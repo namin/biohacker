@@ -60,7 +60,10 @@
             binding-specs)))
 
 (define (generate-pairwise-tests tests)
-  'TODO)
+  (cond
+   ((or (null? tests) (null? (cdr tests))) '())
+   (else (cons (list 'equal? (car tests) (cadr tests))
+               (generate-pairwise-tests (cdr tests))))))
 
 (define (generate-unify-tests pattern vars tests path)
   'TODO)
