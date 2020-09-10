@@ -476,7 +476,13 @@
        (try-rule-on rule datum)))
 
 (define (try-rule-on (rule datum))
-  'TODO)
+  (with-jtre
+   (dbclass-jtre (datum-dbclass datum))
+   (let-values (((okay? bindings node?) ((jrule-matcher rule) (datum-lisp-form datum))))
+     (when okay?
+       (when node?
+         (push! (datum-tms-node datum) bindings))
+       (enqueue (cons (jrule-body rule) bindings) *jtre*)))))
 
 (define (rules-waiting? jtre)
   (not (null? (jtre-queue jtre))))
