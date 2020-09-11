@@ -421,7 +421,7 @@
         ;; the match function for a rule
         ,(if *bound-vars*
              `(lambda (p)
-                (,(car match-procedure) p ,@*bound-vars*))
+                (,(caadr match-procedure) p ,@*bound-vars*))
              (cadr match-procedure))
         ;; the body function for rule
         ,(if (or *bound-vars*
@@ -521,7 +521,10 @@
 ;;;; Recursive macroexpansion
 
 (define (fully-expand-body body)
-  body
+  ;; hack
+  (if (symbol? (car body))
+      (list body)
+      body)
   ;; TODO
   )
 
