@@ -103,7 +103,7 @@
         (else (generate-unify-tests (cdr pattern) vars
                  (generate-unify-tests (car pattern) vars
                                        ;avoid lisp errors
-                                       (cons `(consp ,path)
+                                       (cons `(pair? ,path)
                                              tests)
                                             ;extend the path
                                        (list 'car path))
