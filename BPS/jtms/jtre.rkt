@@ -564,7 +564,7 @@
            (set-jtre-rules-run! *jtre* (+ counter (jtre-rules-run *jtre*))))
          (begin
            (apply (car form) (cdr form))
-           (loop (dequeue *jtre* (+ 1 counter))))))))
+           (loop (dequeue *jtre*) (+ 1 counter)))))))
 
 (define (rules-waiting? jtre)
   (not (null? (jtre-queue jtre))))
