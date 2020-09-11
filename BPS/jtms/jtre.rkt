@@ -55,7 +55,7 @@
           title
           (create-jtms (list ':jtms-of title)
                        #:node-string view-node)
-          (hasheq)
+          (make-hasheq)
           0
           0
           debugging
@@ -265,24 +265,24 @@
     c))
 
 (define (insert fact)
-  (let ((datum (referent1 fact)))
+  (let ((d (referent1 fact)))
     (cond
-     (datum (values datum #t))
+     (d (values d #t))
      (else
-      (set! datum
+      (set! d
             (datum (let* ((id (+ 1 (jtre-datum-counter *jtre*)))
                           (_ (set-jtre-datum-counter! *jtre* id)))
                      id)
                    fact
-                   'TODO
+                   'DONE-BELOW
                    (get-dbclass fact)
                    #f
                    '()))
-      (set-datum-tms-node! datum (tms-create-node (jtre-jtms *jtre*) datum))
-      (set-dbclass-facts! (datum-dbclass datum)
-                          (cons datum (dbclass-facts (datum-dbclass datum))))
-      (try-rules datum)
-      (values datum #f)))))
+      (set-datum-tms-node! d (tms-create-node (jtre-jtms *jtre*) d))
+      (set-dbclass-facts! (datum-dbclass d)
+                          (cons d (dbclass-facts (datum-dbclass d))))
+      (try-rules d)
+      (values d #f)))))
 
 (define (get-candidates pattern)
   (dbclass-facts (get-dbclass pattern)))
