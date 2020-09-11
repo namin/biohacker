@@ -252,7 +252,8 @@
 	 ((variable? fact)
 	  (cond ((bound? fact)
 		 (get-dbclass (variable-value fact) *jtre*))
-	        (else (error 'get-dbclass (format "\nDbclass unbound: ~a" fact)))))
+	        (else (error 'get-dbclass (format "\nDbclass unbound: ~a" fact))))
+          (error 'get-dbclass "TODO: not implemented"))
 	 ((symbol? fact)
           (let ((h (hash-ref (jtre-dbclass-table *jtre*) fact #f)))
 	    (cond (h h)
@@ -375,8 +376,9 @@
 (define *rule-procedures* '())
 (define *bound-vars* '())
 (define (do-rule triggers body)
-  (set! *rule-procedures* '())
-  (let ((bound-vars *bound-vars*))
+  (let ((rule-procedures *rule-procedures*)
+        (bound-vars *bound-vars*))
+    (set! *rule-procedures* '())
     (set! *bound-vars* '())
     (let ((index-form
            (build-rule (car triggers)
@@ -384,8 +386,10 @@
                               'rule
                               (make-nested-rule
                                (cdr triggers) body)))))
-      (set! *bound-vars* bound-vars)
-      `(begin ,@*rule-procedures* ,index-form))))
+      (let ((r `(begin ,@*rule-procedures* ,index-form)))
+        (set! *rule-procedures* rule-procedures)
+        (set! *bound-vars* bound-vars)
+        r))))
 
 (define-syntax internal-rule
   (syntax-rules ()
