@@ -367,7 +367,7 @@
 (define-syntax rule
   (syntax-rules ()
     [(_ triggers body ...)
-     (do-rule (quote triggers) (list body ...))]))
+     (do-rule (quote triggers) (list (quote body) ...))]))
 
 (define *rule-procedures* '())
 (define *bound-vars* '())
