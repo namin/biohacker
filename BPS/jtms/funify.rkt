@@ -37,7 +37,7 @@
 (define (generate-match-body0 pattern vars extra-test bound-vars)
   (let ((structure-tests '())
         (var-alist '())
-        (equal-tests #f)
+        (equal-tests '())
         (binding-specs '()))
     (for
      [(test (generate-unify-tests pattern vars '() 'p))]
@@ -52,9 +52,9 @@
             (push! (car (last test)) binding-specs))
            (else (push! test structure-tests))))
     (set! extra-test (sublis var-alist extra-test))
-    (when (pattern-free-variables0 extra-test bound-vars)
+    (when (not (null? (pattern-free-variables0 extra-test bound-vars)))
       (error 'generate-match-body0 (format "Rule test includes free variable: ~a"
-                                          extra-test)))
+                                           extra-test)))
     (values (append structure-tests equal-tests
                     (if extra-test (list extra-test) '()))
             binding-specs)))
