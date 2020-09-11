@@ -10,3 +10,7 @@
 (run-rules)
 (uassume! '(foo a) ':user)
 (in? '(foo a))
+
+(rule ((:intern (foo ?x) :var ?f :test (number? ?x))
+       (:intern (bar ?y) :var ?g :test (number? ?y)))
+      (rassert! (mumble ?x ?y) (test-intern ?f ?g)))

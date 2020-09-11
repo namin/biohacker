@@ -123,7 +123,8 @@
                        (cdr just)))
     datum))
 
-;; TODO: is rassert! needed?
+(define-syntax-rule (rassert! fact just)
+  (assert! (quotize (quote fact)) (quotize (quote just))))
 
 (define (quiet-assert! fact just [jtre *jtre*])
   (with-jtre
@@ -366,7 +367,7 @@
 (define-syntax rule
   (syntax-rules ()
     [(_ triggers body ...)
-     (do-rule triggers (list body ...))]))
+     (do-rule (quote triggers) (list body ...))]))
 
 (define *rule-procedures* '())
 (define *bound-vars* '())
