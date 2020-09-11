@@ -14,7 +14,7 @@
 (in-package :COMMON-LISP-USER)
 
 (defun shakedown-jtre ()
-  (in-jtre (create-jtre "Test One"))
+  (in-jtre (create-jtre "Test One" :debugging t))
   (dolist (form '((rule ((:INTERN (foo ?x) :VAR ?f :TEST (numberp ?x))
 			 (:INTERN (bar ?y) :VAR ?g :TEST (numberp ?y)))
 			(rassert! (mumble ?x ?y) (Test-intern ?f ?g)))
