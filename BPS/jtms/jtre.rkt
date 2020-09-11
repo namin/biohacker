@@ -63,7 +63,8 @@
           0)))
     (change-jtms (jtre-jtms j)
                  #:enqueue-procedure
-                 (lambda (rule) (enqueue rule j)))))
+                 (lambda (rule) (enqueue rule j)))
+    j))
 
 
 (define (change-jtre jtre #:debugging (debugging ':nada))
