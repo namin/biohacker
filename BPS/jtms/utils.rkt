@@ -27,3 +27,11 @@
 
 (define (atom? x)
   (not (pair? x)))
+
+(define (subst new old x)
+  (cond ((null? x) '())
+        ((pair? x)
+         (cons (subst new old (car x))
+               (subst new old (cdr x))))
+        ((eq? old x) new)
+        (else x)))

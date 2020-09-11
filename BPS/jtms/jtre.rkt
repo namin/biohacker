@@ -385,10 +385,6 @@
                              (cdr triggers) body)))))
     `(begin ,@*rule-procedures* ,index-form)))
 
-;; TODO?
-(define (subst new old lst)
-  lst)
-
 (define-syntax internal-rule
   (syntax-rules ()
     [(_ triggers body ...)
