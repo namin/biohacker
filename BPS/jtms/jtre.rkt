@@ -234,24 +234,21 @@
 (define (get-dbclass fact [jtre *jtre*])
   (with-jtre
    jtre
-   (let ((dbclass '()))
-     (cond ((null? fact) (error 'get-dbclass "\n NIL can't be a dbclass."))
-	   ((pair? fact) (get-dbclass (car fact) *jtre*))
-	   ((variable? fact)
-	    (cond ((bound? fact)
-		   (get-dbclass (variable-value fact) *jtre*))
-	          (else (error 'get-dbclass (format "\nDbclass unbound: ~a" fact)))))
-	   ((symbol? fact)
-            (let ((h (hash-ref (jtre-dbclass-table *jtre*) fact)))
-	      (cond (h
-                     (set! dbclass h)
-		     dbclass)
-	            (else (set! dbclass (dbclass fact *jtre* '() '()))
+   (cond ((null? fact) (error 'get-dbclass "\n NIL can't be a dbclass."))
+	 ((pair? fact) (get-dbclass (car fact) *jtre*))
+	 ((variable? fact)
+	  (cond ((bound? fact)
+		 (get-dbclass (variable-value fact) *jtre*))
+	        (else (error 'get-dbclass (format "\nDbclass unbound: ~a" fact)))))
+	 ((symbol? fact)
+          (let ((h (hash-ref (jtre-dbclass-table *jtre*) fact #f)))
+	    (cond (h h)
+	          (else (let ((dc (dbclass fact *jtre* '() '())))
 		          (hash-set! (jtre-dbclass-table *jtre*)
                                      fact
-			             dbclass)
-		          dbclass))))
-	   (else (error 'get-dbclass (format "Bad dbclass type: ~a" fact)))))))
+			             dc)
+		          dc)))))
+	 (else (error 'get-dbclass (format "Bad dbclass type: ~a" fact))))))
 
 
 (define (referent fact [virtual? #f] [jtre *jtre*])
