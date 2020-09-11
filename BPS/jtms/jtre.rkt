@@ -53,7 +53,7 @@
   (let ((j
          (jtre
           title
-          (create-jtms (list #:jtms-of title)
+          (create-jtms (list ':jtms-of title)
                        #:node-string view-node)
           (hasheq)
           0
