@@ -14,19 +14,14 @@
 (define-namespace-anchor anc)
 (define ns (namespace-anchor->namespace anc))
 
-(define r
-  (rule ((:intern (foo ?x) :var ?f :test (number? ?x))
-         (:intern (bar ?y) :var ?g :test (number? ?y)))
-        (rassert! (mumble ?x ?y) (test-intern ?f ?g))))
-(pretty-print r)
-(eval r ns)
+(rule ((:intern (foo ?x) :var ?f :test (number? ?x))
+       (:intern (bar ?y) :var ?g :test (number? ?y)))
+      (rassert! (mumble ?x ?y) (test-intern ?f ?g)))
 
-(define r2
-  (rule ((:intern (foo ?x) :var ?f :test #t)
-         (:intern (bar ?y) :var ?g :test #t))
-        (rassert! (mumble ?x ?y) (test-intern ?f ?g))))
-(pretty-print r2)
-(eval r2 ns)
+
+(rule ((:intern (foo ?x) :var ?f :test #t)
+       (:intern (bar ?y) :var ?g :test #t))
+      (rassert! (mumble ?x ?y) (test-intern ?f ?g)))
 
 (referent '(foo 2) #t)
 (referent '(bar 2) #t)

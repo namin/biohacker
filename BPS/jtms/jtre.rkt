@@ -1,8 +1,10 @@
 #lang racket
 
 (require "utils.rkt")
+(require (for-syntax "utils.rkt"))
 (require "jtms.rkt")
 (require "unify.rkt")
+(require (for-syntax "unify.rkt"))
 (require "funify.rkt")
 (require (for-syntax "funify.rkt"))
 (require compatibility/defmacro)
@@ -127,7 +129,11 @@
 
 
 (defmacro rassert! (fact just)
-  `(assert! ,(quotize fact) ,(quotize just)))
+  (expand-rassert! fact just))
+
+(begin-for-syntax
+ (define (expand-rassert! fact just)
+   `(assert! ,(quotize fact) ,(quotize just))))
 
 (define (quiet-assert! fact just [jtre *jtre*])
   (with-jtre
@@ -359,60 +365,69 @@
      (fprintf port "<Rule ~a>" (jrule-id this)))]
   )
 
-(define *file-counter* 0)
-(define *file-prefix* "")
+(begin-for-syntax
+ (define *file-counter* 0)
+ (define *file-prefix* "")
 
-(define (rule-file prefix)
-  (set! *file-counter* 0)
-  (set! *file-prefix* prefix))
+ (define (rule-file prefix)
+   (set! *file-counter* 0)
+   (set! *file-prefix* prefix)))
 
 ;;;; Building and installing rules
 
-(define-syntax rule
-  (syntax-rules ()
-    [(_ triggers body ...)
-     (do-rule (quote triggers) (list (quote body) ...))]))
+(defmacro rule (triggers . body)
+  (do-rule triggers body))
 
-(define *rule-procedures* '())
-(define *bound-vars* '())
-(define (do-rule triggers body)
-  (let ((rule-procedures *rule-procedures*)
-        (bound-vars *bound-vars*))
-    (set! *rule-procedures* '())
-    (set! *bound-vars* '())
-    (let ((index-form
-           (build-rule (car triggers)
-                       (subst 'internal-rule
-                              'rule
-                              (make-nested-rule
-                               (cdr triggers) body)))))
-      (let ((r `(begin ,@*rule-procedures* ,index-form)))
-        (set! *rule-procedures* rule-procedures)
-        (set! *bound-vars* bound-vars)
-        r))))
+(begin-for-syntax
+ (define *rule-procedures* '())
+ (define *bound-vars* '())
+ (define (do-rule triggers body)
+   (let ((rule-procedures *rule-procedures*)
+         (bound-vars *bound-vars*))
+     (set! *rule-procedures* '())
+     (set! *bound-vars* '())
+     (let ((index-form
+            (build-rule (car triggers)
+                        (subst 'internal-rule
+                               'rule
+                               (make-nested-rule
+                                (cdr triggers) body)))))
+       (let ((r `(begin ,@*rule-procedures* ,index-form)))
+         (set! *rule-procedures* rule-procedures)
+         (set! *bound-vars* bound-vars)
+         ;;(list 'quote r) ;; for debugging
+         r
+         )))))
 
-(define-syntax internal-rule
-  (syntax-rules ()
-    [(_ triggers body ...)
-     (add-internal-rule
-      (car triggers)
-      (make-nested-rule (cdr triggers) (list body ...)))]))
+(defmacro internal-rule (triggers . body)
+  (apply expand-internal-rule triggers body))
 
-(define (make-nested-rule triggers body)
-  (if (null? triggers)
-      body
-      (add-internal-rule
-       (car triggers)
-       (make-nested-rule (cdr triggers) body))))
+(begin-for-syntax
+ (define (expand-internal-rule triggers . body)
+   `(add-internal-rule
+     ,(car triggers)
+     ,(make-nested-rule (cdr triggers) body)))
+ 
+ (define (make-nested-rule triggers body)
+   (if (null? triggers)
+       body
+       `((add-internal-rule
+          ,(car triggers)
+          ,(make-nested-rule (cdr triggers) body))))))
+ (define (make-nested-rule triggers body)
+   (if (null? triggers)
+       body
+       `((add-internal-rule
+          ,(car triggers)
+          ,(make-nested-rule (cdr triggers) body)))))
 
-(define-syntax add-internal-rule
-  (syntax-rules ()
-    [(_ trigger body)
-     (build-rule trigger body)]))
+ (defmacro add-internal-rule (trigger body)
+   (build-rule trigger body))
 
 ;;;; Details of rule-building
 
-(define (build-rule trigger body)
+(begin-for-syntax
+ (define (build-rule trigger body)
   (let-values (((pattern condition var test) (parse-rule-trigger trigger)))
     (let ((match-procedure
            (generate-match-procedure pattern var test condition))
@@ -439,99 +454,107 @@
                    ,@(scratchout tv *bound-vars*))))
              (cadr body-procedure))))))
 
-(define (parse-rule-trigger trigger)
-  (values (cadr trigger)
-          (if (member (car trigger) '(:intern :in :out))
-              (car trigger)
-              (error
-               'parse-rule-trigger
-               (format
-                "\n Unknown belief condition ~a in trigger ~a."
-                (car trigger) trigger)))
-          (cadr (member ':var (cddr trigger)))
-          (cadr (member ':test (cddr trigger)))))
+ (define (parse-rule-trigger trigger)
+   (values (cadr trigger)
+           (if (member (car trigger) '(:intern :in :out))
+               (car trigger)
+               (error
+                'parse-rule-trigger
+                (format
+                 "\n Unknown belief condition ~a in trigger ~a."
+                 (car trigger) trigger)))
+           (cadr (member ':var (cddr trigger)))
+           (cadr (member ':test (cddr trigger)))))
 
-(define (get-trigger-dbclass trigger)
-  (cond ((variable? trigger)
-         (if (member trigger *bound-vars*) trigger
-             (error 'get-trigger-dbclass (format "\nTrigger dbclass is unbound -- ~a" trigger))))
-        ((atom? trigger) (list 'quote trigger))
-        (else (get-trigger-dbclass (car trigger)))))
-
-(define (atom? x)
-  (not (pair? x)))
+ (define (get-trigger-dbclass trigger)
+   (cond ((variable? trigger)
+          (if (member trigger *bound-vars*) trigger
+              (error 'get-trigger-dbclass (format "\nTrigger dbclass is unbound -- ~a" trigger))))
+         ((atom? trigger) (list 'quote trigger))
+         (else (get-trigger-dbclass (car trigger))))))
 
 ;;;; Generating the body function
 
-(define-syntax with-pushed-variable-bindings
-  (syntax-rules ()
-    [(_ new-bindings body ...)
-     (let ((old-bound-vars *bound-vars*))
-       (set! *bound-vars*
-             (append new-bindings
-                     (scratchout new-bindings *bound-vars*)))
-       (let ((r (begin body ...)))
-         (set! *bound-vars* old-bound-vars)
-         r))]))
+(begin-for-syntax
+ (define-syntax with-pushed-variable-bindings
+   (syntax-rules ()
+     [(_ new-bindings body ...)
+      (let ((old-bound-vars *bound-vars*))
+        (set! *bound-vars*
+              (append new-bindings
+                      (scratchout new-bindings *bound-vars*)))
+        (let ((r (begin body ...)))
+          (set! *bound-vars* old-bound-vars)
+          r))]))
 
-(define (generate-body-procedure pattern condition var body)
-  (let ((newly-bound (pattern-free-variables pattern)))
-    (when var (push! var newly-bound))
-    (set! body (with-pushed-variable-bindings
-                newly-bound (fully-expand-body body)))
-    (let ((env (append
-                newly-bound
-                (scratchout newly-bound *bound-vars*))))
-      (unless (eq? condition ':intern)
-        (push! 'trigger-node env))
-      (let ((fname (generate-rule-procedure-name pattern)))
-        `(define (,fname ,@env)
-           ,@(cond ((eq? condition ':intern) body) ;; Just do it
-                   (else ;; Must check and see if the node's belief state
-                         ;; matches the rule's requirements
-                    `((cond
-                       ((,(cond
-                           ((eq? condition ':in) in-node?)
-                           ((eq? condition ':out) out-node?)
-                           (else (error generate-body-procedure
-                                        (format "~a bad condition" condition))))
-                         trigger-node) ,@body)
-                       (else
-                        (push! (list ',fname ,@env)
-                               ,(cond
-                                 ((eq? condition ':in)
-                                  '(tms-node-in-rules trigger-node))
-                                 ((eq? condition ':out)
-                                  '(tms-node-out-rules trigger-node))))))))))))))
+ (define (generate-body-procedure pattern condition var body)
+   (let ((newly-bound (pattern-free-variables pattern)))
+     (when var (push! var newly-bound))
+     (set! body (with-pushed-variable-bindings
+                 newly-bound (fully-expand-body body)))
+     (let ((env (append
+                 newly-bound
+                 (scratchout newly-bound *bound-vars*))))
+       (unless (eq? condition ':intern)
+         (push! 'trigger-node env))
+       (let ((fname (generate-rule-procedure-name pattern)))
+         `(define (,fname ,@env)
+            ,@(cond ((eq? condition ':intern) body) ;; Just do it
+                    (else ;; Must check and see if the node's belief state
+                     ;; matches the rule's requirements
+                     `((cond
+                        ((,(cond
+                            ((eq? condition ':in) 'in-node?)
+                            ((eq? condition ':out) 'out-node?)
+                            (else (error generate-body-procedure
+                                         (format "~a bad condition" condition))))
+                          trigger-node) ,@body)
+                        (else
+                         (push! (list ',fname ,@env)
+                                ,(cond
+                                  ((eq? condition ':in)
+                                   '(tms-node-in-rules trigger-node))
+                                  ((eq? condition ':out)
+                                   '(tms-node-out-rules trigger-node))))))))))))))
 
-(define (generate-match-procedure pattern var test condition)
-  (let-values (((tests binding-specs)
+ (define (generate-match-procedure pattern var test condition)
+   (let-values (((tests binding-specs)
                  (generate-match-body pattern (pattern-free-variables pattern) test)))
-    `(define (,(generate-rule-procedure-name pattern)
-              p ,@*bound-vars*)
-       ;;first arg, p, is the pattern
-       (if (and ,@tests)
-           (values #t (list ,@(if var '(p) '())
-                            ,@(reverse binding-specs))
-                   ,(if (eq? condition ':intern) #f #t))
-           (values #f #f #f)))))
+     `(define (,(generate-rule-procedure-name pattern)
+               p ,@*bound-vars*)
+        ;;first arg, p, is the pattern
+        (if (and ,@tests)
+            (values #t (list ,@(if var '(p) '())
+                             ,@(reverse binding-specs))
+                    ,(if (eq? condition ':intern) #f #t))
+            (values #f #f #f)))))
 
-(define (scratchout l1 l2)  ;non-destructive and order-preserving
-  ;;(dolist (el1 l1 l2) (setq l2 (remove el1 l2)))
-  (remove* l1 l2))
+ (define (scratchout l1 l2)  ;non-destructive and order-preserving
+   ;;(dolist (el1 l1 l2) (setq l2 (remove el1 l2)))
+   (remove* l1 l2))
 
-(define (generate-rule-procedure-name pattern)
-  (string->symbol (format "~a-~a-~a" *file-prefix* pattern (inc! *file-counter*))))
+ (define (generate-rule-procedure-name pattern)
+   (string->symbol (format "~a-~a-~a" *file-prefix* pattern (inc! *file-counter*)))))
 
 ;;;; Recursive macroexpansion
 
-(define (fully-expand-body body)
-  ;; hack
-  (if (symbol? (car body))
-      (list body)
-      body)
-  ;; TODO
-  )
+(begin-for-syntax
+ (define *macros-to-expand*
+   (list
+    (cons 'internal-rule expand-internal-rule)
+    (cons 'add-internal-rule build-rule)
+    (cons 'rassert! expand-rassert!)))
+ 
+ (define (fully-expand-body body)
+   (cond
+    ((null? body) '())
+    ((not (pair? body)) body)
+    (else
+     (let ((m (assq (car body) *macros-to-expand*)))
+       (if m
+           (fully-expand-body (apply (cdr m) (cdr body)))
+           (cons (fully-expand-body (car body))
+                 (fully-expand-body (cdr body)))))))))
 
 ;;;; Running rules
 
@@ -587,9 +610,10 @@
 
 ;; funify
 
-(define (pattern-free-variables pattern)
-  (pattern-free-variables0 pattern *bound-vars*))
+(begin-for-syntax
+ (define (pattern-free-variables pattern)
+   (pattern-free-variables0 pattern *bound-vars*))
 
-(define (generate-match-body pattern vars extra-test)
-  (generate-match-body0 pattern vars extra-test *bound-vars*))
+ (define (generate-match-body pattern vars extra-test)
+   (generate-match-body0 pattern vars extra-test *bound-vars*)))
 
