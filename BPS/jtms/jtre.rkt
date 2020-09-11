@@ -430,7 +430,7 @@
                (unless (eq? condition ':intern)
                  (push! 'trigger-node tv))
                `(lambda ,tv
-                  (,(cadr body-procedure) ,@tv
+                  (,(caadr body-procedure) ,@tv
                    ,@(scratchout tv *bound-vars*))))
              (cadr body-procedure))))))
 
