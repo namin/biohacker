@@ -544,7 +544,7 @@
   (for ([rule (dbclass-rules (datum-dbclass datum))])
        (try-rule-on rule datum)))
 
-(define (try-rule-on (rule datum))
+(define (try-rule-on rule datum)
   (with-jtre
    (dbclass-jtre (datum-dbclass datum))
    (let-values (((okay? bindings node?) ((jrule-matcher rule) (datum-lisp-form datum))))
