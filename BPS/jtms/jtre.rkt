@@ -267,7 +267,24 @@
     c))
 
 (define (insert fact)
-  'TODO)
+  (let ((datum (referent1 fact)))
+    (cond
+     (datum (values datum #t))
+     (else
+      (set! datum
+            (datum (let* ((id (+ 1 (jtre-datum-counter *jtre*)))
+                          (_ (set-jtre-datum-counter! *jtre* id)))
+                     id)
+                   fact
+                   'TODO
+                   (get-dbclass fact)
+                   #f
+                   '()))
+      (set-datum-tms-node! datum (tms-create-node (jtre-jtms *jtre*) datum))
+      (set-dbclass-facts! (datum-dbclass datum)
+                          (cons datum (dbclass-facts (datum-dbclass datum))))
+      (try-rules datum)
+      (values datum #f)))))
 
 (define (get-candidates pattern)
   (dbclass-facts (get-dbclass pattern)))
