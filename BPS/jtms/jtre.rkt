@@ -395,9 +395,10 @@
        (let ((r `(begin ,@*rule-procedures* ,index-form)))
          (set! *rule-procedures* rule-procedures)
          (set! *bound-vars* bound-vars)
-         `(begin
-            (pretty-print ,(list 'quote r)) ;; for debugging
-            ,r)
+         ;; `(begin
+         ;;    (pretty-print ,(list 'quote r)) ;; for debugging
+         ;;    ,r)
+         r
          )))))
 
 (defmacro internal-rule (triggers . body)
@@ -511,12 +512,13 @@
                                          (format "~a bad condition" condition))))
                           trigger-node) ,@body)
                         (else
-                         (push! (list ',fname ,@env)
-                                ,(cond
-                                  ((eq? condition ':in)
-                                   '(tms-node-in-rules trigger-node))
-                                  ((eq? condition ':out)
-                                   '(tms-node-out-rules trigger-node))))))))))))))
+                         ,(cond
+                           ((eq? condition ':in)
+                            `(set-tms-node-in-rules! trigger-node
+                              (cons (list ,fname ,@env) (tms-node-in-rules trigger-node))))
+                           ((eq? condition ':out)
+                            `(set-tms-node-out-rules! trigger-node
+                              (cons (list ,fname ,@env) (tms-node-out-rules trigger-node)))))))))))))))
 
  (define (generate-match-procedure pattern var test condition)
    (let-values (((tests binding-specs)
