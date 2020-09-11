@@ -70,11 +70,11 @@
 ;;;    to be tested will be in variable "P".
 ;;; Tests are returned in backward order.
 ;;; (generate-unify-tests '(foo ?x) nil nil 'P)
-;;;     returns:    '((NULL (CDR (CDR P)))
-;;;                   (EQUAL ?X (CAR (CDR P)))
-;;;                   (CONSP (CDR P))
-;;;                   (EQUAL (QUOTE FOO) (CAR P))
-;;;                   (CONSP P))
+;;;     returns:    '((NULL? (CDR (CDR P)))
+;;;                   (EQUAL? ?X (CAR (CDR P)))
+;;;                   (PAIR? (CDR P))
+;;;                   (EQUAL? (QUOTE FOO) (CAR P))
+;;;                   (PAIR? P))
 
 (define (generate-unify-tests pattern vars tests path)
   (cond ((null? pattern)
