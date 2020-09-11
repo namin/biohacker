@@ -6,7 +6,7 @@
 
 (define (quotize pattern)
   (cond
-   ((null? pattern) '())
+   ((null? pattern) ''())
    ((variable? pattern) pattern)
    ((not (pair? pattern)) (list 'quote pattern))
    ((eq? (car pattern) ':eval) (cadr pattern))

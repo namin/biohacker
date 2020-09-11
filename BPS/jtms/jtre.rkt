@@ -4,6 +4,8 @@
 (require "jtms.rkt")
 (require "unify.rkt")
 (require "funify.rkt")
+(require (for-syntax "funify.rkt"))
+(require compatibility/defmacro)
 (provide (all-defined-out))
 
 ;; jinter
@@ -123,8 +125,9 @@
                        (cdr just)))
     datum))
 
-(define-syntax-rule (rassert! fact just)
-  (assert! (quotize (quote fact)) (quotize (quote just))))
+
+(defmacro rassert! (fact just)
+  `(assert! ,(quotize fact) ,(quotize just)))
 
 (define (quiet-assert! fact just [jtre *jtre*])
   (with-jtre
