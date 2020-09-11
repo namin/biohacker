@@ -43,9 +43,9 @@
 
 (define-syntax debugging-jtre
   (syntax-rules ()
-    [(_  jtre msg e* ...)
+    [(_  msg e* ...)
      (let ((args (list e* ...)))
-       (when (jtre-debugging jtre)
+       (when (jtre-debugging *jtre*)
          (apply printf msg args)))
      ]))
 
@@ -568,7 +568,12 @@
   (set-jtre-queue! jtre (cons rule (jtre-queue jtre))))
 
 (define (dequeue jtre)
-  (set-jtre-queue! jtre (cdr (jtre-queue jtre))))
+  (let ((q (jtre-queue jtre)))
+    (if (null? q)
+        '()
+        (begin
+          (set-jtre-queue! jtre (cdr q))
+          (car q)))))
 
 ;; funify
 
