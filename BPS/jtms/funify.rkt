@@ -47,9 +47,9 @@
                   (append (generate-pairwise-tests (cdr test))
                           equal-tests))
             (when extra-test
-                (push! (cons (car test) (car (last test)))
+                (push! (cons (car test) (last test))
                        var-alist))
-            (push! (car (last test)) binding-specs))
+            (push! (last test) binding-specs))
            (else (push! test structure-tests))))
     (set! extra-test (sublis var-alist extra-test))
     (when (not (null? (pattern-free-variables0 extra-test bound-vars)))
