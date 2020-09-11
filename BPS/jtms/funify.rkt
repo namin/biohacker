@@ -113,7 +113,7 @@
 (define (add-assoc-value tests pattern path)
   (cond
    ((null? tests) '())
-   ((equal? (car tests) pattern)
+   ((equal? (caar tests) pattern)
     (cons (cons (caar tests)
                 (cons path (cdar tests)))
           (cdr tests)))
