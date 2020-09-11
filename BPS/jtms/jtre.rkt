@@ -147,7 +147,8 @@
         (format "Fact ~a assumed because of ~a assumed again because of ~a"
                 (show-datum datum)
                 (datum-assumption? datum)
-                reason)))))))
+                reason))))
+     datum)))
 
 (define (already-assumed? fact)
   (let ((r (referent fact)))
@@ -262,7 +263,7 @@
 (define (referent fact [virtual? #f] [jtre *jtre*])
   (with-jtre
    jtre
-   (if virtual? (insert fact) (referent1 fact))))
+   (if virtual? (let-values (((d inserted)  (insert fact))) d) (referent1 fact))))
 
 (define (referent1 fact)
   (let ((c #f))
