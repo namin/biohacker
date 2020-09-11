@@ -5,3 +5,4 @@
 
 (in-jtre (create-jtre "Test One"))
 (referent '(foo 1) #t)
+(fetch '(foo 1))

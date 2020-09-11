@@ -210,7 +210,15 @@
        (assumptions-of-node
         (datum-tms-node (referent fact #t)))))
 
-;; TODO: fetch
+(define (fetch pattern [jtre *jtre*])
+  (with-jtre
+   jtre
+   (let ((unifiers '()))
+     (for ([candidate (get-candidates pattern)])
+          (let ((bindings (unify pattern (datum-lisp-form candidate))))
+            (unless (eq? bindings ':fail)
+              (push! (sublis bindings pattern) unifiers))))
+     unifiers)))
 
 
 ;;;; More display-intensive procedures
