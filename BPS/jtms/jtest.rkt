@@ -20,3 +20,16 @@
         (rassert! (mumble ?x ?y) (test-intern ?f ?g))))
 (pretty-print r)
 (eval r ns)
+
+(define r2
+  (rule ((:intern (foo ?x) :var ?f :test #t)
+         (:intern (bar ?y) :var ?g :test #t))
+        (rassert! (mumble ?x ?y) (test-intern ?f ?g))))
+(pretty-print r2)
+(eval r2 ns)
+
+(referent '(foo 2) #t)
+(referent '(bar 2) #t)
+
+(run-rules)
+(fetch '(mumble 1 1))
