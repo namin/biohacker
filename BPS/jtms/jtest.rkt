@@ -18,5 +18,5 @@
   (rule ((:intern (foo ?x) :var ?f :test (number? ?x))
          (:intern (bar ?y) :var ?g :test (number? ?y)))
         (rassert! (mumble ?x ?y) (test-intern ?f ?g))))
-
+(pretty-print r)
 (eval r ns)
