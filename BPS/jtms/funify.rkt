@@ -92,7 +92,7 @@
                  (else (cons (list pattern path) tests)))))
         ;; if variable, it must be bound so test
         ;; against the current value.
-        ((variable? pattern) (cons `(equal ,pattern ,path)
+        ((variable? pattern) (cons `(equal? ,pattern ,path)
                                    tests))
         ;; if not a list, then see if equal
         ((number? pattern)
