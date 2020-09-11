@@ -376,14 +376,16 @@
 (define *bound-vars* '())
 (define (do-rule triggers body)
   (set! *rule-procedures* '())
-  (set! *bound-vars* '())
-  (let ((index-form
-         (build-rule (car triggers)
-                     (subst 'internal-rule
-                            'rule
-                            (make-nested-rule
-                             (cdr triggers) body)))))
-    `(begin ,@*rule-procedures* ,index-form)))
+  (let ((bound-vars *bound-vars*))
+    (set! *bound-vars* '())
+    (let ((index-form
+           (build-rule (car triggers)
+                       (subst 'internal-rule
+                              'rule
+                              (make-nested-rule
+                               (cdr triggers) body)))))
+      (set! *bound-vars* bound-vars)
+      `(begin ,@*rule-procedures* ,index-form))))
 
 (define-syntax internal-rule
   (syntax-rules ()
