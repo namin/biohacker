@@ -509,7 +509,7 @@
            (values #t (list ,@(if var '(p) '())
                             ,@(reverse binding-specs))
                    ,(if (eq? condition ':intern) #f #t))
-           #f))))
+           (values #f #f #f)))))
 
 (define (scratchout l1 l2)  ;non-destructive and order-preserving
   ;;(dolist (el1 l1 l2) (setq l2 (remove el1 l2)))
