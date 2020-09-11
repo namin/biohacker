@@ -395,8 +395,9 @@
        (let ((r `(begin ,@*rule-procedures* ,index-form)))
          (set! *rule-procedures* rule-procedures)
          (set! *bound-vars* bound-vars)
-         ;;(list 'quote r) ;; for debugging
-         r
+         `(begin
+            (pretty-print ,(list 'quote r)) ;; for debugging
+            ,r)
          )))))
 
 (defmacro internal-rule (triggers . body)
