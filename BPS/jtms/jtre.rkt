@@ -254,21 +254,21 @@
   (with-jtre
    jtre
    (cond ((null? fact) (error 'get-dbclass "\n NIL can't be a dbclass."))
-	 ((pair? fact) (get-dbclass (car fact) *jtre*))
-	 ((variable? fact)
-	  (cond ((bound? fact)
-		 (get-dbclass (variable-value fact) *jtre*))
-	        (else (error 'get-dbclass (format "\nDbclass unbound: ~a" fact))))
+         ((pair? fact) (get-dbclass (car fact) *jtre*))
+         ((variable? fact)
+          (cond ((bound? fact)
+                 (get-dbclass (variable-value fact) *jtre*))
+                (else (error 'get-dbclass (format "\nDbclass unbound: ~a" fact))))
           (error 'get-dbclass "TODO: not implemented"))
-	 ((symbol? fact)
+         ((symbol? fact)
           (let ((h (hash-ref (jtre-dbclass-table *jtre*) fact #f)))
-	    (cond (h h)
-	          (else (let ((dc (dbclass fact *jtre* '() '())))
-		          (hash-set! (jtre-dbclass-table *jtre*)
+            (cond (h h)
+                  (else (let ((dc (dbclass fact *jtre* '() '())))
+                          (hash-set! (jtre-dbclass-table *jtre*)
                                      fact
-			             dc)
-		          dc)))))
-	 (else (error 'get-dbclass (format "Bad dbclass type: ~a" fact))))))
+                                     dc)
+                          dc)))))
+         (else (error 'get-dbclass (format "Bad dbclass type: ~a" fact))))))
 
 
 (define (referent fact [virtual? #f] [jtre *jtre*])
@@ -407,7 +407,7 @@
    `(add-internal-rule
      ,(car triggers)
      ,(make-nested-rule (cdr triggers) body)))
- 
+
  (define (make-nested-rule triggers body)
    (if (null? triggers)
        body
@@ -544,7 +544,7 @@
     (cons 'internal-rule expand-internal-rule)
     (cons 'add-internal-rule build-rule)
     (cons 'rassert! expand-rassert!)))
- 
+
  (define (fully-expand-body body)
    (cond
     ((null? body) '())
@@ -616,4 +616,3 @@
 
  (define (generate-match-body pattern vars extra-test)
    (generate-match-body0 pattern vars extra-test *bound-vars*)))
-
