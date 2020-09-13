@@ -331,7 +331,7 @@
 
 ;;;; More query routines
 
-(define (show-datum node)
+(define (show-datum datum)
   (format "~a" (datum-lisp-form datum)))
 
 (define (get-datum (num [jtre *jtre*]))
