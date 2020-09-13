@@ -52,8 +52,7 @@
                (((nogood? asns)
                  (try-in-context
                   choice
-                  (let ((rest-choice-sets (cdr choice-sets)))
-                    (lambda () (solve-queens-puzzle rest-choice-sets)))
+                  (lambda () (solve-queens-puzzle (cdr choice-sets)))
                   *jtre*)))
              (inc! *n-assumptions*)
              (when nogood?
@@ -80,13 +79,13 @@
           (set! result
                 (with-handlers
                  ([(lambda (x) (and (pair? x) (eq? (car x) 'try-contradiction-found)))
-                   (lambda (x) cdr x)])
+                   (lambda (x) (cdr x))])
                  (assume! asn try-marker jtre))))
         (when (and (pair? result) (eq? (car result) ':asns))
           (raise `(try-in-context #t ,(map view-node (cdr result)))))
         (set! result (with-handlers
                       ([(lambda (x) (and (pair? x) (eq? (car x) 'try-contradiction-found)))
-                        (lambda (x) cdr x)])
+                        (lambda (x) (cdr x))])
                       (run-rules jtre)))
         (when (and (pair? result) (eq? (car result) ':asns))
           (raise `(try-in-context #t ,(map view-node (cdr result)))))
