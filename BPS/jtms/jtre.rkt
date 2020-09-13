@@ -169,8 +169,8 @@
 (define (retract! fact [just 'user] [quiet? #f] [jtre *jtre*])
   (with-jtre
    jtre
-   (let ((datum (referent fact #t))
-         (node (datum-tms-node datum)))
+   (let* ((datum (referent fact #t))
+          (node (datum-tms-node datum)))
      (cond
       ((not (tms-node-assumption? node))
        (unless quiet?
