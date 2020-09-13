@@ -80,18 +80,18 @@
                 (with-handlers
                  ([(lambda (x) (and (pair? x) (eq? (car x) 'try-contradiction-found)))
                    (lambda (x) (cdr x))])
-                 (assume! asn try-marker jtre))))
-        (when (and (pair? result) (eq? (car result) ':asns))
-          (raise `(try-in-context #t ,(map view-node (cdr result)))))
-        (set! result (with-handlers
-                      ([(lambda (x) (and (pair? x) (eq? (car x) 'try-contradiction-found)))
-                        (lambda (x) (cdr x))])
-                      (run-rules jtre)))
-        (when (and (pair? result) (eq? (car result) ':asns))
-          (raise `(try-in-context #t ,(map view-node (cdr result)))))
-        (thunk)
-        (retract! asn try-marker #t)
-        (raise `(try-in-context #f #f)))))))
+                 (assume! asn try-marker jtre)))
+          (when (and (pair? result) (eq? (car result) ':asns))
+            (raise `(try-in-context #t ,(map view-node (cdr result)))))
+          (set! result (with-handlers
+                        ([(lambda (x) (and (pair? x) (eq? (car x) 'try-contradiction-found)))
+                          (lambda (x) (cdr x))])
+                        (run-rules jtre)))
+          (when (and (pair? result) (eq? (car result) ':asns))
+            (raise `(try-in-context #t ,(map view-node (cdr result)))))
+          (thunk)
+          (retract! asn try-marker #t)
+          (raise `(try-in-context #f #f))))))))
 
 (define (try-contradiction-handler contras jtms asn marker jtre)
   (with-jtre
