@@ -10,6 +10,13 @@
 (bps-load-file (make-bps-path "jtms") "jqueens" :action :compile)
 (test-queens 1 8)
 
+(setup-queens-puzzle 2 t)
+(assume! '(queen 1 1) '(try queen 1 1))
+(assume! '(queen 2 1) '(try queen 2 1))
+(run-rules)
+(assume! '(queen 1 2) '(try queen 1 2))
+(run-rules)
+
 (bps-load-file (make-bps-path "jtms") "jtest" :action :compile)
 (shakedown-jtre)
 
