@@ -129,3 +129,13 @@
               (printf "~a"
                       (if (member `(queen ,(+ 1 i) ,(+ 1 j)) solution)
                           "Q" "-"))))))
+
+;; regression tests
+(define (assumptions-of-node-not-empty-second-time)
+  (setup-queens-puzzle 2 #t)
+  (change-jtms (jtre-jtms *jtre*) #:debugging #t)
+  (assume! '(queen 1 1) '(try queen 1 1))
+  (assume! '(queen 2 1) '(try queen 2 1))
+  (run-rules)
+  (assume! '(queen 2 2) '(try queen 2 2))
+  (run-rules))
