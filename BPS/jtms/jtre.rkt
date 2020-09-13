@@ -127,7 +127,6 @@
                        (cdr just)))
     datum))
 
-
 (defmacro rassert! (fact just)
   (expand-rassert! fact just))
 
@@ -186,7 +185,13 @@
        (display (format "\n~a is not source of assumption for ~a" just fact))))
      node)))
 
-;; TODO: is rretract! needed?
+(defmacro rretract! (fact just)
+  (expand-rretract! fact just))
+
+(begin-for-syntax
+ (define (expand-rretract! fact just)
+   `(retract! ,(quotize fact) ,(quotize just))))
+
 
 (define (contradiction fact [jtre *jtre*])
   (with-jtre
@@ -549,7 +554,8 @@
    (list
     (cons 'internal-rule expand-internal-rule)
     (cons 'add-internal-rule build-rule)
-    (cons 'rassert! expand-rassert!)))
+    (cons 'rassert! expand-rassert!)
+    (cons 'rretract! expand-rretract!)))
 
  (define (fully-expand-body body)
    (cond
