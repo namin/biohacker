@@ -82,13 +82,13 @@
                  ([(lambda (x) (and (pair? x) (eq? (car x) 'try-contradiction-found)))
                    (lambda (x) cdr x)])
                  (assume! asn try-marker jtre))))
-        (when (and (pair? result) (eq? (car result ':asns)))
+        (when (and (pair? result) (eq? (car result) ':asns))
           (raise `(try-in-context #t ,(map view-node (cdr result)))))
         (set! result (with-handlers
                       ([(lambda (x) (and (pair? x) (eq? (car x) 'try-contradiction-found)))
                         (lambda (x) cdr x)])
                       (run-rules jtre)))
-        (when (and (pair? result) (eq? (car result ':asns)))
+        (when (and (pair? result) (eq? (car result) ':asns))
           (raise `(try-in-context #t ,(map view-node (cdr result)))))
         (thunk)
         (retract! asn try-marker #t)
@@ -99,14 +99,14 @@
    jtre
    (unless (eq? jtms (jtre-jtms *jtre*))
      (error 'try-contradiction-handler (format "\nHigh contradiction weirdness: ~a not jtms for ~a" jtms *jtre*)))
-   (when (and (not (null? contras)) (not asn))
+   (when (and (not (null? contras)) asn)
      (let ((node (get-tms-node asn)))
        (for
         ([cnode contras])
         (let ((asns (assumptions-of-node cnode)))
           (when (member node asns)
             (retract! asn marker)
-            (raise `(try-conradition-found (:asns . ,asns))))))))))
+            (raise `(try-contradiction-found (:asns . ,asns))))))))))
 
 ;;; Other helpers
 
