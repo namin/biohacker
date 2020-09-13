@@ -37,9 +37,9 @@
      (if (eq? jtre *jtre*)
          (begin body ...)
          (let ((old-jtre *jtre*))
-           (set! *jtre* jtre)
+           (in-jtre jtre)
            (let ((r (begin body ...)))
-             (set! *jtre* old-jtre)
+             (in-jtre old-jtre)
              r)))]))
 
 (define (in-jtre jtre)
