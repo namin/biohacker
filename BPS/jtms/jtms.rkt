@@ -71,7 +71,7 @@
 (define (tms-node-premise? node)
   (let ([support (tms-node-support node)])
     (and support ;; other than #f everything is true even '()
-         (not (equal? support ':ENABLED-ASSUMPTION)) ;; :ENABLED-ASSUMPTION ?
+         (not (eq? support ':ENABLED-ASSUMPTION)) ;; :ENABLED-ASSUMPTION ?
          (or (false? just-antecedents support) (empty? (just-antecedents support))))))
 
 ;;; Simple utilities:
@@ -135,8 +135,8 @@
 
 ;;;;; Basic inference-engine interface ;;;;;;
 
-(define  (in-node? node) (equal? (tms-node-label node) ':IN))
-(define  (out-node? node) (equal? (tms-node-label node) ':OUT))
+(define  (in-node? node) (eq? (tms-node-label node) ':IN))
+(define  (out-node? node) (eq? (tms-node-label node) ':OUT))
 
 (define (tms-create-node jtms datum
                          #:assumptionp (assumptionp #f)
@@ -242,7 +242,7 @@
 ;;; Assumption Manipulation
 (define (retract-assumption node)
   (let ((jtms #f))
-    (when (equal? (tms-node-support node) ':ENABLED-ASSUMPTION)
+    (when (eq? (tms-node-support node) ':ENABLED-ASSUMPTION)
       (set! jtms (tms-node-jtms node))
       (debugging-jtms jtms "\n  Retracting assumption ~a." node)
       (make-node-out node)
@@ -256,9 +256,9 @@
     (cond (
            (out-node? node) (make-node-in node ':ENABLED-ASSUMPTION)
            (propagate-inness node))
-          ((or (equal? (tms-node-support node) ':ENABLED-ASSUMPTION)
+          ((or (eq? (tms-node-support node) ':ENABLED-ASSUMPTION)
                (null? (just-antecedents (tms-node-support node)))))
-          (#t (set-tms-node-support! node ':ENABLED-ASSUMPTION)))
+          (else (set-tms-node-support! node ':ENABLED-ASSUMPTION)))
     (check-for-contradictions jtms)))
 
 (define (make-node-out node)
@@ -282,7 +282,7 @@
       ;; it supports some other node.  If so, forget that node,
       ;; queue up the node to look for other support, and recurse
       (set! conseq (just-consequence (car js)))
-      (when (equal? (tms-node-support conseq) (car js))
+      (when (eq? (tms-node-support conseq) (car js))
         (make-node-out conseq)
         (push! conseq out-queue)
         (set! newvar (tms-node-consequences conseq))))))
@@ -374,7 +374,7 @@
 (define (enabled-assumptions jtms)
   (let ((result '()))
     (for ((assumption (jtms-assumptions jtms)))
-         (when (equal? (tms-node-support assumption) ':ENABLED-ASSUMPTION)
+         (when (eq? (tms-node-support assumption) ':ENABLED-ASSUMPTION)
            (push! assumption result)))
     result))
 
@@ -383,7 +383,7 @@
 (define (why-node node)
   (let ((justification (tms-node-support node)))
     (cond
-      ((equal?  justification ':ENABLED-ASSUMPTION)
+      ((eq?  justification ':ENABLED-ASSUMPTION)
        (printf "\n~a is an enabled assumption"
                (node-string node)))
       (justification ;; right condition?
@@ -472,7 +472,7 @@
                       (set! current (list-ref options (- good? 1))))))
           (printf "\n>>>")
           (set! choice (read))
-          (cond ((or (equal? choice 'q)
+          (cond ((or (eq? choice 'q)
                      (and (integer? choice)
                           (<= choice olen))
                      (>= choice 0))
