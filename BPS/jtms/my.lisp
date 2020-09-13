@@ -16,6 +16,7 @@
 (run-rules)
 (assume! '(queen 1 2) '(try queen 1 2))
 (run-rules)
+(assumptions-of-node (get-tms-node 'queens-capture)) ;; why nil???
 
 (bps-load-file (make-bps-path "jtms") "jtest" :action :compile)
 (shakedown-jtre)
