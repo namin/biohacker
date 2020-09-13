@@ -269,7 +269,7 @@
   (set-tms-node-label! node ':OUT)
   (when enqueuef (for ((out-rule (tms-node-out-rules node)))
                       (enqueuef out-rule)))
-  (set-tms-node-out-rules! node #f))
+  (set-tms-node-out-rules! node '()))
 
 (define (propagate-outness node jtms)
   (let ((out-queue '()))
