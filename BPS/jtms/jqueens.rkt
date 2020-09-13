@@ -105,7 +105,7 @@
         (let ((asns (assumptions-of-node cnode)))
           (when (member node asns)
             (retract! asn marker)
-            (raise `(try-contradiction-found (:asns . ,asns))))))))))
+            (raise `(try-contradiction-found :asns . ,asns)))))))))
 
 ;;; Other helpers
 
