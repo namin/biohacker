@@ -88,12 +88,52 @@
 	    (jsaint-operators))
   (run-jsaint *jsaint*))
 
+;; TODO: explain-result
+
 ;;;; Basic algorithm
 
 (define (run-jsaint js)
+  (with-jsaint
+   js
+   (cond
+    ((jsaint-solution *jsaint*)
+     (values (jsaint-solution *jsaint*) *jsaint*)) ;; Don't re-solv
+    ((> (jsaint-n-subproblems *jsaint*)
+        (jsaint-max-tasks *jsaint*))
+     (values ':time-out *jsaint*)) ;; Respect resource limits
+    (else
+     (do ((done? #f)
+          (solution (fetch-solution (jsaint-problem *jsaint*) *jsaint*)
+		    (fetch-solution (jsaint-problem *jsaint*) *jsaint*))
+          (failure-signal `(Failed (Integrate ,(jsaint-problem *jsaint*)))))
+         (done? (values (jsaint-solution *jsaint*) *jsaint*))
+       (cond (solution
+              (set-jsaint-solution! *jsaint* solution)
+              (debugging-jsaint *jsaint*
+               "~\n ~a: Solved original problem." (jsaint-title *jsaint*))
+	    (set! done? #t))
+	  ((in? failure-signal (jsaint-jtre *jsaint*))
+	   (debugging-jsaint *jsaint*
+	     "\n ~a: Failed on original problem."
+	     (jsaint-title *jsaint*)) 
+	   (set-jsaint-solution! *jsaint* ':failed-problem)
+	   (set! done? #t))
+	  ((null? (jsaint-agenda *jsaint*))
+	   (debugging-jsaint *jsaint* "~% ~a: Agenda empty."
+			     (jsaint-title *jsaint*))
+	   (set-jsaint-solution! *jsaint* ':failed-empty)
+	   (set! done? #t))
+	  (else
+           (let ((sub (car (jsaint-agenda *jsaint*))))
+             (set-jsaint-agenda! *jsaint* (cdr (jsaint-agenda *jsaint*)))
+             (process-subproblem (cdr sub))))))))))
+
+(define (process-subproblem item)
   'TODO)
 
 ;;;; Auxiliary routines
+(define (fetch-solution problem)
+  'TODO)
 
 (define (jsaint-contradiction-handler contradictions jtms)
   (ask-user-handler contradictions jtms)) ;; default
