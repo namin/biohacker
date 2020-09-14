@@ -59,6 +59,11 @@
   (unless (eq? problem ':nada) (set-jsaint-problem! js problem))
   (unless (eq? max-tasks ':nada) (set-jsaint-max-tasks! js max-tasks)))
 
+(define (change-jsaint-debug-all js)
+  (set-jsaint-debugging! js #t)
+  (set-jtre-debugging! (jsaint-jtre js) #t)
+  (set-jtms-debugging! (jtre-jtms (jsaint-jtre js)) #t))
+
 (define-syntax with-jsaint
   (syntax-rules ()
     [(_  js body ...)
@@ -77,6 +82,7 @@
 (define (solve-integral integral
                        #:title (title (symbol->string (gensym)))
                        #:debugging (debugging #f)
+                       #:debugging-all (debugging-all #f)
                        #:max-tasks (max-tasks 20))
   ;; Remove redudancies and canonicalize input.
   (set! integral (eval (quotize (simplifying-form-of integral))))
@@ -87,6 +93,8 @@
   (with-jtre (jsaint-jtre *jsaint*)
             (jsaint-rules)
             (jsaint-operators))
+  (when debugging-all
+    (change-jsaint-debug-all *jsaint*))
   (run-jsaint *jsaint*))
 
 (define (explain-result [js *jsaint*])
@@ -300,7 +308,7 @@
 ;;;; Debugging
 
 (define (try-jsaint problem [title "JSAINT Test"])
-  (solve-integral problem #:debugging #t #:title title))
+  (solve-integral problem #:debugging #t #:title title #:debugging-all #t))
 
 ;;;; Defining operators
 
