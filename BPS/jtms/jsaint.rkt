@@ -74,18 +74,18 @@
 ;;;; User entry point
 
 (define (solve-integral integral
-		       #:title (title "untitled")
-		       #:debugging (debugging #f)
-		       #:max-tasks (max-tasks 20))
-  ;; Remove redudancies and canonicalize input. 
+                       #:title (title "untitled")
+                       #:debugging (debugging #f)
+                       #:max-tasks (max-tasks 20))
+  ;; Remove redudancies and canonicalize input.
   (set! integral (eval (quotize (simplifying-form-of integral))))
   (use-jsaint (create-jsaint title integral
-			     #:debugging debugging
-			     #:max-tasks max-tasks))
+                             #:debugging debugging
+                             #:max-tasks max-tasks))
   (queue-problem (jsaint-problem *jsaint*) '())
-  (with-jtre (jsaint-jtre *jsaint*) 
-	    (jsaint-rules)
-	    (jsaint-operators))
+  (with-jtre (jsaint-jtre *jsaint*)
+            (jsaint-rules)
+            (jsaint-operators))
   (run-jsaint *jsaint*))
 
 ;; TODO: explain-result
@@ -104,26 +104,26 @@
     (else
      (do ((done? #f)
           (solution (fetch-solution (jsaint-problem *jsaint*) *jsaint*)
-		    (fetch-solution (jsaint-problem *jsaint*) *jsaint*))
+                    (fetch-solution (jsaint-problem *jsaint*) *jsaint*))
           (failure-signal `(Failed (Integrate ,(jsaint-problem *jsaint*)))))
          (done? (values (jsaint-solution *jsaint*) *jsaint*))
        (cond (solution
               (set-jsaint-solution! *jsaint* solution)
               (debugging-jsaint *jsaint*
                "~\n ~a: Solved original problem." (jsaint-title *jsaint*))
-	    (set! done? #t))
-	  ((in? failure-signal (jsaint-jtre *jsaint*))
-	   (debugging-jsaint *jsaint*
-	     "\n ~a: Failed on original problem."
-	     (jsaint-title *jsaint*)) 
-	   (set-jsaint-solution! *jsaint* ':failed-problem)
-	   (set! done? #t))
-	  ((null? (jsaint-agenda *jsaint*))
-	   (debugging-jsaint *jsaint* "~% ~a: Agenda empty."
-			     (jsaint-title *jsaint*))
-	   (set-jsaint-solution! *jsaint* ':failed-empty)
-	   (set! done? #t))
-	  (else
+            (set! done? #t))
+          ((in? failure-signal (jsaint-jtre *jsaint*))
+           (debugging-jsaint *jsaint*
+             "\n ~a: Failed on original problem."
+             (jsaint-title *jsaint*))
+           (set-jsaint-solution! *jsaint* ':failed-problem)
+           (set! done? #t))
+          ((null? (jsaint-agenda *jsaint*))
+           (debugging-jsaint *jsaint* "~% ~a: Agenda empty."
+                             (jsaint-title *jsaint*))
+           (set-jsaint-solution! *jsaint* ':failed-empty)
+           (set! done? #t))
+          (else
            (let ((sub (car (jsaint-agenda *jsaint*))))
              (set-jsaint-agenda! *jsaint* (cdr (jsaint-agenda *jsaint*)))
              (process-subproblem (cdr sub))))))))))
@@ -143,12 +143,12 @@
  (define (simplifying-form-of alg-goal)
   ;; Run simplifier on subgoals, just in case.
   (cond ((null? alg-goal) '())
-	((not (pair? alg-goal)) alg-goal)
-	((eq? (car alg-goal) 'integral) ;; simplify as needed
-	 `(integral (:eval (simplify ,(quotize (cadr alg-goal))))
-	   ,(caddr alg-goal)))
-	(else (cons (simplifying-form-of (car alg-goal))
-		    (simplifying-form-of (cdr alg-goal))))))
+        ((not (pair? alg-goal)) alg-goal)
+        ((eq? (car alg-goal) 'integral) ;; simplify as needed
+         `(integral (:eval (simplify ,(quotize (cadr alg-goal))))
+           ,(caddr alg-goal)))
+        (else (cons (simplifying-form-of (car alg-goal))
+                    (simplifying-form-of (cdr alg-goal))))))
 
 (begin-for-syntax
 
@@ -157,39 +157,39 @@
   ;; Takes list of entries whose form is (?result-var ?form)
   ;; and returns a list of (?goal-var ?form)
    (map (lambda (pair)
-	  (inc! counter)
-	   (list (string->symbol (format "?goal~a" counter)) 
-		 (simplifying-form-of (cadr pair))))
+          (inc! counter)
+           (list (string->symbol (format "?goal~a" counter))
+                 (simplifying-form-of (cadr pair))))
        subproblems))
 
  (define (simplifying-form-of alg-goal)
   ;; Run simplifier on subgoals, just in case.
   (cond ((null? alg-goal) '())
-	((not (pair? alg-goal)) alg-goal)
-	((eq? (car alg-goal) 'integral) ;; simplify as needed
-	 `(integral (:eval (simplify ,(quotize (cadr alg-goal))))
-	   ,(caddr alg-goal)))
-	(else (cons (simplifying-form-of (car alg-goal))
-		 (simplifying-form-of (cdr alg-goal))))))
+        ((not (pair? alg-goal)) alg-goal)
+        ((eq? (car alg-goal) 'integral) ;; simplify as needed
+         `(integral (:eval (simplify ,(quotize (cadr alg-goal))))
+           ,(caddr alg-goal)))
+        (else (cons (simplifying-form-of (car alg-goal))
+                 (simplifying-form-of (cdr alg-goal))))))
 
  (define (calculate-solution-rule-parts sub-pairs res-pairs)
    (define counter -1)
    (define antes '())
    (define triggers '())
   (set! triggers
-	(map (lambda (subpair respair)
-	       (inc! counter)
-	       (let ((rvar (string->symbol (format "?result~a" counter))))
-		 (push! rvar antes)
-		 `(:in (solution-of ,(car subpair) ,(car respair))
-		       :var ,rvar)))
-		sub-pairs res-pairs))
+        (map (lambda (subpair respair)
+               (inc! counter)
+               (let ((rvar (string->symbol (format "?result~a" counter))))
+                 (push! rvar antes)
+                 `(:in (solution-of ,(car subpair) ,(car respair))
+                       :var ,rvar)))
+                sub-pairs res-pairs))
   (values triggers (reverse antes)))
 
  (define (keywordize stuff)
    (cond ((null? stuff) (error "Can't keywordize nothing."))
-	 ((pair? stuff) (keywordize (car stuff)))
-	 (else (string->symbol (format "~a" stuff))))))
+         ((pair? stuff) (keywordize (car stuff)))
+         (else (string->symbol (format "~a" stuff))))))
 
 ;;;; Defining operators
 
@@ -197,49 +197,49 @@
   (define subproblems (cadr-if (member ':subproblems keyed-items)))
   (define result (cadr-if (member ':result keyed-items)))
   (define test (cadr-if (member ':test keyed-items)))
-  (unless result 
+  (unless result
     (error "Integration operator must have result form"))
   `(rule ((:in (expanded (integrate ,trigger)) :var ?starter
-	       ,@(if (not (null? test)) `(:test ,test) '())))
-	 (rlet ((?integral ,trigger)
-	        (?problem (integrate ,trigger)))
-	       (rlet ((?op-instance (,name ?integral)))
-	             (rassert! (operator-instance ?op-instance)
-		               :op-instance-definition)
-	             ;; if no subproblems, just create solution
+               ,@(if (not (null? test)) `(:test ,test) '())))
+         (rlet ((?integral ,trigger)
+                (?problem (integrate ,trigger)))
+               (rlet ((?op-instance (,name ?integral)))
+                     (rassert! (operator-instance ?op-instance)
+                               :op-instance-definition)
+                     ;; if no subproblems, just create solution
                      ,@(cond ((or (not subproblems) (null? subproblems))
-	                      `((rlet ((?solution
-			                (:eval (simplify ,(quotize result)))))
-		                      (rassert! (solution-of ?problem ?solution)
-		                                (,(keywordize name)
-		                                 (operator-instance ?op-instance))))))
-	                     (else ;; usual case
-	                      (let ((subs (calculate-subproblem-list subproblems))) 
-		                `((rassert! (suggest-for ?problem ?op-instance)
-		                            (:intopexpander ?starter))
+                              `((rlet ((?solution
+                                        (:eval (simplify ,(quotize result)))))
+                                      (rassert! (solution-of ?problem ?solution)
+                                                (,(keywordize name)
+                                                 (operator-instance ?op-instance))))))
+                             (else ;; usual case
+                              (let ((subs (calculate-subproblem-list subproblems)))
+                                `((rassert! (suggest-for ?problem ?op-instance)
+                                            (:intopexpander ?starter))
                                   (rule ((:in (expanded (try ?op-instance)) :var ?try))
-	                                (rlet ,subs
-		                              ,@(map (lambda (sub)
-			                               `(queue-problem ,(car sub) ?problem))
-			                             subs)
-		                              (rassert! (and-subgoals (try ?op-instance)
-					                              ,(map car subs))
-			                                (,(keywordize (format "~a-def" name))
-			                                 ?try))
-		                              ;; solution detector
-		                              ,(let-values (((triggers antes)
-		                                             (calculate-solution-rule-parts subs subproblems)))
-		                                 `(rule (,@triggers)
-			                                (rlet ((?solution
-				                                (:eval (simplify ,(quotize result)))))
-				                              (rassert! (solution-of ?problem ?solution)
-					                                (,(keywordize name)
-					                                 ,@antes)))))))))))))))
+                                        (rlet ,subs
+                                              ,@(map (lambda (sub)
+                                                       `(queue-problem ,(car sub) ?problem))
+                                                     subs)
+                                              (rassert! (and-subgoals (try ?op-instance)
+                                                                      ,(map car subs))
+                                                        (,(keywordize (format "~a-def" name))
+                                                         ?try))
+                                              ;; solution detector
+                                              ,(let-values (((triggers antes)
+                                                             (calculate-solution-rule-parts subs subproblems)))
+                                                 `(rule (,@triggers)
+                                                        (rlet ((?solution
+                                                                (:eval (simplify ,(quotize result)))))
+                                                              (rassert! (solution-of ?problem ?solution)
+                                                                        (,(keywordize name)
+                                                                         ,@antes)))))))))))))))
 
 (define (jsaint-operators)
 
 (defintegration integral-of-constant
-  (integral ?t ?var) 
+  (integral ?t ?var)
   :test (not (occurs-in? ?var ?t))
   :result (* ?t ?var))
 
@@ -250,21 +250,21 @@
 (defintegration move-constant-outside
   (integral (* ?const ?nonconst) ?var)
   :test (and (not (occurs-in? ?var ?const))
-	     (occurs-in? ?var ?nonconst))
+             (occurs-in? ?var ?nonconst))
   :subproblems ((?int (integrate (integral ?nonconst ?var))))
   :result (* ?const ?int))
 
 (defintegration integral-of-sum
   (integral (+ ?t1 ?t2) ?var)
   :subproblems ((?int1 (integrate (integral ?t1 ?var)))
-		(?int2 (integrate (integral ?t2 ?var))))
+                (?int2 (integrate (integral ?t2 ?var))))
   :result (+ ?int1 ?int2))
 
 (defintegration integral-of-nary-sum
   (integral (+ ?t1 ?t2 . ?trest) ?var)
   :subproblems ((?int1 (integrate (integral ?t1 ?var)))
-		(?int2 (integrate (integral ?t2 ?var)))
-		(?intr (integrate (integral (+ . ?trest) ?var))))
+                (?int2 (integrate (integral ?t2 ?var)))
+                (?intr (integrate (integral (+ . ?trest) ?var))))
   :test (not (null ?trest))
   :result (+ ?int1 ?int2 ?intr))
 
@@ -276,7 +276,7 @@
 (defintegration integral-of-minus
   (integral (- ?t1 ?t2) ?var)
   :subproblems ((?int1 (integrate (integral ?t1 ?var)))
-		(?int2 (integrate (integral ?t2 ?var))))
+                (?int2 (integrate (integral ?t2 ?var))))
   :result (- ?int1 ?int2))
 
 (defintegration integral-of-sqr
@@ -302,7 +302,7 @@
 (defintegration non-e-power-integral
   (integral (expt ?b (* ?a ?var)) ?var)
   :test (and (not (occurs-in? ?var ?a))
-	     (not (occurs-in? ?var ?b)))
+             (not (occurs-in? ?var ?b)))
   :result (/ (expt ?b (* ?a ?var)) (* ?a (log ?b %e))))
 
 (defintegration log-integral
@@ -332,35 +332,35 @@
 (defintegration sintocossqrsub
   (integral ?exp ?var)
   :test (and (occurs-in? ?var ?exp)
-	     (occurs-in? `(sin ,?var) ?exp))
+             (occurs-in? `(sin ,?var) ?exp))
   :subproblems
   ((?int (integrate (integral
-		     (:eval (subst `(sqrt (- 1 (expt (cos ,?var) 2)))
-				   `(sin ,?var)
-				   ?exp)) ?var))))
+                     (:eval (subst `(sqrt (- 1 (expt (cos ,?var) 2)))
+                                   `(sin ,?var)
+                                   ?exp)) ?var))))
   :result ?int)
 
 (defintegration costosinsqrsub
   (integral ?exp ?var)
   :test (and (occurs-in? ?var ?exp)
-	     (occurs-in? `(cos ,?var) ?exp))
+             (occurs-in? `(cos ,?var) ?exp))
   :subproblems
   ((?int (integrate (integral
-		     (:eval (subst `(sqrt (- 1 (expt (sin ,?var) 2)))
-				   `(cos ,?var)
-				   ?exp)) ?var))))
+                     (:eval (subst `(sqrt (- 1 (expt (sin ,?var) 2)))
+                                   `(cos ,?var)
+                                   ?exp)) ?var))))
   :result ?int)
 
 (defintegration sinsqrtotancossub
   (integral ?exp ?var)
   :test (and (occurs-in? ?var ?exp)
-	     (occurs-in? `(sin ,?var) ?exp))
+             (occurs-in? `(sin ,?var) ?exp))
   :subproblems ((?int (integrate (integral
-				  (:eval (subst `(* (sqr (tan ,?var))
-						    (sqr (cos ,?var)))
-						`(sin ,?var)
-						?exp))
-				  ?var))))
+                                  (:eval (subst `(* (sqr (tan ,?var))
+                                                    (sqr (cos ,?var)))
+                                                `(sin ,?var)
+                                                ?exp))
+                                  ?var))))
   :result ?int)
 )
 
