@@ -315,6 +315,15 @@
 (define (try-jsaint problem [title "JSAINT Test"] #:debugging-all (debugging-all #f))
   (solve-integral problem #:debugging #t #:title title #:debugging-all debugging-all))
 
+(define problem1 '(integrate (integral 1 x)))
+(define problem2 '(integrate (integral (+ x 5) x)))
+(define problem3 '(integrate (integral (* 46 (log x %e)) x)))
+(define problem4 '(integrate
+		   (integral (+ 0.63
+			        (* 3.2 (sin (* 1.7 x)))
+			        (* 4 (expt %e (* 2 x)))) x)))
+
+
 ;;;; Defining operators
 
 (defmacro defintegration (name trigger . keyed-items)
