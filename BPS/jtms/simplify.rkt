@@ -93,7 +93,8 @@
 	((null? exp2) #f)
 	((pair? exp2)
 	 (or (occurs-in? exp1 (car exp2))
-	     (occurs-in? exp1 (cdr exp2))))))
+	     (occurs-in? exp1 (cdr exp2))))
+        (else #f)))
 
 
 ;;;; Rules for algebraic simplification
