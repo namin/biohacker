@@ -36,6 +36,8 @@
 (enable-assumption u :TRUE)
 (explain-node d)
 
+(retract-assumption u)
+
 ;; The court does not make the order.
 ;; The prisoner does not die.
 (enable-assumption u :FALSE)
