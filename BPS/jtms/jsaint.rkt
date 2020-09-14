@@ -89,7 +89,25 @@
             (jsaint-operators))
   (run-jsaint *jsaint*))
 
-;; TODO: explain-result
+(define (explain-result [js *jsaint*])
+  (with-jsaint
+   js
+   (cond
+    ((null? (jsaint-solution *jsaint*))
+     (printf "\n Problem not solved yet."))
+    ((eq? (jsaint-solution *jsaint*) ':failed-problem)
+     (explore-network (get-tms-node `(failed ,(jsaint-problem *jsaint*))
+				    (jsaint-jtre *jsaint*)))
+     (printf "\n Failed to find a solution."))
+    ((eq? (jsaint-solution *jsaint*) ':failed-empty)
+     (printf "\n Ran out of things to do.")
+     (explore-network (get-tms-node `(failed ,(jsaint-problem *jsaint*))
+				    (jsaint-jtre *jsaint*))))
+    (else (printf "\n Solved the problem:")
+	  (explore-network (get-tms-node
+			    `(solution-of ,(jsaint-problem *jsaint*)
+				          ,(jsaint-solution *jsaint*))
+			    (jsaint-jtre *jsaint*)))))))
 
 ;;;; Basic algorithm
 
