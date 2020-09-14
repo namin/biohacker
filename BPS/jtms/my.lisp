@@ -33,5 +33,5 @@
 (try-jsaint '(integrate (integral x x)))
 (try-jsaint problem2)
 (explain-result)
-(try-jsaint '(integrate (integral (+ (* 3 x) (cos x)) x)))
+(try-jsaint '(integrate (integral (+ (* 3 x) (cos (* 1.1 x))) x)))
 (explain-result)
