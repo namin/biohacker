@@ -553,18 +553,21 @@
 
 (begin-for-syntax
  (define (expand-rlet var-specs . body)
-   (let ((*bound-vars*
-	  (append (map car var-specs) *bound-vars*)))
-     `(let ,(map
-	     (lambda (let-clause)
-	       (list (car let-clause)
-		     (if (and (pair? (cadr let-clause))
-			      (eq? (car (cadr let-clause))
-				   ':eval))
-			 (cadr (cadr let-clause))
-		         (quotize (cadr let-clause)))))
-	     var-specs)
-        ,@(fully-expand-body body)))))
+   (let ((old-bound-vars *bound-vars*))
+     (set! *bound-vars* (append (map car var-specs) *bound-vars*))
+     (let ((r
+            `(let ,(map
+	            (lambda (let-clause)
+	              (list (car let-clause)
+		            (if (and (pair? (cadr let-clause))
+			             (eq? (car (cadr let-clause))
+				          ':eval))
+			        (cadr (cadr let-clause))
+		                (quotize (cadr let-clause)))))
+	            var-specs)
+               ,@(fully-expand-body body))))
+       (set! *bound-vars* old-bound-vars)
+       r))))
 
 ;;;; Recursive macroexpansion
 

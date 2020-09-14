@@ -62,39 +62,39 @@
   `(rule ((:in (expanded (integrate ,trigger)) :var ?starter
 	       ,@(if (not (null? test)) `(:test ,test) '())))
 	 (rlet ((?integral ,trigger)
-		(?problem (integrate ,trigger)))
+	        (?problem (integrate ,trigger)))
 	       (rlet ((?op-instance (,name ?integral)))
-	     (rassert! (operator-instance ?op-instance)
-		       :op-instance-definition)
-	     ;; if no subproblems, just create solution
-             ,@(cond ((or (not subproblems) (null? subproblems))
-	       `((rlet ((?solution
-			 (:eval (simplify ,(quotize result)))))
-		  (rassert! (solution-of ?problem ?solution)
-		   (,(keywordize name)
-		     (operator-instance ?op-instance))))))
-	      (else ;; usual case
-	       (let ((subs (calculate-subproblem-list subproblems))) 
-		 `((rassert! (suggest-for ?problem ?op-instance)
-		    (:intopexpander ?starter))
-   (rule ((:in (expanded (try ?op-instance)) :var ?try))
-	   (rlet ,subs
-		 ,@(map (lambda (sub)
-			   `(queue-problem ,(car sub) ?problem))
-			 subs)
-		 (rassert! (and-subgoals (try ?op-instance)
-					 ,(map car subs))
-			   (,(keywordize (format "~a-def" name))
-			    ?try))
-		 ;; solution detector
-		 ,(let-values (((triggers antes)
-		                (calculate-solution-rule-parts subs subproblems)))
-		    `(rule (,@triggers)
-			   (rlet ((?solution
-				    (:eval (simplify ,(quotize result)))))
-				 (rassert! (solution-of ?problem ?solution)
-					   (,(keywordize name)
-					     ,@antes)))))))))))))))
+	             (rassert! (operator-instance ?op-instance)
+		               :op-instance-definition)
+	             ;; if no subproblems, just create solution
+                     ,@(cond ((or (not subproblems) (null? subproblems))
+	                      `((rlet ((?solution
+			                (:eval (simplify ,(quotize result)))))
+		                      (rassert! (solution-of ?problem ?solution)
+		                                (,(keywordize name)
+		                                 (operator-instance ?op-instance))))))
+	                     (else ;; usual case
+	                      (let ((subs (calculate-subproblem-list subproblems))) 
+		                `((rassert! (suggest-for ?problem ?op-instance)
+		                            (:intopexpander ?starter))
+                                  (rule ((:in (expanded (try ?op-instance)) :var ?try))
+	                                (rlet ,subs
+		                              ,@(map (lambda (sub)
+			                               `(queue-problem ,(car sub) ?problem))
+			                             subs)
+		                              (rassert! (and-subgoals (try ?op-instance)
+					                              ,(map car subs))
+			                                (,(keywordize (format "~a-def" name))
+			                                 ?try))
+		                              ;; solution detector
+		                              ,(let-values (((triggers antes)
+		                                             (calculate-solution-rule-parts subs subproblems)))
+		                                 `(rule (,@triggers)
+			                                (rlet ((?solution
+				                                (:eval (simplify ,(quotize result)))))
+				                              (rassert! (solution-of ?problem ?solution)
+					                                (,(keywordize name)
+					                                 ,@antes)))))))))))))))
 
 (define (jsaint-ops)
 
@@ -197,7 +197,7 @@
   ((?int (integrate (integral
 		     (:eval (subst `(sqrt (- 1 (expt (cos ,?var) 2)))
 				   `(sin ,?var)
-				   ?exp :test 'equal)) ?var))))
+				   ?exp)) ?var))))
   :result ?int)
 
 (defintegration costosinsqrsub
@@ -208,7 +208,7 @@
   ((?int (integrate (integral
 		     (:eval (subst `(sqrt (- 1 (expt (sin ,?var) 2)))
 				   `(cos ,?var)
-				   ?exp :test 'equal)) ?var))))
+				   ?exp)) ?var))))
   :result ?int)
 
 (defintegration sinsqrtotancossub
@@ -219,7 +219,7 @@
 				  (:eval (subst `(* (sqr (tan ,?var))
 						    (sqr (cos ,?var)))
 						`(sin ,?var)
-						?exp :test 'equal))
+						?exp))
 				  ?var))))
   :result ?int)
 )
@@ -231,6 +231,10 @@
 (define (occurs-in? exp1 exp2)
   ;; TODO
   #f)
+
+(define (same-constant? exp constant)
+  ;; TODO
+  #t)
 
 (define (queue-problem problem parent)
   'TODO)
