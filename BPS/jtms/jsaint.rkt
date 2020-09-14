@@ -322,7 +322,8 @@
 		   (integral (+ 0.63
 			        (* 3.2 (sin (* 1.7 x)))
 			        (* 4 (expt %e (* 2 x)))) x)))
-
+(define problem5 '(integrate (integral (cos x) x)))
+(define problem6 '(integrate (integral (+ (* 3 x) (cos x)) x)))
 
 ;;;; Defining operators
 
@@ -451,6 +452,14 @@
   (integral (cos (* ?a ?var)) ?var)
   :test (not (occurs-in? ?var ?a))
   :result (/ (sin (* ?a ?var)) ?a))
+
+(defintegration sin-x-integral
+  (integral (sin ?var) ?var)
+  :result (- (cos ?var)))
+
+(defintegration cos-x-integral
+  (integral (cos ?var) ?var)
+  :result (sin ?var))
 
 (defintegration sin-sqr-integral
   (integral (sqr (sin ?var)) ?var)
