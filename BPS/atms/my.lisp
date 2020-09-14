@@ -4,3 +4,8 @@
 ;;(compile-planner)
 (bps-load-file (make-bps-path "atms") "sudoku" :action :compile)
 (solve-sudoku *easy-puzzle*)
+
+(bps-load-file (make-bps-path "atms") "atest" :action :compile)
+(atms-test1)
+(atms-test2)
+(step-1)
