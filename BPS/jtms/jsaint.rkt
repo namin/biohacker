@@ -123,7 +123,7 @@
   (with-jsaint
    js
    (cond
-    ((jsaint-solution *jsaint*)
+    ((not (null? (jsaint-solution *jsaint*)))
      (values (jsaint-solution *jsaint*) *jsaint*)) ;; Don't re-solv
     ((> (jsaint-n-subproblems *jsaint*)
         (jsaint-max-tasks *jsaint*))
@@ -134,7 +134,7 @@
                     (fetch-solution (jsaint-problem *jsaint*) *jsaint*))
           (failure-signal `(Failed (Integrate ,(jsaint-problem *jsaint*)))))
          (done? (values (jsaint-solution *jsaint*) *jsaint*))
-       (cond (solution
+       (cond ((not (null? solution))
               (set-jsaint-solution! *jsaint* solution)
               (debugging-jsaint *jsaint*
                "~\n ~a: Solved original problem." (jsaint-title *jsaint*))
