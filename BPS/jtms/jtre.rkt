@@ -547,6 +547,28 @@
  (define (generate-rule-procedure-name pattern)
    (string->symbol (format "~a-~a-~a" *file-prefix* pattern (inc! *file-counter*)))))
 
+;;;; rlet
+;; Provides means for lisp code in body to
+;; add information to the rule's environment.
+
+(defmacro rlet (var-specs . body)
+  (apply expand-rlet var-specs body))
+
+(begin-for-syntax
+ (define (expand-rlet var-specs . body)
+   (let ((*bound-vars*
+	  (append (map car var-specs) *bound-vars*)))
+     `(let ,(map
+	     (lambda (let-clause)
+	       (list (car let-clause)
+		     (if (and (pair? (cadr let-clause))
+			      (eq? (car (cadr let-clause))
+				   ':eval))
+			 (cadr (cadr let-clause))
+		         (quotize (cadr let-clause)))))
+	     var-specs)
+        ,@(fully-expand-body body)))))
+
 ;;;; Recursive macroexpansion
 
 (begin-for-syntax
@@ -554,6 +576,7 @@
    (list
     (cons 'internal-rule expand-internal-rule)
     (cons 'add-internal-rule build-rule)
+    (cons 'rlet expand-rlet)
     (cons 'rassert! expand-rassert!)
     (cons 'rretract! expand-rretract!)))
 
