@@ -30,7 +30,7 @@
 
 (define *jsaint* #f)
 
-(define (create-jsaint title problem :#debugging (debugging #f) #:max-tasks (max-tasks #f))
+(define (create-jsaint title problem #:debugging (debugging #f) #:max-tasks (max-tasks #f))
   (let ((ag (jsaint
              title
              (create-jtre (format "JTRE of ~a" title))
@@ -43,7 +43,8 @@
     (in-jtre (jsaint-jtre ag))
     (change-jtms (jtre-jtms (jsaint-jtre ag))
                  #:contradiction-handler jsaint-contradiction-handler)
-    (use-jsaint ag)))
+    (use-jsaint ag)
+    ag))
 
 (define-syntax debugging-jsaint
   (syntax-rules ()
@@ -262,6 +263,26 @@
    (cond ((null? stuff) (error "Can't keywordize nothing."))
          ((pair? stuff) (keywordize (car stuff)))
          (else (string->symbol (format "~a" stuff))))))
+
+;;;; Interrogatives
+
+;;; SHOW-PROBLEM highlights the assertions relevant to
+;;; the given problem.
+
+;; TODO show-problem
+
+;;;; Textual display of an AND/OR graph
+
+;; TODO show-ao-graph
+
+;; TODO update-ao-depth-table
+
+;; TODO get-problems
+
+;;;; Debugging
+
+(define (try-jsaint problem [title "JSAINT Test"])
+  (solve-integral problem #:debugging #t #:title title))
 
 ;;;; Defining operators
 

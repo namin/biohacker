@@ -6,7 +6,7 @@
 (define *simplify-cache* (make-hash))
 
 (define (simplify exp)
-  (or (hash-ref exp *simplify-cache*)
+  (or (hash-ref *simplify-cache* exp #f)
       (hash-set! *simplify-cache* exp 
 	         (simplify-it exp *algebra-rules*))))
 
@@ -16,7 +16,7 @@
 (define (simplify-it exp rules)
   (define result
     (try-matcher-rules
-     (if (list? exp) (map #'simplify exp)
+     (if (list? exp) (map simplify exp)
 	 exp)
      rules))
   (if (equal? result exp) result
