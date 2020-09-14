@@ -23,7 +23,7 @@
                          ?children))))
 
 (rule ((:in (or-subgoals ?parent ?children) :var ?def
-            :test ?children))
+            :test (not (null? ?children))))
       (for/list ((child ?children))
         (rlet ((?child (:eval child)))
               (rassert! (parent-of ?child ?parent :or)
