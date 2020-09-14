@@ -74,7 +74,7 @@
 ;;;; User entry point
 
 (define (solve-integral integral
-                       #:title (title "untitled")
+                       #:title (title (symbol->string (gensym)))
                        #:debugging (debugging #f)
                        #:max-tasks (max-tasks 20))
   ;; Remove redudancies and canonicalize input.
