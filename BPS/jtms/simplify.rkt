@@ -1,5 +1,6 @@
 #lang racket
 
+(require "match.rkt")
 (provide (all-defined-out))
 
 (define *simplify-cache* (make-hash))
@@ -157,9 +158,3 @@
 (((? op +/*?) (?? terms))
  (not (sorted? (quote (? terms)) #'alg<))
  ((? op) (:SPLICE (sort (quote (? terms)) #'alg<))))))
-
-(define (matcher pat dat [dict '()])
-  'TODO)
-
-(define (substitute-in exp dict)
-  'TODO)
