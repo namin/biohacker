@@ -26,13 +26,13 @@
 	(else (matcher (cdr pat) (cdr dat)
 		       (matcher (car pat) (car dat) dict)))))
 
-(define ( match-element-var pat dat dict)
+(define (match-element-var pat dat dict)
   (define entry (lookup-var pat dict))
   (cond (entry 
 	 (if (~equal? (cadr entry) dat) dict ':fail))
 	(else (let ((pred (var-restriction pat)))
-	        (cond ((or (not pred)
-		           (pred dat))
+	        (cond ((or (null? pred)
+		           ((eval pred) dat))
 		       (bind-element-var (var-name pat) dat dict))
 		      (else ':fail))))))
 
@@ -90,7 +90,7 @@
 (define (element-var? x) (and (pair? x) (eq? (car x) '?)))
 (define (segment-var? x) (and (pair? x) (eq? (car x) '??)))
 (define (var-name x) (cadr x))
-(define (var-restriction x) (caddr x))
+(define (var-restriction x) (if (null? (cddr x)) '() (caddr x)))
 
 ;; Dictionary entries take the form
 ;; (<name> <position> <value>), where <position> is NIL if an element

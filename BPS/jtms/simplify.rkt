@@ -24,7 +24,7 @@
 
 (define (try-matcher-rules exp rules)
   (with-handlers
-   ([(lambda (x) #t)
+   ([(lambda (x) (not (exn? x)))
      (lambda (x) x)])
    (for ([rule rules])
         (let ((bindings (matcher (rule-pattern rule) exp '())))
