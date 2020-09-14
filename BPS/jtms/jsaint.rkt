@@ -235,7 +235,7 @@
     ([(lambda (x) (not (exn? x)))
       (lambda (x) x)])
     (let ((jtre (jsaint-jtre *jsaint*)))
-      (for ([solution (fetch `(solution of ,problem ?answer) jtre)])
+      (for ([solution (fetch `(solution-of ,problem ?answer) jtre)])
            (when (in? solution jtre)
              (raise (third solution))))
       '()))))
