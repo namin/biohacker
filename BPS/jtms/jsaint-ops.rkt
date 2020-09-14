@@ -5,6 +5,7 @@
 (require "jtms.rkt")
 (require "jtre.rkt")
 (require (for-syntax "funify.rkt"))
+(require "simplify.rkt")
 (require compatibility/defmacro)
 (provide (all-defined-out))
 
@@ -223,18 +224,6 @@
 				  ?var))))
   :result ?int)
 )
-
-(define (simplify exp)
-  ;; TODO
-  exp)
-
-(define (occurs-in? exp1 exp2)
-  ;; TODO
-  #f)
-
-(define (same-constant? exp constant)
-  ;; TODO
-  #t)
 
 (define (queue-problem problem parent)
   'TODO)
