@@ -158,6 +158,42 @@
   ;; Look for quick win, extra consequences.
   (run-rules jtre))
 
+;;;; Queuing problems
+;; Queue entries take the form (<difficulty> . <subproblem>)
+;; Difficulty estimates are based on the form of the subproblem
+;; alone, since there could be multiple parents for a subproblem.
+
+(define (queue-problem problem parent)
+  (define entry (cons (estimate-difficulty problem) problem))
+  (debugging-jsaint *jsaint* "\n   Queueing ~a, difficulty = ~a"
+		    problem (car entry))
+  (set-jsaint-agenda!
+   *jsaint*
+   (insert-in-order
+    entry
+    (jsaint-agenda *jsaint*)
+    (lambda (a b) (< (car a) (car b))))))
+
+(define (insert-in-order entry lst order)
+  (cond ((null? lst) (list entry))
+        ((order (car entry) (caar lst))
+         (cons entry lst))
+        (else
+         (cons (car lst) (insert-in-order entry (cdr lst) order)))))
+
+(define (estimate-difficulty problem)
+  (+ (max-depth problem) (count-symbols problem)))
+
+(define (count-symbols pr)
+  (cond ((null? pr) 0)
+	((list? pr)
+	 (foldl + 0 (map count-symbols pr)))
+	(else 1)))
+
+(define (max-depth pr)
+  (cond ((not (list? pr)) 1)
+	(else (+ 1 (foldl max 0 (map max-depth pr))))))
+
 ;;;; Auxiliary routines
 
 (define (fetch-solution problem)
@@ -391,6 +427,3 @@
                                   ?var))))
   :result ?int)
 )
-
-(define (queue-problem problem parent)
-  'TODO)
