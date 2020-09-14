@@ -35,3 +35,7 @@
                (subst new old (cdr x))))
         ((eq? old x) new)
         (else x)))
+
+(define (cadr-if x)
+  (and x (cadr x)))
+

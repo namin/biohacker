@@ -473,9 +473,6 @@
            (cadr-if (member ':var (cddr trigger)))
            (cadr-if (member ':test (cddr trigger)))))
 
- (define (cadr-if x)
-   (and x (cadr x)))
-
  (define (get-trigger-dbclass trigger)
    (cond ((variable? trigger)
           (if (member trigger *bound-vars*) trigger
