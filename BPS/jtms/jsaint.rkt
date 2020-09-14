@@ -232,7 +232,8 @@
     (let ((jtre (jsaint-jtre *jsaint*)))
       (for ([solution (fetch `(solution of ,problem ?answer) jtre)])
            (when (in? solution jtre)
-             (raise (third solution))))))))
+             (raise (third solution))))
+      '()))))
 
 (define (jsaint-contradiction-handler contradictions jtms)
   (ask-user-handler contradictions jtms)) ;; default
