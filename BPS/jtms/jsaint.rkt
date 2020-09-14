@@ -206,7 +206,6 @@
     (lambda (a b) (< (car a) (car b))))))
 
 (define (insert-in-order entry lst order)
-  (printf "insert-in-order ~a ~a" entry lst)
   (cond ((null? lst) (list entry))
         ((order entry (car lst))
          (cons entry lst))
@@ -390,7 +389,7 @@
   :subproblems ((?int1 (integrate (integral ?t1 ?var)))
                 (?int2 (integrate (integral ?t2 ?var)))
                 (?intr (integrate (integral (+ . ?trest) ?var))))
-  :test (not (null ?trest))
+  :test (not (null? ?trest))
   :result (+ ?int1 ?int2 ?intr))
 
 (defintegration integral-of-uminus
