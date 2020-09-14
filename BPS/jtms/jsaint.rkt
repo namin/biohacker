@@ -129,9 +129,37 @@
              (process-subproblem (cdr sub))))))))))
 
 (define (process-subproblem item)
-  'TODO)
+  (define jtre (jsaint-jtre *jsaint*))
+  (debugging-jsaint *jsaint* "\n  Trying to solve ~a." item)
+  (open-subproblem item)
+  (cond
+   ((fetch-solution item *jsaint*)
+    ;; Bookkeeping is done by pdis rules
+    (debugging-jsaint *jsaint* "\n    ..already solved.")
+    #t)
+   ((ormap (lambda (f) (in? f jtre)) ;; Already expanded
+	        (fetch `(and-subgoals ,item ?subproblems) jtre))
+    (debugging-jsaint *jsaint* "~\n   ..already expanded.")
+    #t)
+   (else
+    (let ((suggestions '()))
+      (for ([suggestion (fetch `(suggest-for ,item ?operator) jtre)])
+           (when (in? suggestion jtre)
+             (queue-problem `(try ,(third suggestion)) item)
+             (push! `(try ,(third suggestion)) suggestions)))
+      ;; Presume extra subgoals don't come along.
+      (assert! `(or-subgoals ,item ,suggestions) ':or-subgoals jtre)
+      (run-rules jtre)))))
+
+(define (open-subproblem item)
+(define jtre (jsaint-jtre *jsaint*))
+  (assert! `(expanded ,item) ':expand-agenda-item jtre)
+  (assume! `(open ,item) ':expand-agenda-item jtre)
+  ;; Look for quick win, extra consequences.
+  (run-rules jtre))
 
 ;;;; Auxiliary routines
+
 (define (fetch-solution problem)
   'TODO)
 
