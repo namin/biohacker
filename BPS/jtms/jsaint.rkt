@@ -134,26 +134,32 @@
                     (fetch-solution (jsaint-problem *jsaint*) *jsaint*))
           (failure-signal `(Failed (Integrate ,(jsaint-problem *jsaint*)))))
          (done? (values (jsaint-solution *jsaint*) *jsaint*))
-       (cond ((not (null? solution))
-              (set-jsaint-solution! *jsaint* solution)
-              (debugging-jsaint *jsaint*
-               "~\n ~a: Solved original problem." (jsaint-title *jsaint*))
-            (set! done? #t))
-          ((in? failure-signal (jsaint-jtre *jsaint*))
-           (debugging-jsaint *jsaint*
-             "\n ~a: Failed on original problem."
-             (jsaint-title *jsaint*))
-           (set-jsaint-solution! *jsaint* ':failed-problem)
-           (set! done? #t))
-          ((null? (jsaint-agenda *jsaint*))
-           (debugging-jsaint *jsaint* "~% ~a: Agenda empty."
-                             (jsaint-title *jsaint*))
-           (set-jsaint-solution! *jsaint* ':failed-empty)
-           (set! done? #t))
-          (else
-           (let ((sub (car (jsaint-agenda *jsaint*))))
-             (set-jsaint-agenda! *jsaint* (cdr (jsaint-agenda *jsaint*)))
-             (process-subproblem (cdr sub))))))))))
+       (printf "done ~a" done?)
+       (cond
+        ((not (null? solution))
+         (set-jsaint-solution! *jsaint* solution)
+         (debugging-jsaint
+          *jsaint*
+          "~\n ~a: Solved original problem." (jsaint-title *jsaint*))
+         (set! done? #t)
+         (printf "done here ~a\n" done?))
+        ((in? failure-signal (jsaint-jtre *jsaint*))
+         (debugging-jsaint
+          *jsaint*
+          "\n ~a: Failed on original problem."
+          (jsaint-title *jsaint*))
+         (set-jsaint-solution! *jsaint* ':failed-problem)
+         (set! done? #t))
+        ((null? (jsaint-agenda *jsaint*))
+         (debugging-jsaint
+          *jsaint* "~% ~a: Agenda empty."
+          (jsaint-title *jsaint*))
+         (set-jsaint-solution! *jsaint* ':failed-empty)
+         (set! done? #t))
+        (else
+         (let ((sub (car (jsaint-agenda *jsaint*))))
+           (set-jsaint-agenda! *jsaint* (cdr (jsaint-agenda *jsaint*)))
+           (process-subproblem (cdr sub))))))))))
 
 (define (process-subproblem item)
   (define jtre (jsaint-jtre *jsaint*))
@@ -309,7 +315,7 @@
 ;;;; Debugging
 
 (define (try-jsaint problem [title "JSAINT Test"])
-  (solve-integral problem #:debugging #t #:title title #:debugging-all #t))
+  (solve-integral problem #:debugging #t #:title title))
 
 ;;;; Defining operators
 
