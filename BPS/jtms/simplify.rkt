@@ -7,8 +7,9 @@
 
 (define (simplify exp)
   (or (hash-ref *simplify-cache* exp #f)
-      (hash-set! *simplify-cache* exp 
-	         (simplify-it exp *algebra-rules*))))
+      (let ((r (simplify-it exp *algebra-rules*)))
+        (hash-set! *simplify-cache* exp r)
+        r)))
 
 (define (clear-simplify-cache)
   (hash-clear! *simplify-cache*))
@@ -114,7 +115,7 @@
 ((expt (? base) (log (? val) (? base))) '() (? val))
 ;; Equivalences involving powers
 ((* (? e) (? e)) '() (sqr (? e)))
-((expt (? e) (? two ,#'(lambda (exp) (same-constant? exp 2))))
+((expt (? e) (? two ,(lambda (exp) (same-constant? exp 2))))
  '() (sqr (? e)))
 ((sqrt (sqr (? e))) '() (abs (? e)))
 ((sqr (sqrt (? e))) '() (? e))
@@ -157,5 +158,5 @@
  (+ (?? pre) (* (+ 1 (? f1)) (? thing)) (?? mid) (?? post)))
 ;; Canonicalize +,*
 (((? op +/*?) (?? terms))
- (not (sorted? (quote (? terms)) #'alg<))
- ((? op) (:SPLICE (sort (quote (? terms)) #'alg<))))))
+ (not (sorted? (quote (? terms)) alg<))
+ ((? op) (:splice (sort (quote (? terms)) alg<))))))

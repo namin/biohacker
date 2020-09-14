@@ -130,7 +130,7 @@
 			(substitute-in (cdr exp) dict)))
 	       ((eq? (car exp) ':eval)
 		(eval (substitute-in (cadr exp) dict)))
-	       ((and (cons (car exp)) (eq? (caar exp) ':splice))
+	       ((and (pair? (car exp)) (eq? (caar exp) ':splice))
 		(append (eval (substitute-in (cadar exp) dict))
 			(substitute-in (cdr exp) dict)))
 	       (else (cons (substitute-in (car exp) dict)
