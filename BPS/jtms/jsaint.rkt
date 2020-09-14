@@ -44,6 +44,25 @@
     [(_ js msg arg ...)
      (when (jsaint-debugging js) (printf msg arg ...))]))
 
+(define (change-jsaint js
+                       #:debugging (debugging ':nada)
+                       #:problem (problem ':nada)
+                       #:max-tasks (max-tasks ':nada))
+  (unless (eq? debugging ':nada) (set-jsaint-debugging! js debugging))
+  (unless (eq? problem ':nada) (set-jsaint-problem! js problem))
+  (unless (eq? max-tasks ':nada) (set-jsaint-max-tasks! js max-tasks)))
+
+(define-syntax with-jsaint
+  (syntax-rules ()
+    [(_  js body ...)
+     (if (eq? js *jsaint*)
+         (begin body ...)
+         (let ((old-js *jsaint*))
+           (use-jsaint js)
+           (let ((r (begin body ...)))
+             (use-jsaint old-js)
+             r)))]))
+
 (define (use-jsaint js) (set! *jsaint* js))
 
 ;;;; Auxiliary routines
