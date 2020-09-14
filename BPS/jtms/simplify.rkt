@@ -52,10 +52,10 @@
 ;;;; Algebra utilities
 
 (define (alg< e1 e2) ;; Sort predicate for algebraic expressions
-  (cond ((equal? e1 e2) #f)
+  (cond ((~equal? e1 e2) #f)
 	((pair? e1)
 	 (if (pair? e2)
-	     (if (equal? (car e1) (car e2))
+	     (if (~equal? (car e1) (car e2))
 		 (alg< (cdr e1) (cdr e2))
 		 (alg< (car e1) (car e2)))
 	     #f))
@@ -79,7 +79,8 @@
 
 (define (same-constant? exp constant)
   (and (number? exp)
-       (= exp constant)))
+       (if (real? exp) (~equal? exp constant)
+	   (= exp constant))))
 
 (define (zero? exp) (same-constant? exp 0))
 (define (one? exp) (same-constant? exp 1))
