@@ -134,15 +134,13 @@
                     (fetch-solution (jsaint-problem *jsaint*) *jsaint*))
           (failure-signal `(Failed (Integrate ,(jsaint-problem *jsaint*)))))
          (done? (values (jsaint-solution *jsaint*) *jsaint*))
-       (printf "done ~a" done?)
        (cond
         ((not (null? solution))
          (set-jsaint-solution! *jsaint* solution)
          (debugging-jsaint
           *jsaint*
           "~\n ~a: Solved original problem." (jsaint-title *jsaint*))
-         (set! done? #t)
-         (printf "done here ~a\n" done?))
+         (set! done? #t))
         ((in? failure-signal (jsaint-jtre *jsaint*))
          (debugging-jsaint
           *jsaint*
@@ -185,7 +183,7 @@
       (run-rules jtre)))))
 
 (define (open-subproblem item)
-(define jtre (jsaint-jtre *jsaint*))
+  (define jtre (jsaint-jtre *jsaint*))
   (assert! `(expanded ,item) ':expand-agenda-item jtre)
   (assume! `(open ,item) ':expand-agenda-item jtre)
   ;; Look for quick win, extra consequences.
@@ -315,7 +313,7 @@
 ;;;; Debugging
 
 (define (try-jsaint problem [title "JSAINT Test"])
-  (solve-integral problem #:debugging #t #:title title))
+  (solve-integral problem #:debugging #t #:title title #:debugging-all #t))
 
 ;;;; Defining operators
 
