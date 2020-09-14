@@ -30,6 +30,7 @@
 (bps-load-file (make-bps-path "jtms") "match" :action :compile)
 (bps-load-file (make-bps-path "jtms") "simplify" :action :compile)
 (bps-load-file (make-bps-path "jtms") "jsaint" :action :compile)
+(try-jsaint '(integrate (integral x x)))
 (try-jsaint problem2)
 (explain-result)
 (try-jsaint '(integrate (integral (+ (* 3 x) (cosh x)) x)))

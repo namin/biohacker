@@ -164,7 +164,7 @@
   (debugging-jsaint *jsaint* "\n  Trying to solve ~a." item)
   (open-subproblem item)
   (cond
-   ((fetch-solution item *jsaint*)
+   ((not (null? (fetch-solution item *jsaint*)))
     ;; Bookkeeping is done by pdis rules
     (debugging-jsaint *jsaint* "\n    ..already solved.")
     #t)
@@ -206,8 +206,9 @@
     (lambda (a b) (< (car a) (car b))))))
 
 (define (insert-in-order entry lst order)
+  (printf "insert-in-order ~a ~a" entry lst)
   (cond ((null? lst) (list entry))
-        ((order (car entry) (caar lst))
+        ((order entry (car lst))
          (cons entry lst))
         (else
          (cons (car lst) (insert-in-order entry (cdr lst) order)))))
@@ -312,8 +313,8 @@
 
 ;;;; Debugging
 
-(define (try-jsaint problem [title "JSAINT Test"])
-  (solve-integral problem #:debugging #t #:title title #:debugging-all #t))
+(define (try-jsaint problem [title "JSAINT Test"] #:debugging-all (debugging-all #f))
+  (solve-integral problem #:debugging #t #:title title #:debugging-all debugging-all))
 
 ;;;; Defining operators
 

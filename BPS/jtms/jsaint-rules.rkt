@@ -18,8 +18,8 @@
                               (:and-failure ?def ?delinquent)))))
       (assert! `(solved ,?parent)
                 `(:and-success ,?def
-                  ,@(map #'(lambda (child)
-                             `(solved ,child))
+                  ,@(map (lambda (child)
+                           `(solved ,child))
                          ?children))))
 
 (rule ((:in (or-subgoals ?parent ?children) :var ?def
@@ -33,8 +33,8 @@
                               (:or-success ?winner ?def)))))
       (assert! `(failed ,?parent)
                `(:or-failure ,?def
-                             ,@(map #'(lambda (child)
-                                        `(failed ,child))
+                             ,@(map (lambda (child)
+                                      `(failed ,child))
                                     ?children))))
 
 (rule ((:in (parent-of ?child ?parent ?type) :var ?lineage))
