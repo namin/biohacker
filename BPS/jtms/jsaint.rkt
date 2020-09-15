@@ -348,11 +348,53 @@
 
 ;;;; Textual display of an AND/OR graph
 
-;; TODO show-ao-graph
+(define (show-ao-graph [js *jsaint*])
+  (with-jsaint
+   js
+   (let* ((problems (get-problems))
+	  (depth-table (update-ao-depth-table 
+		        (jsaint-problem *jsaint*)
+		        0 (list (cons (jsaint-problem *jsaint*) 0))
+		        (list (jsaint-problem *jsaint*)))))
+     (set! depth-table
+	   (sort depth-table (lambda (x y) (< (cdr x) (cdr y)))))
+     (for ([pair depth-table])
+	  (printf "\n ~a:" (cdr pair))
+	  (show-problem (car pair))))))
 
-;; TODO update-ao-depth-table
+(define (update-ao-depth-table now depth depths path)
+  (inc! depth)
+  (for ([child (get-children now)])
+   (unless (member child path) ;; Yes, can loop!
+    (let ((entry (assoc child depths)))
+      (unless entry
+        (set! entry (cons child 0))
+	(push! entry depths))
+      (when (> depth (cdr entry))
+        (set! depths (replace-cdr-of-entry entry depth depths))
+	(set! depths (update-ao-depth-table
+		      child depth depths (cons child path)))))))
+  depths)
 
-;; TODO get-problems
+(define (replace-cdr-of-entry entry v a)
+  (cond
+   ((null? a) (error 'replace-cdr-of-entry "entry not found"))
+   ((eq? (car entry) (caar a))
+    (cons (cons (car entry) v) (cdr a)))
+   (else (cons (car a) (replace-cdr-of-entry entry v (cdr a))))))
+
+(define (get-children gp [js *jsaint*])
+  (with-jsaint
+   js
+   (for/list ([maybe-kid (fetch `(parent-of ?x ,gp ?type)
+			        (jsaint-jtre *jsaint*))]
+              #:when (in? maybe-kid (jsaint-jtre *jsaint*)))
+	     (cadr maybe-kid))))
+
+(define (get-problems [js *jsaint*])
+  (with-jsaint
+   js
+   (map cadr (fetch '(expanded ?x) (jsaint-jtre *jsaint*)))))
 
 ;;;; Debugging
 
