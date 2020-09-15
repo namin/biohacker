@@ -105,17 +105,17 @@
      (printf "\n Problem not solved yet."))
     ((eq? (jsaint-solution *jsaint*) ':failed-problem)
      (explore-network (get-tms-node `(failed ,(jsaint-problem *jsaint*))
-				    (jsaint-jtre *jsaint*)))
+                                    (jsaint-jtre *jsaint*)))
      (printf "\n Failed to find a solution."))
     ((eq? (jsaint-solution *jsaint*) ':failed-empty)
      (printf "\n Ran out of things to do.")
      (explore-network (get-tms-node `(failed ,(jsaint-problem *jsaint*))
-				    (jsaint-jtre *jsaint*))))
+                                    (jsaint-jtre *jsaint*))))
     (else (printf "\n Solved the problem:")
-	  (explore-network (get-tms-node
-			    `(solution-of ,(jsaint-problem *jsaint*)
-				          ,(jsaint-solution *jsaint*))
-			    (jsaint-jtre *jsaint*)))))))
+          (explore-network (get-tms-node
+                            `(solution-of ,(jsaint-problem *jsaint*)
+                                          ,(jsaint-solution *jsaint*))
+                            (jsaint-jtre *jsaint*)))))))
 
 ;;;; Basic algorithm
 
@@ -169,7 +169,7 @@
     (debugging-jsaint *jsaint* "\n    ..already solved.")
     #t)
    ((ormap (lambda (f) (in? f jtre)) ;; Already expanded
-	        (fetch `(and-subgoals ,item ?subproblems) jtre))
+                (fetch `(and-subgoals ,item ?subproblems) jtre))
     (debugging-jsaint *jsaint* "~\n   ..already expanded.")
     #t)
    (else
@@ -197,7 +197,7 @@
 (define (queue-problem problem parent)
   (define entry (cons (estimate-difficulty problem) problem))
   (debugging-jsaint *jsaint* "\n   Queueing ~a, difficulty = ~a"
-		    problem (car entry))
+                    problem (car entry))
   (set-jsaint-agenda!
    *jsaint*
    (insert-in-order
@@ -217,13 +217,13 @@
 
 (define (count-symbols pr)
   (cond ((null? pr) 0)
-	((list? pr)
-	 (foldl + 0 (map count-symbols pr)))
-	(else 1)))
+        ((list? pr)
+         (foldl + 0 (map count-symbols pr)))
+        (else 1)))
 
 (define (max-depth pr)
   (cond ((not (list? pr)) 1)
-	(else (+ 1 (foldl max 0 (map max-depth pr))))))
+        (else (+ 1 (foldl max 0 (map max-depth pr))))))
 
 ;;;; Auxiliary routines
 
@@ -311,40 +311,40 @@
        ((not (null? stuff))
         (printf "\n Parent(s): ")
         (for ([p stuff])
-	     (if (in? p)
-	         (printf "\n   ~a, ~a."
-		         (third p) (fourth p))
-	         (printf "\n    BUG: Should be in: ~a" p))))
+             (if (in? p)
+                 (printf "\n   ~a, ~a."
+                         (third p) (fourth p))
+                 (printf "\n    BUG: Should be in: ~a" p))))
        (else
         (printf "\n No parents found.")))
       (if (not (null? (fetch `(expanded ,pr)))) (printf "\n Expanded,")
           (printf "~% Not expanded,"))
       (if (not (null? (fetch `(open ,pr))))
           (if (in? `(open ,pr)) (printf " open,")
-	      (printf " closed,"))
+              (printf " closed,"))
           (printf " not opened,"))
       (if (in? `(relevant ,pr)) (printf " relevant.")
           (printf " not relevant."))
       (cond ((begin
                (set! stuff (fetch-solution pr))
                (not (null? stuff)))
-	     (printf "\n Solved, solution = ~a" stuff))
-	    ((and (begin
+             (printf "\n Solved, solution = ~a" stuff))
+            ((and (begin
                     (set! stuff (car (fetch `(failed ,pr))))
                     (not (null? stuff)))
-	          (in? stuff)) (printf "\n  Failed."))
-	    ((not (equal? (car pr) 'try))
-	     (printf "\n Neither solved nor failed."))))
+                  (in? stuff)) (printf "\n  Failed."))
+            ((not (equal? (car pr) 'try))
+             (printf "\n Neither solved nor failed."))))
     (let ((ands (fetch `(and-subgoals ,pr ?ands))))
       (when (not (null? ands)) (printf "\n And subgoals:")
-	    (for ([subg (third (car ands))])
-		 (printf "\n   ~a" subg))
-	    (printf ".")))
+            (for ([subg (third (car ands))])
+                 (printf "\n   ~a" subg))
+            (printf ".")))
     (let ((ors (fetch `(or-subgoals ,pr ?ors))))
       (when ors (printf "\n Or subgoals:")
-	    (for ([subg (third (car ors))])
-		 (printf "\n   ~a" subg))
-	    (printf "."))))))
+            (for ([subg (third (car ors))])
+                 (printf "\n   ~a" subg))
+            (printf "."))))))
 
 ;;;; Textual display of an AND/OR graph
 
@@ -352,15 +352,15 @@
   (with-jsaint
    js
    (let* ((problems (get-problems))
-	  (depth-table (update-ao-depth-table 
-		        (jsaint-problem *jsaint*)
-		        0 (list (cons (jsaint-problem *jsaint*) 0))
-		        (list (jsaint-problem *jsaint*)))))
+          (depth-table (update-ao-depth-table
+                        (jsaint-problem *jsaint*)
+                        0 (list (cons (jsaint-problem *jsaint*) 0))
+                        (list (jsaint-problem *jsaint*)))))
      (set! depth-table
-	   (sort depth-table (lambda (x y) (< (cdr x) (cdr y)))))
+           (sort depth-table (lambda (x y) (< (cdr x) (cdr y)))))
      (for ([pair depth-table])
-	  (printf "\n ~a:" (cdr pair))
-	  (show-problem (car pair))))))
+          (printf "\n ~a:" (cdr pair))
+          (show-problem (car pair))))))
 
 (define (update-ao-depth-table now depth depths path)
   (inc! depth)
@@ -369,11 +369,11 @@
     (let ((entry (assoc child depths)))
       (unless entry
         (set! entry (cons child 0))
-	(push! entry depths))
+        (push! entry depths))
       (when (> depth (cdr entry))
         (set! depths (replace-cdr-of-entry entry depth depths))
-	(set! depths (update-ao-depth-table
-		      child depth depths (cons child path)))))))
+        (set! depths (update-ao-depth-table
+                      child depth depths (cons child path)))))))
   depths)
 
 (define (replace-cdr-of-entry entry v a)
@@ -387,9 +387,9 @@
   (with-jsaint
    js
    (for/list ([maybe-kid (fetch `(parent-of ?x ,gp ?type)
-			        (jsaint-jtre *jsaint*))]
+                                (jsaint-jtre *jsaint*))]
               #:when (in? maybe-kid (jsaint-jtre *jsaint*)))
-	     (cadr maybe-kid))))
+             (cadr maybe-kid))))
 
 (define (get-problems [js *jsaint*])
   (with-jsaint
@@ -405,9 +405,9 @@
 (define problem2 '(integrate (integral (+ x 5) x)))
 (define problem3 '(integrate (integral (* 46 (log x %e)) x)))
 (define problem4 '(integrate
-		   (integral (+ 0.63
-			        (* 3.2 (sin (* 1.7 x)))
-			        (* 4 (expt %e (* 2 x)))) x)))
+                   (integral (+ 0.63
+                                (* 3.2 (sin (* 1.7 x)))
+                                (* 4 (expt %e (* 2 x)))) x)))
 (define problem5 '(integrate (integral (cos x) x)))
 (define problem6 '(integrate (integral (+ (* 3 x) (cos x)) x)))
 
