@@ -260,15 +260,32 @@
 		     (push! ante so-far)
 		     (push! ante new-antes)))))))))
 
-(define (say-datum-belief (pr [jtre *jtre*]
-			      (indent "")))
+(define (say-datum-belief pr [jtre *jtre*] [indent ""])
   (with-jtre
    jtre
    (printf "\n~a~a: ~a" indent pr
 	   (if (in-node? (get-tms-node pr *jtre*))
 	       "IN" "OUT"))))
 
-;; TODO: show-justifications
+(define (show-justifications fact [jtre *jtre*])
+  (with-jtre
+   jtre
+   (printf "\n ~a::" fact)
+   (let* ((node (get-tms-node fact *jtre*))
+	  (justs (tms-node-justs node)))
+     (cond
+      ((null? justs)
+       (printf " No justifications."))
+      (else
+       (for ([j justs])
+	    (printf "\n ~a" (just-informant j))
+	    (cond ((not (null? (just-antecedents j))) 
+		   (printf ", on:")
+		   (for ([ante (just-antecedents j)])
+			(say-datum-belief
+			 (view-node ante) *jtre* "  "))
+		   (printf "."))
+		  (else (printf ".")))))))))
 
 ;; TODO: show-data
 
