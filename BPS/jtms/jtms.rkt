@@ -454,9 +454,8 @@
       (do ((stack '())
            (current node)
            (options '())
-           (olen 0)
-           (done? #f))
-          ((or done? (null? current)))
+           (olen 0))
+          ((null? current))
         (why-node current)
         (set! options (when (just? (tms-node-support current))
                         (just-antecedents (tms-node-support current))))
@@ -466,20 +465,20 @@
             (good? (case good?
                      ((q) (raise current))
                      ((0) (if (not (null? stack))
-                          (set! current (pop! stack))
-                          (raise current)))
-                     ((#t) (push! current stack)
-                      (set! current (list-ref options (- good? 1))))))
+                              (set! current (pop! stack))
+                              (raise current)))
+                     (else (push! current stack)
+                           (set! current (list-ref options (- good? 1))))))
           (printf "\n>>>")
           (set! choice (read))
           (cond ((or (eq? choice 'q)
                      (and (integer? choice)
-                          (<= choice olen))
-                     (>= choice 0))
+                          (not (> choice olen))
+                          (not (< choice 0))))
                  (set! good? choice))
-                (#t (printf
-                     "\n Must be q or an integer from 0 to ~a."
-                     olen)))))))))
+                (else (printf
+                       "\n Must be q or an integer from 0 to ~a."
+                       olen)))))))))
 
 (define (push-jtms-assumptions! node jtms)
   (set-jtms-assumptions! jtms (cons node (jtms-assumptions jtms))))
