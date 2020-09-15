@@ -239,7 +239,26 @@
 
 ;;;; More display-intensive procedures
 
-;; TODO: wfs
+(define (wfs fact [jtre *jtre*])
+  (with-jtre
+   jtre
+   ;; Displays well-founded support for a fact
+   (cond
+    ((out? fact) (printf "\n ~a is OUT." fact))
+    (else (do ((queue (list (get-tms-node fact))
+		      (append (cdr queue) new-antes))
+	       (so-far (list (get-tms-node fact)))
+	       (new-antes '() '()))
+	      ((null? queue) (printf "\n--------") fact)
+	    (why-node (car queue))
+	    (unless (or (out-node? (car queue))
+			(tms-node-assumption? (car queue)))
+	      ;; Go down the support
+	      (for ([ante (just-antecedents
+			   (tms-node-support (car queue)))])
+		   (unless (member ante so-far)
+		     (push! ante so-far)
+		     (push! ante new-antes)))))))))
 
 ;; TODO: say-datum-belief
 
