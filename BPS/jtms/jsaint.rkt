@@ -300,7 +300,51 @@
 ;;; SHOW-PROBLEM highlights the assertions relevant to
 ;;; the given problem.
 
-;; TODO show-problem
+(define (show-problem pr [js *jsaint*])
+  (with-jsaint
+   js
+   (printf "\n~a:: (~a)" pr (estimate-difficulty pr))
+   (with-jtre
+    (jsaint-jtre *jsaint*)
+    (let ((stuff (fetch `(parent-of ,pr ?x ?type))))
+      (cond
+       ((not (null? stuff))
+        (printf "\n Parent(s): ")
+        (for ([p stuff])
+	     (if (in? p)
+	         (printf "\n   ~a, ~a."
+		         (third p) (fourth p))
+	         (printf "\n    BUG: Should be in: ~a" p))))
+       (else
+        (printf "\n No parents found.")))
+      (if (not (null? (fetch `(expanded ,pr)))) (printf "\n Expanded,")
+          (printf "~% Not expanded,"))
+      (if (not (null? (fetch `(open ,pr))))
+          (if (in? `(open ,pr)) (printf " open,")
+	      (printf " closed,"))
+          (printf " not opened,"))
+      (if (in? `(relevant ,pr)) (printf " relevant.")
+          (printf " not relevant."))
+      (cond ((begin
+               (set! stuff (fetch-solution pr))
+               (not (null? stuff)))
+	     (printf "\n Solved, solution = ~a" stuff))
+	    ((and (begin
+                    (set! stuff (car (fetch `(failed ,pr))))
+                    (not (null? stuff)))
+	          (in? stuff)) (printf "\n  Failed."))
+	    ((not (equal? (car pr) 'try))
+	     (printf "\n Neither solved nor failed."))))
+    (let ((ands (fetch `(and-subgoals ,pr ?ands))))
+      (when (not (null? ands)) (printf "\n And subgoals:")
+	    (for ([subg (third (car ands))])
+		 (printf "\n   ~a" subg))
+	    (printf ".")))
+    (let ((ors (fetch `(or-subgoals ,pr ?ors))))
+      (when ors (printf "\n Or subgoals:")
+	    (for ([subg (third (car ors))])
+		 (printf "\n   ~a" subg))
+	    (printf "."))))))
 
 ;;;; Textual display of an AND/OR graph
 
