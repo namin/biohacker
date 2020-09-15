@@ -260,7 +260,13 @@
 		     (push! ante so-far)
 		     (push! ante new-antes)))))))))
 
-;; TODO: say-datum-belief
+(define (say-datum-belief (pr [jtre *jtre*]
+			      (indent "")))
+  (with-jtre
+   jtre
+   (printf "\n~a~a: ~a" indent pr
+	   (if (in-node? (get-tms-node pr *jtre*))
+	       "IN" "OUT"))))
 
 ;; TODO: show-justifications
 
