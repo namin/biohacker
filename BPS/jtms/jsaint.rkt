@@ -134,6 +134,7 @@
                     (fetch-solution (jsaint-problem *jsaint*) *jsaint*))
           (failure-signal `(Failed (Integrate ,(jsaint-problem *jsaint*)))))
          (done? (values (jsaint-solution *jsaint*) *jsaint*))
+       ;;(show-ao-graph)
        (cond
         ((not (null? solution))
          (set-jsaint-solution! *jsaint* solution)
@@ -330,8 +331,12 @@
                (not (null? stuff)))
              (printf "\n Solved, solution = ~a" stuff))
             ((and (begin
-                    (set! stuff (car (fetch `(failed ,pr))))
-                    (not (null? stuff)))
+                    (set! stuff (fetch `(failed ,pr)))
+                    (if (not (null? stuff))
+                        (begin
+                          (set! stuff (car stuff))
+                          #t)
+                        #f))
                   (in? stuff)) (printf "\n  Failed."))
             ((not (equal? (car pr) 'try))
              (printf "\n Neither solved nor failed."))))
@@ -341,7 +346,7 @@
                  (printf "\n   ~a" subg))
             (printf ".")))
     (let ((ors (fetch `(or-subgoals ,pr ?ors))))
-      (when ors (printf "\n Or subgoals:")
+      (when (not (null? ors)) (printf "\n Or subgoals:")
             (for ([subg (third (car ors))])
                  (printf "\n   ~a" subg))
             (printf "."))))))
