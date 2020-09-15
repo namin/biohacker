@@ -304,10 +304,10 @@
 ;;;; Database system
 
 (define (bound? x)
-  'TODO);; boundp
+  (with-handlers ([exn? (lambda (e) #f)]) (eval x)))
 
 (define (variable-value x)
-  'TODO) ;; symbol-value
+  (eval x))
 
 (define (get-dbclass fact [jtre *jtre*])
   (with-jtre
@@ -317,8 +317,7 @@
          ((variable? fact)
           (cond ((bound? fact)
                  (get-dbclass (variable-value fact) *jtre*))
-                (else (error 'get-dbclass (format "\nDbclass unbound: ~a" fact))))
-          (error 'get-dbclass "TODO: not implemented"))
+                (else (error 'get-dbclass (format "\nDbclass unbound: ~a" fact)))))
          ((symbol? fact)
           (let ((h (hash-ref (jtre-dbclass-table *jtre*) fact #f)))
             (cond (h h)
