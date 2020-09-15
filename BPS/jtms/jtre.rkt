@@ -287,7 +287,19 @@
 		   (printf "."))
 		  (else (printf ".")))))))))
 
-;; TODO: show-data
+(define (show-data [jtre *jtre*] [stream #f])
+  (unless stream
+    (set! stream (current-output-port)))
+  (with-jtre
+   jtre
+   (fprintf stream
+	    "\n~a facts total." (jtre-datum-counter *jtre*))
+   (map-dbclass
+    (lambda (dbclass)
+      (for ([datum (dbclass-facts dbclass)])
+	   (fprintf stream "\n~a: ~a" (show-datum datum)
+		    (if (in-node? (datum-tms-node datum))
+			"IN" "OUT")))))))
 
 ;;;; Database system
 
