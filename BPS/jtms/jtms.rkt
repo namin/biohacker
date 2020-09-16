@@ -386,14 +386,14 @@
       ((eq?  justification ':ENABLED-ASSUMPTION)
        (printf "\n~a is an enabled assumption"
                (node-string node)))
-      (justification ;; right condition?
+      (justification
        (printf "\n~a is IN via ~a on"
                (node-string node)
                (just-informant justification)
                )
        (for ((anode (just-antecedents justification)))
             (printf  "\n  ~a" (node-string anode))))
-      (#t (printf "\n~a is OUT." (node-string node))))
+      (else (printf "\n~a is OUT." (node-string node))))
     node))
 
 (define (why-nodes jtms)
@@ -407,7 +407,7 @@
 
 (define (handle-one-contradiction contra-node)
   (set! *contra-assumptions* (assumptions-of-node contra-node))
-    (unless *contra-assumptions*
+  (when (null? *contra-assumptions*)
       (tms-error 'handle-one-contradiction "\nThere is a flaw in the universe...~a" contra-node))
   (printf  "\nContradiction found: ~a" (node-string contra-node))
   (print-contra-list *contra-assumptions*)
