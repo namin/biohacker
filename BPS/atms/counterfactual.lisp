@@ -43,3 +43,16 @@
 
 
 (why-nodes *atms*)
+#|
+<The contradiction,{}>
+<U,{{U}}>
+<C,{{U}}>
+<A,{{U}}>
+<B,{{U}}>
+<D,{{U}}>
+<notU,{{notU}}>
+<notC,{{notU}}>
+<notA,{{notU}}>
+<notB,{{notU}}>
+<notD,{{notU}}>
+|#
