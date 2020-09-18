@@ -11,14 +11,12 @@
 (setq nb (tms-create-node *atms* "notB"))
 (setq nd (tms-create-node *atms* "notD"))
 
-(setq aORb (tms-create-node *atms* "AorB"))
-
 (nogood-nodes 'nogood-u (list u nu))
 (nogood-nodes 'nogood-c (list c nc))
 (nogood-nodes 'nogood-a (list a na))
 (nogood-nodes 'nogood-b (list b nb))
 (nogood-nodes 'nogood-d (list d nd))
-(nogood-nodes 'nogood-d (list aORb na nb))
+
 (assume-node u)
 (assume-node nu)
 
@@ -29,8 +27,9 @@
 (justify-node 'J_CB b (list c))
 (justify-node 'J_BC c (list b))
 (justify-node 'J_AD d (list a))
+(justify-node 'J_DA a (list d))
 (justify-node 'J_BD d (list b))
-(justify-node 'J_DAB aORb (list d))
+(justify-node 'J_DB b (list d))
 
 (justify-node 'JN_UC nc (list nu))
 (justify-node 'JN_CU nu (list nc))
