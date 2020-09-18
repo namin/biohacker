@@ -56,3 +56,27 @@
 <notB,{{notU}}>
 <notD,{{notU}}>
 |#
+
+(assume-node c)
+(assume-node nc)
+(assume-node a)
+(assume-node na)
+(assume-node b)
+(assume-node nb)
+(assume-node d)
+(assume-node nd)
+
+(why-nodes *atms*)
+#|
+<The contradiction,{}>
+<U,{{D}{B}{A}{C}{U}}>
+<C,{{D}{B}{A}{C}{U}}>
+<A,{{D}{B}{A}{C}{U}}>
+<B,{{D}{B}{A}{C}{U}}>
+<D,{{D}{B}{A}{C}{U}}>
+<notU,{{notD}{notB}{notA}{notC}{notU}}>
+<notC,{{notD}{notB}{notA}{notC}{notU}}>
+<notA,{{notD}{notB}{notA}{notC}{notU}}>
+<notB,{{notD}{notB}{notA}{notC}{notU}}>
+<notD,{{notD}{notB}{notA}{notC}{notU}}>
+|#
