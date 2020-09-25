@@ -119,3 +119,56 @@
 ;; abduction: notD implies notC
 ;; transduction: A implies B
 ;; action: notC and A* implies D* and notB*
+
+(setq *ps*
+      (list (cons u 0.6)
+            (cons nu 0.4)
+            (cons a* 0.7)
+            (cons na* 0.3)))
+
+;; this logic is wrong (see below)
+;; but we will use it as a starting point
+
+(defun env-prob (e ps)
+    (let* ((as (env-assumptions e))
+           (kps (mapcar #'(lambda (k) (assoc k ps)) as)))
+      (if (some #'(lambda (kp) (not kp)) kps)
+          nil
+          (apply #'* (mapcar #'cdr kps)))))
+
+(defun label-prob (l ps)
+  (apply #'+ (remove nil (mapcar #'(lambda (e) (env-prob e ps)) l))))
+
+(defun node-prob (n ps)
+  (label-prob (tms-node-label n) ps))
+
+(defun prob-node (node ps &optional (stream t) (prefix ""))
+  (format stream "~%<~A~A,{" prefix (tms-node-datum node))
+  (format stream "~A" (node-prob node ps))
+  (format stream "}>"))
+
+(defun prob-nodes (atms ps &optional (stream t))
+  (dolist (n (reverse (atms-nodes atms))) (prob-node n ps stream )))
+
+(prob-nodes *atms* *ps*)
+#|
+<The contradiction,{0}>
+<U,{0.6}>
+<C,{0.6}>
+<A,{0.6}>
+<B,{0.6}>
+<D,{0.6}>
+<C*,{0.6}>
+<A*,{0.7}>
+<B*,{0.6}>
+<D*,{1.3}>
+<notU,{0.4}>
+<notC,{0.4}>
+<notA,{0.4}>
+<notB,{0.4}>
+<notD,{0.4}>
+<notC*,{0.4}>
+<notA*,{0.3}>
+<notB*,{0.4}>
+<notD*,{0.120000005}>
+|#
