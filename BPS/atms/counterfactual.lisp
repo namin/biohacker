@@ -143,7 +143,7 @@
 
 (defun prob-node (node ps &optional (stream t) (prefix ""))
   (format stream "~%<~A~A,{" prefix (tms-node-datum node))
-  (format stream "~A" (node-prob node ps))
+  (format stream "~2$" (node-prob node ps))
   (format stream "}>"))
 
 (defun prob-nodes (atms ps &optional (stream t))
@@ -151,23 +151,23 @@
 
 (prob-nodes *atms* *ps*)
 #|
-<The contradiction,{0}>
-<U,{0.6}>
-<C,{0.6}>
-<A,{0.6}>
-<B,{0.6}>
-<D,{0.6}>
-<C*,{0.6}>
-<A*,{0.7}>
-<B*,{0.6}>
-<D*,{0.87999994}>
-<notU,{0.4}>
-<notC,{0.4}>
-<notA,{0.4}>
-<notB,{0.4}>
-<notD,{0.4}>
-<notC*,{0.4}>
-<notA*,{0.3}>
-<notB*,{0.4}>
-<notD*,{0.120000005}>
+<The contradiction,{0.00}>
+<U,{0.60}>
+<C,{0.60}>
+<A,{0.60}>
+<B,{0.60}>
+<D,{0.60}>
+<C*,{0.60}>
+<A*,{0.70}>
+<B*,{0.60}>
+<D*,{0.88}>
+<notU,{0.40}>
+<notC,{0.40}>
+<notA,{0.40}>
+<notB,{0.40}>
+<notD,{0.40}>
+<notC*,{0.40}>
+<notA*,{0.30}>
+<notB*,{0.40}>
+<notD*,{0.12}>
 |#
