@@ -126,9 +126,6 @@
             (cons a* 0.7)
             (cons na* 0.3)))
 
-;; this logic is wrong (see below)
-;; but we will use it as a starting point
-
 (defun env-prob (e ps)
     (let* ((as (env-assumptions e))
            (kps (mapcar #'(lambda (k) (assoc k ps)) as)))
@@ -137,7 +134,9 @@
           (apply #'* (mapcar #'cdr kps)))))
 
 (defun label-prob (l ps)
-  (apply #'+ (remove nil (mapcar #'(lambda (e) (env-prob e ps)) l))))
+  (let ((worlds (remove nil (mapcar #'(lambda (e) (env-prob e ps)) l))))
+    (- (apply #'+ worlds)
+       (if (< (length worlds) 2) 0 (apply #'* worlds)))))
 
 (defun node-prob (n ps)
   (label-prob (tms-node-label n) ps))
@@ -161,7 +160,7 @@
 <C*,{0.6}>
 <A*,{0.7}>
 <B*,{0.6}>
-<D*,{1.3}>
+<D*,{0.87999994}>
 <notU,{0.4}>
 <notC,{0.4}>
 <notA,{0.4}>
