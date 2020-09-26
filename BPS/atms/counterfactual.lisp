@@ -159,34 +159,34 @@
   (label-prob (tms-node-label n) ps))
 
 (defun prob-node (node ps &optional (stream t) (prefix ""))
-  (format stream "~%<~A~A,{" prefix (tms-node-datum node))
+  (format stream "~%<~A~A," prefix (tms-node-datum node))
   (format stream "~2$" (node-prob node ps))
-  (format stream "}>"))
+  (format stream ">"))
 
 (defun prob-nodes (atms ps &optional (stream t))
   (dolist (n (reverse (atms-nodes atms))) (prob-node n ps stream)))
 
 (prob-nodes *atms* *ps*)
 #|
-<The contradiction,{0.00}>
-<U,{0.60}>
-<C,{0.60}>
-<A,{0.60}>
-<B,{0.60}>
-<D,{0.60}>
-<C*,{0.60}>
-<A*,{0.70}>
-<B*,{0.60}>
-<D*,{0.88}>
-<notU,{0.40}>
-<notC,{0.40}>
-<notA,{0.40}>
-<notB,{0.40}>
-<notD,{0.40}>
-<notC*,{0.40}>
-<notA*,{0.30}>
-<notB*,{0.40}>
-<notD*,{0.12}>
+<The contradiction,0.00>
+<U,0.60>
+<C,0.60>
+<A,0.60>
+<B,0.60>
+<D,0.60>
+<C*,0.60>
+<A*,0.70>
+<B*,0.60>
+<D*,0.88>
+<notU,0.40>
+<notC,0.40>
+<notA,0.40>
+<notB,0.40>
+<notD,0.40>
+<notC*,0.40>
+<notA*,0.30>
+<notB*,0.40>
+<notD*,0.12>
 |#
 
 (defun why-prob-node (node ps &optional (stream t) (prefix ""))
