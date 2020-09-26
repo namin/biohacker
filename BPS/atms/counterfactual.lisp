@@ -164,7 +164,7 @@
   (format stream "}>"))
 
 (defun prob-nodes (atms ps &optional (stream t))
-  (dolist (n (reverse (atms-nodes atms))) (prob-node n ps stream )))
+  (dolist (n (reverse (atms-nodes atms))) (prob-node n ps stream)))
 
 (prob-nodes *atms* *ps*)
 #|
@@ -187,4 +187,39 @@
 <notA*,{0.30}>
 <notB*,{0.40}>
 <notD*,{0.12}>
+|#
+
+(defun why-prob-node (node ps &optional (stream t) (prefix ""))
+  (format stream "~%<~A~A," prefix (tms-node-datum node))
+  (format stream "~2$:{" (node-prob node ps))
+  (dolist (e (tms-node-label node))
+    (let ((pe (env-prob e ps)))
+      (when pe (format stream "~2$:" pe))
+      (env-string e stream)))
+  (format stream "}>"))
+
+(defun why-prob-nodes (atms ps &optional (stream t))
+  (dolist (n (reverse (atms-nodes atms))) (why-prob-node n ps stream)))
+
+(why-prob-nodes *atms* *ps*)
+#|
+<The contradiction,0.00:{}>
+<U,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<C,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<A,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<B,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<D,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<C*,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<A*,0.70:{{D*,notB*}{D*,notC*}{D*,notD}{D*,notB}{D*,notA}{D*,notC}{D*,notU}0.70:{A*}}>
+<B*,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<D*,0.88:{{D*}{B*}0.70:{A*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<notU,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notC,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notA,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notB,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notD,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notC*,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notA*,0.30:{{notD*}0.30:{notA*}}>
+<notB*,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notD*,0.12:{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notD}{notA*,notB}{notA,notA*}{notA*,notC}0.12:{notA*,notU}}>
 |#
