@@ -134,9 +134,26 @@
           (apply #'* (mapcar #'cdr kps)))))
 
 (defun label-prob (l ps)
-  (let ((worlds (remove nil (mapcar #'(lambda (e) (env-prob e ps)) l))))
-    (- (apply #'+ worlds)
-       (if (< (length worlds) 2) 0 (apply #'* worlds)))))
+  (union-prob (remove nil (mapcar #'(lambda (e) (env-prob e ps)) l))))
+
+(defun choose (vs k)
+  (cond
+    ((= k 0) '(()))
+    ((null vs) '())
+    (t
+     (append
+      (mapcar #'(lambda (x) (cons (car vs) x)) (choose (cdr vs) (- k 1)))
+      (choose (cdr vs) k)))))
+
+(defun union-prob (vs)
+  (union-prob-iter vs 1 (length vs)))
+
+(defun union-prob-iter (vs k n)
+  (let ((r (choose vs k)))
+    (if (null r)
+        0
+        (- (apply #'+ (mapcar #'(lambda (x) (apply #'* x)) r))
+           (union-prob-iter vs (+ k 1) n)))))
 
 (defun node-prob (n ps)
   (label-prob (tms-node-label n) ps))
