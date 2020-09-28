@@ -90,12 +90,13 @@
 (assume-node b)
 (assume-node nb)
 (assume-node d)
-(assume-node nd)
+;;(assume-node nd)
+(nogood-nodes 'nogood-nd (list nd))
 
 (assume-node c*)
 (assume-node nc*)
 ;;(assume-node a*)
-(nogood-nodes 'nogood-u (list a*))
+(nogood-nodes 'nogood-a* (list a*))
 (assume-node na*)
 (assume-node b*)
 (assume-node nb*)
@@ -115,16 +116,16 @@
 <A*,{}>
 <B*,{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}{U}}>
 <D*,{{D*}{B*}{C*}{D,notW}{B}{A,notW}{C}{U}}>
-<notU,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notU,{{notD*}{notB*}{notC*}{notB}{notC}{notU}}>
 <notW,{{notW}}>
-<notC,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notA,{{notD*,notW}{notB*,notW}{notC*,notW}{notD}{notB,notW}{notA}{notC,notW}{notU,notW}}>
-<notB,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notD,{{notD*,notW}{notB*,notW}{notC*,notW}{notD}{notB,notW}{notA}{notC,notW}{notU,notW}}>
-<notC*,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notC,{{notD*}{notB*}{notC*}{notB}{notC}{notU}}>
+<notA,{}>
+<notB,{{notD*}{notB*}{notC*}{notB}{notC}{notU}}>
+<notD,{}>
+<notC*,{{notD*}{notB*}{notC*}{notB}{notC}{notU}}>
 <notA*,{{notD*}{notA*}}>
-<notB*,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notD*,{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notD}{notA*,notB}{notA,notA*}{notA*,notC}{notA*,notU}}>
+<notB*,{{notD*}{notB*}{notC*}{notB}{notC}{notU}}>
+<notD*,{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notB}{notA*,notC}{notA*,notU}}>
 |#
 
 ;; prediction: notA implies notD
@@ -137,7 +138,8 @@
             (cons nu 0.4)
             (cons w 0.7)
             (cons nw 0.3)
-            (cons na* 1.0)))
+            (cons na* 1.0)
+            (cons d 1.0)))
 
 (defun env-prob (e ps)
     (let* ((as (env-assumptions e))
@@ -183,22 +185,23 @@
 
 (prob-nodes *atms* *ps*)
 #|
-<U,0.60>
+<The contradiction,0.00>
+<U,0.72>
 <W,0.70>
-<C,0.60>
-<A,0.88>
-<B,0.60>
-<D,0.88>
-<C*,0.60>
+<C,0.72>
+<A,1.00>
+<B,0.72>
+<D,1.00>
+<C*,0.72>
 <A*,0.00>
-<B*,0.60>
-<D*,0.60>
+<B*,0.72>
+<D*,0.72>
 <notU,0.40>
 <notW,0.30>
 <notC,0.40>
-<notA,0.12>
+<notA,0.00>
 <notB,0.40>
-<notD,0.12>
+<notD,0.00>
 <notC*,0.40>
 <notA*,1.00>
 <notB*,0.40>
@@ -220,24 +223,24 @@
 (why-prob-nodes *atms* *ps*)
 #|
 <The contradiction,0.00:{}>
-<U,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<U,0.72:{{D*,notA*}{B*}{C*}0.30:{D,notW}{B}{A,notW}{C}0.60:{U}}>
 <W,0.70:{0.70:{W}}>
-<C,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
-<A,0.88:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.70:{W}0.60:{U}}>
-<B,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
-<D,0.88:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.70:{W}0.60:{U}}>
-<C*,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<C,0.72:{{D*,notA*}{B*}{C*}0.30:{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<A,1.00:{{D*,notA*}{B*}{C*}1.00:{D}{B}{A}{C}0.70:{W}0.60:{U}}>
+<B,0.72:{{D*,notA*}{B*}{C*}0.30:{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<D,1.00:{{D*,notA*}{B*}{C*}1.00:{D}{B}{A}{C}0.70:{W}0.60:{U}}>
+<C*,0.72:{{D*,notA*}{B*}{C*}0.30:{D,notW}{B}{A,notW}{C}0.60:{U}}>
 <A*,0.00:{}>
-<B*,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
-<D*,0.60:{{D*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
-<notU,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<B*,0.72:{{D*,notA*}{B*}{C*}0.30:{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<D*,0.72:{{D*}{B*}{C*}0.30:{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<notU,0.40:{{notD*}{notB*}{notC*}{notB}{notC}0.40:{notU}}>
 <notW,0.30:{0.30:{notW}}>
-<notC,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notA,0.12:{{notD*,notW}{notB*,notW}{notC*,notW}{notD}{notB,notW}{notA}{notC,notW}0.12:{notU,notW}}>
-<notB,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notD,0.12:{{notD*,notW}{notB*,notW}{notC*,notW}{notD}{notB,notW}{notA}{notC,notW}0.12:{notU,notW}}>
-<notC*,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notC,0.40:{{notD*}{notB*}{notC*}{notB}{notC}0.40:{notU}}>
+<notA,0.00:{}>
+<notB,0.40:{{notD*}{notB*}{notC*}{notB}{notC}0.40:{notU}}>
+<notD,0.00:{}>
+<notC*,0.40:{{notD*}{notB*}{notC*}{notB}{notC}0.40:{notU}}>
 <notA*,1.00:{{notD*}1.00:{notA*}}>
-<notB*,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notD*,0.40:{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notD}{notA*,notB}{notA,notA*}{notA*,notC}0.40:{notA*,notU}}>
+<notB*,0.40:{{notD*}{notB*}{notC*}{notB}{notC}0.40:{notU}}>
+<notD*,0.40:{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notB}{notA*,notC}0.40:{notA*,notU}}>
 |#
