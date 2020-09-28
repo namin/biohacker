@@ -72,7 +72,12 @@
 (defun horn-clause? (c)
   (= 1 (length (remove-if-not #'(lambda (l) (eq (cdr l) ':TRUE)) (PLTMS::clause-literals c)))))
 
+#|
+Horn clause format:
+(:OR (:NOT A1) (:NOT A2) ... (:NOT A3) B)
+|#
 (setq horn-clauses (remove-if-not #'horn-clause? clauses))
+(mapcar #'PLTMS::pretty-print-clause horn-clauses)
 
 (length horn-clauses)
 
@@ -80,11 +85,11 @@
 
 (mapcar #'PLTMS::pretty-print-clause non-horn-clauses)
 #|
-(:OR A* (:NOT D*) C)
+(:OR A* (:NOT D*) C) ;; can we use (:NOT D*) == notD*?
 (:OR A* (:NOT D*) B*)
 (:OR A* (:NOT D*) B)
 (:OR A* (:NOT D*) A)
-(:OR A* (:NOT D*) U)
+(:OR A* (:NOT D*) U) ;; (OR (:NOT notA*) (:NOT D*) U)
 (:OR A* (:NOT D*) C*)
 (:OR A* (:NOT D*) D)
 |#

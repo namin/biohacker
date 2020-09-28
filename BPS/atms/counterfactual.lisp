@@ -1,5 +1,6 @@
 (setq *atms* (create-atms "riflemen" :debugging t))
 (setq u (tms-create-node *atms* "U"))
+(setq w (tms-create-node *atms* "W"))
 (setq c (tms-create-node *atms* "C"))
 (setq a (tms-create-node *atms* "A"))
 (setq b (tms-create-node *atms* "B"))
@@ -10,6 +11,7 @@
 (setq d* (tms-create-node *atms* "D*"))
 
 (setq nu (tms-create-node *atms* "notU"))
+(setq nw (tms-create-node *atms* "notW"))
 (setq nc (tms-create-node *atms* "notC"))
 (setq na (tms-create-node *atms* "notA"))
 (setq nb (tms-create-node *atms* "notB"))
@@ -20,29 +22,33 @@
 (setq nd* (tms-create-node *atms* "notD*"))
 
 (nogood-nodes 'nogood-u (list u nu))
+(nogood-nodes 'nogood-w (list w nw))
 (nogood-nodes 'nogood-c (list c nc))
 (nogood-nodes 'nogood-a (list a na))
 (nogood-nodes 'nogood-b (list b nb))
 (nogood-nodes 'nogood-d (list d nd))
-(nogood-nodes 'nogood-c (list c* nc*))
-(nogood-nodes 'nogood-a (list a* na*))
-(nogood-nodes 'nogood-b (list b* nb*))
-(nogood-nodes 'nogood-d (list d* nd*))
+(nogood-nodes 'nogood-c* (list c* nc*))
+(nogood-nodes 'nogood-a* (list a* na*))
+(nogood-nodes 'nogood-b* (list b* nb*))
+(nogood-nodes 'nogood-d* (list d* nd*))
 
 (justify-node 'J_UC c (list u))
 (justify-node 'J_CU u (list c))
 (justify-node 'J_CA a (list c))
-(justify-node 'J_AC c (list a))
+(justify-node 'J_WA a (list w))
+;; A shooting no longer implies captain gave the order,
+;; unless notW.
+(justify-node 'J_AC c (list a nw))
 (justify-node 'J_CB b (list c))
 (justify-node 'J_BC c (list b))
 (justify-node 'J_AD d (list a))
 (justify-node 'J_DA a (list d))
 (justify-node 'J_BD d (list b))
-(justify-node 'J_DB b (list d))
+(justify-node 'J_DB b (list d nw))
 
 (justify-node 'JN_UC nc (list nu))
 (justify-node 'JN_CU nu (list nc))
-(justify-node 'JN_CA na (list nc))
+(justify-node 'JN_CA na (list nc nw))
 (justify-node 'JN_AC nc (list na))
 (justify-node 'JN_CB nb (list nc))
 (justify-node 'JN_BC nc (list nb))
@@ -74,6 +80,9 @@
 (assume-node u)
 (assume-node nu)
 
+(assume-node w)
+(assume-node nw)
+
 (assume-node c)
 (assume-node nc)
 (assume-node a)
@@ -85,7 +94,8 @@
 
 (assume-node c*)
 (assume-node nc*)
-(assume-node a*)
+;;(assume-node a*)
+(nogood-nodes 'nogood-u (list a*))
 (assume-node na*)
 (assume-node b*)
 (assume-node nb*)
@@ -95,20 +105,22 @@
 (why-nodes *atms*)
 #|
 <The contradiction,{}>
-<U,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
-<C,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
-<A,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
-<B,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
-<D,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
-<C*,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
-<A*,{{D*,notB*}{D*,notC*}{D*,notD}{D*,notB}{D*,notA}{D*,notC}{D*,notU}{A*}}>
-<B*,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
-<D*,{{D*}{B*}{A*}{C*}{D}{B}{A}{C}{U}}>
+<U,{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}{U}}>
+<W,{{W}}>
+<C,{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}{U}}>
+<A,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{W}{U}}>
+<B,{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}{U}}>
+<D,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{W}{U}}>
+<C*,{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}{U}}>
+<A*,{}>
+<B*,{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}{U}}>
+<D*,{{D*}{B*}{C*}{D,notW}{B}{A,notW}{C}{U}}>
 <notU,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notW,{{notW}}>
 <notC,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notA,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notA,{{notD*,notW}{notB*,notW}{notC*,notW}{notD}{notB,notW}{notA}{notC,notW}{notU,notW}}>
 <notB,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notD,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notD,{{notD*,notW}{notB*,notW}{notC*,notW}{notD}{notB,notW}{notA}{notC,notW}{notU,notW}}>
 <notC*,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
 <notA*,{{notD*}{notA*}}>
 <notB*,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
@@ -123,8 +135,9 @@
 (setq *ps*
       (list (cons u 0.6)
             (cons nu 0.4)
-            (cons a* 0.7)
-            (cons na* 0.3)))
+            (cons w 0.7)
+            (cons nw 0.3)
+            (cons na* 1.0)))
 
 (defun env-prob (e ps)
     (let* ((as (env-assumptions e))
@@ -145,6 +158,8 @@
       (mapcar #'(lambda (x) (cons (car vs) x)) (choose (cdr vs) (- k 1)))
       (choose (cdr vs) k)))))
 
+;; P(A U B) = P(A) + P(B) - P(A)*P(B)
+;; P(A U B C) = P(A) + P(B) + P(C) - P(A)*P(B) - P(A)*P(C) - P(B)*P(C) + P(A)*P(B)*P(C)
 (defun union-prob (vs)
   (union-prob-iter vs 1 (length vs)))
 
@@ -168,25 +183,26 @@
 
 (prob-nodes *atms* *ps*)
 #|
-<The contradiction,0.00>
 <U,0.60>
+<W,0.70>
 <C,0.60>
-<A,0.60>
+<A,0.88>
 <B,0.60>
-<D,0.60>
+<D,0.88>
 <C*,0.60>
-<A*,0.70>
+<A*,0.00>
 <B*,0.60>
-<D*,0.88>
+<D*,0.60>
 <notU,0.40>
+<notW,0.30>
 <notC,0.40>
-<notA,0.40>
+<notA,0.12>
 <notB,0.40>
-<notD,0.40>
+<notD,0.12>
 <notC*,0.40>
-<notA*,0.30>
+<notA*,1.00>
 <notB*,0.40>
-<notD*,0.12>
+<notD*,0.40>
 |#
 
 (defun why-prob-node (node ps &optional (stream t) (prefix ""))
@@ -204,22 +220,24 @@
 (why-prob-nodes *atms* *ps*)
 #|
 <The contradiction,0.00:{}>
-<U,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<C,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<A,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<B,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<D,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<C*,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<A*,0.70:{{D*,notB*}{D*,notC*}{D*,notD}{D*,notB}{D*,notA}{D*,notC}{D*,notU}0.70:{A*}}>
-<B*,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<D*,0.88:{{D*}{B*}0.70:{A*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<U,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<W,0.70:{0.70:{W}}>
+<C,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<A,0.88:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.70:{W}0.60:{U}}>
+<B,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<D,0.88:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.70:{W}0.60:{U}}>
+<C*,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<A*,0.00:{}>
+<B*,0.60:{{D*,notA*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
+<D*,0.60:{{D*}{B*}{C*}{D,notW}{B}{A,notW}{C}0.60:{U}}>
 <notU,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notW,0.30:{0.30:{notW}}>
 <notC,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notA,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notA,0.12:{{notD*,notW}{notB*,notW}{notC*,notW}{notD}{notB,notW}{notA}{notC,notW}0.12:{notU,notW}}>
 <notB,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notD,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notD,0.12:{{notD*,notW}{notB*,notW}{notC*,notW}{notD}{notB,notW}{notA}{notC,notW}0.12:{notU,notW}}>
 <notC*,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notA*,0.30:{{notD*}0.30:{notA*}}>
+<notA*,1.00:{{notD*}1.00:{notA*}}>
 <notB*,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notD*,0.12:{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notD}{notA*,notB}{notA,notA*}{notA*,notC}0.12:{notA*,notU}}>
+<notD*,0.40:{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notD}{notA*,notB}{notA,notA*}{notA*,notC}0.40:{notA*,notU}}>
 |#
