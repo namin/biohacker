@@ -222,6 +222,8 @@
 
 (why-prob-nodes *atms* *ps*)
 #|
+;; 0.30:{D,notW} = 1.0 (for D) * 0.3 (for notW)
+;; P(D /\ notW) = P(U) = 0.60
 <The contradiction,0.00:{}>
 <U,0.72:{{D*,notA*}{B*}{C*}0.30:{D,notW}{B}{A,notW}{C}0.60:{U}}>
 <W,0.70:{0.70:{W}}>
