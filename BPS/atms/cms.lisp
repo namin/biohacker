@@ -63,7 +63,7 @@
          ;;(:implies "notC*" "notA*") (:implies "notA*" "notC*")
          (:implies "notC*" "notB*") (:implies "notB*" "notC*")
          (:implies (:and "notA*" "notB*") "notD*")
-         (:implies "notD*" (:or "notA*" "notB*")))))
+         (:implies "notD*" (:and "notA*" "notB*")))))
 
 (setq p (PLTMS::prime-implicates formula))
 
@@ -87,13 +87,6 @@
 (:OR A* (:NOT D*) U)
 (:OR A* (:NOT D*) C*)
 (:OR A* (:NOT D*) D)
-(:OR (:NOT notD*) notA* notC)
-(:OR (:NOT notD*) notA* notU)
-(:OR (:NOT notD*) notA* notB)
-(:OR (:NOT notD*) notA* notA)
-(:OR (:NOT notD*) notA* notC*)
-(:OR (:NOT notD*) notA* notB*)
-(:OR (:NOT notD*) notD notA*)
 |#
 
 (defun find-node (atms name)
@@ -133,7 +126,6 @@
 
 (why-nodes *atms*)
 #|
-<The contradiction,{}>
 <U,{{B*}{C*}{D}{B}{A}{C}{U}}>
 <C,{{B*}{C*}{D}{B}{A}{C}{U}}>
 <A,{{B*}{C*}{D}{B}{A}{C}{U}}>
@@ -143,21 +135,20 @@
 <A*,{{A*}}>
 <B*,{{B*}{C*}{D}{B}{A}{C}{U}}>
 <D*,{{D*}{B*}{A*}{C*}{D}{B}{A}{C}{U}}>
-<notU,{{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notC,{{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notA,{{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notB,{{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notD,{{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notC*,{{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
-<notA*,{{notA*}}>
-<notB*,{{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notU,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notC,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notA,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notB,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notD,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notC*,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
+<notA*,{{notD*}{notA*}}>
+<notB*,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
 <notD*,{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notD}{notA*,notB}{notA,notA*}{notA*,notC}{notA*,notU}}>
 |#
 
 ;; ...
 (prob-nodes *atms* *ps*)
 #|
-<The contradiction,0.00>
 <U,0.60>
 <C,0.60>
 <A,0.60>
@@ -175,11 +166,13 @@
 <notC*,0.40>
 <notA*,0.30>
 <notB*,0.40>
+<notD*,0.12>
 |#
 
 ;; ...
 (why-prob-nodes *atms* *ps*)
 #|
+<The contradiction,0.00:{}>
 <U,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
 <C,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
 <A,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
@@ -189,13 +182,13 @@
 <A*,0.70:{0.70:{A*}}>
 <B*,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
 <D*,0.88:{{D*}{B*}0.70:{A*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<notU,0.40:{{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notC,0.40:{{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notA,0.40:{{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notB,0.40:{{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notD,0.40:{{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notC*,0.40:{{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
-<notA*,0.30:{0.30:{notA*}}>
-<notB*,0.40:{{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notU,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notC,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notA,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notB,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notD,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notC*,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
+<notA*,0.30:{{notD*}0.30:{notA*}}>
+<notB*,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
 <notD*,0.12:{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notD}{notA*,notB}{notA,notA*}{notA*,notC}0.12:{notA*,notU}}>
 |#
