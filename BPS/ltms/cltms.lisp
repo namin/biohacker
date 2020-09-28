@@ -434,4 +434,5 @@
   (export 'prime-implicates :PLTMS)
   (export 'collect :PLTMS)
   (export 'clause-literals :PLTMS)
-  (export 'tms-node-datum :PLTMS))
+  (export 'tms-node-datum :PLTMS)
+  (export 'pretty-print-clause :PLTMS))

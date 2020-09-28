@@ -76,6 +76,26 @@
 
 (length horn-clauses)
 
+(setq non-horn-clauses (remove-if #'horn-clause? clauses))
+
+(mapcar #'PLTMS::pretty-print-clause non-horn-clauses)
+#|
+(:OR A* (:NOT D*) C)
+(:OR A* (:NOT D*) B*)
+(:OR A* (:NOT D*) B)
+(:OR A* (:NOT D*) A)
+(:OR A* (:NOT D*) U)
+(:OR A* (:NOT D*) C*)
+(:OR A* (:NOT D*) D)
+(:OR (:NOT notD*) notA* notC)
+(:OR (:NOT notD*) notA* notU)
+(:OR (:NOT notD*) notA* notB)
+(:OR (:NOT notD*) notA* notA)
+(:OR (:NOT notD*) notA* notC*)
+(:OR (:NOT notD*) notA* notB*)
+(:OR (:NOT notD*) notD notA*)
+|#
+
 (defun find-node (atms name)
   (find-if #'(lambda (n) (equal name (tms-node-datum n))) (atms-nodes atms)))
 
