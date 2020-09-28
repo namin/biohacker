@@ -12,7 +12,12 @@
 ;;; and disclaimer of warranty.  The above copyright notice and that
 ;;; paragraph must be included in any separate copy of this file.
 
-(in-package :COMMON-LISP-USER)
+(cond
+  ((boundp '*pack-ltms*)
+   (defpackage :PLTMS
+     (:use :COMMON-LISP))
+   (in-package :PLTMS))
+  (t (in-package :COMMON-LISP-USER)))
 
 ;;; Adding formulas and clauses.
 
@@ -424,3 +429,9 @@
   (complete-ltms tltms)
   (format T "~% There now are ~D clauses" (length (collect tltms)))
   tltms)
+
+(when (boundp '*pack-ltms*)
+  (export 'prime-implicates :PLTMS)
+  (export 'collect :PLTMS)
+  (export 'clause-literals :PLTMS)
+  (export 'tms-node-datum :PLTMS))

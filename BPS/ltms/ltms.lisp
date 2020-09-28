@@ -11,7 +11,12 @@
 ;;; and disclaimer of warranty.  The above copyright notice and that
 ;;; paragraph must be included in any separate copy of this file.
 
-(in-package :COMMON-LISP-USER)
+(cond
+  ((boundp '*pack-ltms*)
+   (defpackage :PLTMS
+     (:use :COMMON-LISP))
+   (in-package :PLTMS))
+  (t (in-package :COMMON-LISP-USER)))
 
 ;;; Definitions.
 
