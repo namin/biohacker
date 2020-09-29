@@ -6,6 +6,12 @@
 (bps-load-file (make-bps-path "atms") "atms" :action :compile)
 (compile-atre)
 
+(setq *complements* nil)
+(defun complements (x nx)
+  (nogood-nodes 'nogood-complement (list x nx))
+  (push (cons x nx) *complements*)
+  (push (cons nx x) *complements*))
+
 (setq *atms* (create-atms "riflemen" :debugging t))
 (setq u (tms-create-node *atms* "U"))
 (setq c (tms-create-node *atms* "C"))
@@ -27,15 +33,15 @@
 (setq nb* (tms-create-node *atms* "notB*"))
 (setq nd* (tms-create-node *atms* "notD*"))
 
-(nogood-nodes 'nogood-u (list u nu))
-(nogood-nodes 'nogood-c (list c nc))
-(nogood-nodes 'nogood-a (list a na))
-(nogood-nodes 'nogood-b (list b nb))
-(nogood-nodes 'nogood-d (list d nd))
-(nogood-nodes 'nogood-c (list c* nc*))
-(nogood-nodes 'nogood-a (list a* na*))
-(nogood-nodes 'nogood-b (list b* nb*))
-(nogood-nodes 'nogood-d (list d* nd*))
+(complements u nu)
+(complements c nc)
+(complements a na)
+(complements b nb)
+(complements d nd)
+(complements c* nc*)
+(complements a* na*)
+(complements b* nb*)
+(complements d* nd*)
 
 (setq formula
       '(:and
@@ -69,6 +75,11 @@
 
 (setq clauses (PLTMS::collect p))
 
+(defun print-clauses (cs)
+  (loop for c in cs do
+    (PLTMS::pretty-print-clause c)
+    (format t "~%")))
+
 (defun horn-clause? (c)
   (= 1 (length (remove-if-not #'(lambda (l) (eq (cdr l) ':TRUE)) (PLTMS::clause-literals c)))))
 
@@ -77,13 +88,13 @@ Horn clause format:
 (:OR (:NOT A1) (:NOT A2) ... (:NOT A3) B)
 |#
 (setq horn-clauses (remove-if-not #'horn-clause? clauses))
-(mapcar #'PLTMS::pretty-print-clause horn-clauses)
+(print-clauses horn-clauses)
 
 (length horn-clauses)
 
 (setq non-horn-clauses (remove-if #'horn-clause? clauses))
 
-(mapcar #'PLTMS::pretty-print-clause non-horn-clauses)
+(print-clauses non-horn-clauses)
 #|
 (:OR A* (:NOT D*) C) ;; can we use (:NOT D*) == notD*?
 (:OR A* (:NOT D*) B*)
@@ -93,6 +104,26 @@ Horn clause format:
 (:OR A* (:NOT D*) C*)
 (:OR A* (:NOT D*) D)
 |#
+
+(defun take-complement (n)
+  (cdr (assoc n *complements*)))
+
+(defun make-positive-literal (l)
+  (ecase (cdr l)
+    (:TRUE (translate-node (car l)))
+    (:FALSE (take-complement (translate-node (car l))))))
+
+(defun make-negative-literal (l)
+  (ecase (cdr l)
+    (:TRUE (take-complement (translate-node (car l))))
+    (:FALSE (translate-node (car l)))))
+
+(defun add-non-horn-justification (c)
+  (let ((cs (PLTMS::clause-literals c)))
+    (justify-node
+     'JNH
+     (make-positive-literal (car (last cs)))
+     (mapcar #'make-negative-literal (butlast cs)))))
 
 (defun find-node (atms name)
   (find-if #'(lambda (n) (equal name (tms-node-datum n))) (atms-nodes atms)))
@@ -107,6 +138,7 @@ Horn clause format:
    (mapcar #'translate-node (mapcar #'car (remove-if-not #'(lambda (l) (eq (cdr l) ':FALSE)) (PLTMS::clause-literals c))))))
 
 (mapcar #'add-horn-justification  horn-clauses)
+(mapcar #'add-non-horn-justification non-horn-clauses)
 
 (assume-node u)
 (assume-node nu)
@@ -131,14 +163,15 @@ Horn clause format:
 
 (why-nodes *atms*)
 #|
-<U,{{B*}{C*}{D}{B}{A}{C}{U}}>
-<C,{{B*}{C*}{D}{B}{A}{C}{U}}>
-<A,{{B*}{C*}{D}{B}{A}{C}{U}}>
-<B,{{B*}{C*}{D}{B}{A}{C}{U}}>
-<D,{{B*}{C*}{D}{B}{A}{C}{U}}>
-<C*,{{B*}{C*}{D}{B}{A}{C}{U}}>
+<The contradiction,{}>
+<U,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
+<C,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
+<A,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
+<B,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
+<D,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
+<C*,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
 <A*,{{A*}}>
-<B*,{{B*}{C*}{D}{B}{A}{C}{U}}>
+<B*,{{D*,notA*}{B*}{C*}{D}{B}{A}{C}{U}}>
 <D*,{{D*}{B*}{A*}{C*}{D}{B}{A}{C}{U}}>
 <notU,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
 <notC,{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}{notU}}>
@@ -151,9 +184,15 @@ Horn clause format:
 <notD*,{{notD*}{notA*,notB*}{notA*,notC*}{notA*,notD}{notA*,notB}{notA,notA*}{notA*,notC}{notA*,notU}}>
 |#
 
+(setq *ps*
+      (list (cons u 0.6)
+            (cons nu 0.4)
+            (cons a* 0.7)
+            (cons na* 0.3)))
 ;; ...
 (prob-nodes *atms* *ps*)
 #|
+<The contradiction,0.00>
 <U,0.60>
 <C,0.60>
 <A,0.60>
@@ -178,14 +217,14 @@ Horn clause format:
 (why-prob-nodes *atms* *ps*)
 #|
 <The contradiction,0.00:{}>
-<U,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<C,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<A,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<B,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<D,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
-<C*,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<U,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<C,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<A,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<B,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<D,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<C*,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
 <A*,0.70:{0.70:{A*}}>
-<B*,0.60:{{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
+<B*,0.60:{{D*,notA*}{B*}{C*}{D}{B}{A}{C}0.60:{U}}>
 <D*,0.88:{{D*}{B*}0.70:{A*}{C*}{D}{B}{A}{C}0.60:{U}}>
 <notU,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
 <notC,0.40:{{notD*}{notB*}{notC*}{notD}{notB}{notA}{notC}0.40:{notU}}>
