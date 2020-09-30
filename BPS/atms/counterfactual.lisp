@@ -103,6 +103,25 @@
 (assume-node d*)
 (assume-node nd*)
 
+#|
+;; Step 1: calculate the joint distribution given outcome
+;; joint distribution
+P(U) = p
+P(W) = q
+P(u,w) = P(u)*P(w)
+;; calculate the joint distribution given outcome
+P(u,w | D) = P(u,w) / (1 - p(u=0,w=0)) if u=1 or w=1 else 0 (if u=0 and w=0)
+;; would we get same result using different denominator?
+P(D) = (1 - p(u=0,w=0)) = 1-(1-p)(1-q)
+P(D) = P(U) + P(W) - P(U)P(W) = p + q - pq
+1-(1-p)(1-q) = 1 - 1 - pq +  p + q = p + q - pq ;; same
+
+;; Step 2:  form submodel, while retaining the posterior probability
+;; A does not shoot
+;; Step 3: compute oucome in this model
+;; need to note that not D => not U
+|#
+
 (why-nodes *atms*)
 #|
 <The contradiction,{}>
