@@ -161,6 +161,12 @@ Horn clause format:
 (assume-node d*)
 (assume-node nd*)
 
+;; on the twin model
+;; prediction: notA implies notD
+;; abduction: notD implies notC
+;; transduction: A implies B
+;; action: notC and A* implies D* and notB*
+
 (why-nodes *atms*)
 #|
 <The contradiction,{}>
