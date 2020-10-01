@@ -109,6 +109,8 @@
 (assume-node nd*)
 
 #|
+;; 7.1.3 Evaluating Counterfactuals: Probablistic Analysis
+
 ;; Step 1: calculate the joint distribution given outcome
 ;; joint distribution
 P(U) = p
