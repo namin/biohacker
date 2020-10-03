@@ -57,3 +57,67 @@
       (mapcar #'(lambda (p) `(:implies ,(car p) (:or . ,(cdr p)))) (consolidate-alist (graph-reverse graph))))))
 
 ;; (graph-formula *graph*)
+
+(setq *formula* (graph-formula *graph*))
+
+(setq *p* (PLTMS::prime-implicates *formula*))
+
+(defun print-clauses (cs)
+  (loop for c in cs do
+    (PLTMS::pretty-print-clause c)
+    (format t "~%")))
+
+(setq *clauses* (PLTMS::collect *p*))
+
+(print-clauses *clauses*)
+
+(setq *atms* (create-atms (causal-title *causal*) :debugging t))
+
+;; (car (PLTMS::clause-literals (car *clauses*)))
+
+(defun find-node (atms name)
+  (find-if #'(lambda (n) (equal name (tms-node-datum n))) (atms-nodes atms)))
+
+(defun name-literal (l)
+  (let ((d (PLTMS::tms-node-datum (car l))))
+    (ecase (cdr l)
+      (:TRUE d)
+      (:FALSE `(:not ,d)))))
+
+(defun create-node (atms la)
+  (let ((pos (tms-create-node atms (name-literal (cons la :TRUE))))
+        (neg (tms-create-node atms (name-literal (cons la :FALSE)))))
+    (nogood-nodes 'nogood-complement (list pos neg))
+    (assume-node pos)
+    (assume-node neg)
+    'done))
+
+(defun translate-node (atms literal)
+  (or (find-node atms (name-literal literal))
+      (progn
+        (create-node atms (car literal))
+        (translate-node atms literal))))
+
+;; (translate-node *atms* (car (PLTMS::clause-literals (car *clauses*))))
+;; (translate-node *atms* (cadr (PLTMS::clause-literals (car *clauses*))))
+
+(defun negate-literal (l)
+  (cons
+   (car l)
+   (ecase (cdr l)
+     (:TRUE :FALSE)
+     (:FALSE :TRUE))))
+
+;; (negate-literal (car (PLTMS::clause-literals (car *clauses*))))
+(defun translate-clause (atms clause)
+  (let ((ls (PLTMS::clause-literals clause)))
+    (justify-node
+     'PI
+     (translate-node atms (car (last ls)))
+     (mapcar #'(lambda (l) (translate-node atms (negate-literal l))) (butlast ls)))))
+
+;; (translate-clause *atms* (car *clauses*))
+
+(mapcar #'(lambda (c) (translate-clause *atms* c)) *clauses*)
+
+(why-nodes *atms*)
