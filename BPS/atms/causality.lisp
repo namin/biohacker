@@ -28,7 +28,7 @@
   :intervention '(:NOT A)
   :outcome '(:NOT D)))
 
-(setq *graph* (causal-graph *causal*))
+;;(setq *graph* (causal-graph *causal*))
 
 (defun graph-reverse (graph)
   (mapcar #'(lambda (p) (cons (cdr p) (car p))) graph))
@@ -56,20 +56,20 @@
 
 ;; (graph-formula *graph*)
 
-(setq *formula* (graph-formula *graph*))
+;; (setq *formula* (graph-formula *graph*))
 
-(setq *p* (PLTMS::prime-implicates *formula*))
+;; (setq *p* (PLTMS::prime-implicates *formula*))
 
 (defun print-clauses (cs)
   (loop for c in cs do
     (PLTMS::pretty-print-clause c)
     (format t "~%")))
 
-(setq *clauses* (PLTMS::collect *p*))
+;; (setq *clauses* (PLTMS::collect *p*))
 
-(print-clauses *clauses*)
+;; (print-clauses *clauses*)
 
-(setq *atms* (create-atms (causal-title *causal*) :debugging t))
+;; (setq *atms* (create-atms (causal-title *causal*) :debugging t))
 
 ;; (car (PLTMS::clause-literals (car *clauses*)))
 
@@ -128,7 +128,7 @@
 
 ;; (translate-clause *atms* (car *clauses*))
 
-(mapcar #'(lambda (c) (translate-clause *atms* c)) *clauses*)
+;; (mapcar #'(lambda (c) (translate-clause *atms* c)) *clauses*)
 
 (defun atms-from-graph (graph title &aux formula p clauses atms)
   (setq formula (graph-formula graph))
@@ -138,8 +138,9 @@
   (mapcar #'(lambda (c) (translate-clause atms c)) clauses)
   atms)
 
-(setq *atms* (atms-from-graph *graph* (causal-title *causal*)))
-(why-nodes *atms*)
+;; (setq *atms* (atms-from-graph *graph* (causal-title *causal*)))
+
+;; (why-nodes *atms*)
 #|
 <The contradiction,{}>
 <A,{{U}{W}{D}{B}{C}{A}}>
@@ -171,12 +172,9 @@
     (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) ps)
     (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (- 1 (cdr p)))) ps))))
 
-(setq
- *ps*
- (probabilities-for *atms* (causal-priors *causal*))
-)
+;; (setq *ps* (probabilities-for *atms* (causal-priors *causal*)))
 
-(why-prob-nodes *atms* *ps*)
+;; (why-prob-nodes *atms* *ps*)
 #|
 <The contradiction,0.00:{}>
 <A,0.88:{0.60:{U}0.70:{W}{D}{B}{C}{A}}>
@@ -199,18 +197,21 @@
     (remove-if #'(lambda (p) (member (cdr p) names))
                (causal-graph causal))))
 
-(setq *post-graph* (post-graph *causal*))
+;; (setq *post-graph* (post-graph *causal*))
+#|
 (setq
  *post-atms*
  (atms-from-graph
   *post-graph*
   (format nil "~A (POST)"(causal-title *causal*))))
-(setq *given-node* (find-node *atms* (causal-given *causal*)))
-(setq *given-p* (node-prob *given-node* *ps*))
+|#
+;; (setq *given-node* (find-node *atms* (causal-given *causal*)))
+;; (setq *given-p* (node-prob *given-node* *ps*))
 
-(setq *intervention* (causal-intervention *causal*))
-(nogood-nodes 'nogood-not-intervention (list (find-node *post-atms* (negate-name *intervention*))))
+;; (setq *intervention* (causal-intervention *causal*))
+;; (nogood-nodes 'nogood-not-intervention (list (find-node *post-atms* (negate-name *intervention*))))
 
+#|
 (setq
  *post-ps*
  (probabilities-for
@@ -219,8 +220,9 @@
    (cons *intervention* 1.0)
    (mapcar #'(lambda (p) (cons (car p) (/ (cdr p) *given-p*)))
            (causal-priors *causal*)))))
+|#
 
-(why-prob-nodes *post-atms* *post-ps*)
+;; (why-prob-nodes *post-atms* *post-ps*)
 #|
 <The contradiction,0.00:{}>
 <B,0.68:{0.68:{U}{(NOT A),D}{C}{B}}>
@@ -235,5 +237,5 @@
 <(NOT U),0.32:{{(NOT D)}{(NOT B)}{(NOT C)}0.32:{(NOT U)}}>
 |#
 
-(setq *outcome-node* (find-node *post-atms* (causal-outcome *causal*)))
-(setq *outcome-p* (node-prob *outcome-node* *post-ps*))
+;; (setq *outcome-node* (find-node *post-atms* (causal-outcome *causal*)))
+;; (setq *outcome-p* (node-prob *outcome-node* *post-ps*))
