@@ -165,10 +165,11 @@
 ;; (negate-name '(:not D))
 
 (defun probabilities-for (atms ps)
-  (append
-   (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) (causal-priors *causal*))
-   (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (- 1 (cdr p)))) ps)
-   ))
+  (remove-if-not
+   #'car
+   (append
+    (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) ps)
+    (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (- 1 (cdr p)))) ps))))
 
 (setq
  *ps*
@@ -204,11 +205,12 @@
  (atms-from-graph
   *post-graph*
   (format nil "~A (POST)"(causal-title *causal*))))
-
 (setq *given-node* (find-node *atms* (causal-given *causal*)))
 (setq *given-p* (node-prob *given-node* *ps*))
 
 (setq *intervention* (causal-intervention *causal*))
+(nogood-nodes 'nogood-not-intervention (list (find-node *post-atms* (negate-name *intervention*))))
+
 (setq
  *post-ps*
  (probabilities-for
@@ -219,3 +221,16 @@
            (causal-priors *causal*)))))
 
 (why-prob-nodes *post-atms* *post-ps*)
+#|
+<The contradiction,0.00:{}>
+<B,0.80:{0.80:{U}{(NOT A),D}{C}{B}}>
+<(NOT B),0.20:{0.20:{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<C,0.80:{0.80:{U}{(NOT A),D}{B}{C}}>
+<(NOT C),0.20:{0.20:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
+<D,0.80:{0.80:{U}{B}{C}{D}}>
+<(NOT D),0.20:{0.20:{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<A,0.00:{}>
+<(NOT A),1.00:{{(NOT D)}1.00:{(NOT A)}}>
+<U,0.80:{{(NOT A),D}{B}{C}0.80:{U}}>
+<(NOT U),0.20:{{(NOT D)}{(NOT B)}{(NOT C)}0.20:{(NOT U)}}>
+|#
