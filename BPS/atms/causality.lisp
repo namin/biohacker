@@ -133,3 +133,18 @@
 (mapcar #'(lambda (c) (translate-clause *atms* c)) *clauses*)
 
 (why-nodes *atms*)
+#|
+<The contradiction,{}>
+<A,{{U}{W}{D}{B}{C}{A}}>
+<(NOT A),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<C,{{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
+<(NOT C),{{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
+<B,{{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
+<(NOT B),{{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
+<D,{{U}{W}{A}{B}{C}{D}}>
+<(NOT D),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<W,{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}{W}}>
+<(NOT W),{{(NOT D)}{(NOT A)}{(NOT W)}}>
+<U,{{(NOT W),D}{(NOT W),A}{B}{C}{U}}>
+<(NOT U),{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}{(NOT U)}}>
+|#
