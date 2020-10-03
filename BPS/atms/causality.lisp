@@ -4,7 +4,16 @@
   (priors nil)
   (given nil)
   (intervention nil)
-  (outcome nil))
+  (outcome nil)
+  (atms nil)
+  (atms-ps nil)
+  (post-graph nil)
+  (post-atms nil)
+  (post-atms-ps nil)
+  (given-node nil)
+  (given-p nil)
+  (outcome-node nil)
+  (outcome-p nil))
 
 (defun print-causal (causal stream ignore)
   (declare (ignore ignore))
@@ -205,11 +214,12 @@
   *post-graph*
   (format nil "~A (POST)"(causal-title *causal*))))
 |#
-;; (setq *given-node* (find-node *atms* (causal-given *causal*)))
-;; (setq *given-p* (node-prob *given-node* *ps*))
 
 ;; (setq *intervention* (causal-intervention *causal*))
 ;; (nogood-nodes 'nogood-not-intervention (list (find-node *post-atms* (negate-name *intervention*))))
+
+;; (setq *given-node* (find-node *atms* (causal-given *causal*)))
+;; (setq *given-p* (node-prob *given-node* *ps*))
 
 #|
 (setq
@@ -239,3 +249,60 @@
 
 ;; (setq *outcome-node* (find-node *post-atms* (causal-outcome *causal*)))
 ;; (setq *outcome-p* (node-prob *outcome-node* *post-ps*))
+
+(defun causal-crank (causal)
+  (setf (causal-atms causal) (atms-from-graph (causal-graph causal) (causal-title causal)))
+  (setf (causal-atms-ps causal) (probabilities-for (causal-atms causal) (causal-priors causal)))
+  (setf (causal-post-graph causal) (post-graph causal))
+  (setf (causal-post-atms causal) (atms-from-graph (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
+  (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
+  (setf (causal-given-node causal) (find-node (causal-atms causal) (causal-given causal)))
+  (setf (causal-given-p causal) (node-prob (causal-given-node causal) (causal-atms-ps causal)))
+  (setf
+   (causal-post-atms-ps causal)
+   (probabilities-for
+    (causal-post-atms causal)
+    (cons
+     (cons (causal-intervention causal) 1.0)
+     (mapcar #'(lambda (p) (cons (car p) (/ (cdr p) (causal-given-p causal))))
+             (causal-priors causal)))))
+  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) (causal-outcome causal)))
+  (setf (causal-outcome-p causal) (node-prob (causal-outcome-node causal) (causal-post-atms-ps causal)))
+
+  (format t "~%~%Before intervention:~%")
+  (why-prob-nodes (causal-atms causal) (causal-atms-ps causal))
+  (format t "~%~%After intervention:~%")
+  (why-prob-nodes (causal-post-atms causal) (causal-post-atms-ps causal)))
+
+(causal-crank *causal*)
+#|
+Before intervention:
+
+<The contradiction,0.00:{}>
+<A,0.88:{0.60:{U}0.70:{W}{D}{B}{C}{A}}>
+<(NOT A),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<C,0.60:{0.60:{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
+<(NOT C),0.40:{0.40:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
+<B,0.60:{0.60:{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
+<(NOT B),0.40:{0.40:{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
+<D,0.88:{0.60:{U}0.70:{W}{A}{B}{C}{D}}>
+<(NOT D),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<W,0.70:{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}0.70:{W}}>
+<(NOT W),0.30:{{(NOT D)}{(NOT A)}0.30:{(NOT W)}}>
+<U,0.60:{{(NOT W),D}{(NOT W),A}{B}{C}0.60:{U}}>
+<(NOT U),0.40:{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}0.40:{(NOT U)}}>
+
+After intervention:
+
+<The contradiction,0.00:{}>
+<B,0.68:{0.68:{U}{(NOT A),D}{C}{B}}>
+<(NOT B),0.32:{0.32:{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<C,0.68:{0.68:{U}{(NOT A),D}{B}{C}}>
+<(NOT C),0.32:{0.32:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
+<D,0.68:{0.68:{U}{B}{C}{D}}>
+<(NOT D),0.32:{0.32:{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<A,0.00:{}>
+<(NOT A),1.00:{{(NOT D)}1.00:{(NOT A)}}>
+<U,0.68:{{(NOT A),D}{B}{C}0.68:{U}}>
+<(NOT U),0.32:{{(NOT D)}{(NOT B)}{(NOT C)}0.32:{(NOT U)}}>
+|#
