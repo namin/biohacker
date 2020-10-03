@@ -148,3 +148,38 @@
 <U,{{(NOT W),D}{(NOT W),A}{B}{C}{U}}>
 <(NOT U),{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}{(NOT U)}}>
 |#
+
+(defun negate-name (name)
+  (if (and (listp name) (eq :not (car name)))
+      (cadr name)
+      `(:not ,name)))
+
+;; (negate-name 'D)
+;; (negate-name '(:not D))
+
+(setq
+ *ps*
+ (append
+  (mapcar #'(lambda (p) (cons (find-node *atms* (car p)) (cdr p))) (causal-priors *causal*))
+  (mapcar #'(lambda (p) (cons (find-node *atms* (negate-name (car p))) (- 1 (cdr p)))) (causal-priors *causal*))
+  ))
+
+(why-prob-nodes *atms* *ps*)
+#|
+<The contradiction,0.00:{}>
+<A,0.88:{0.70:{U}0.60:{W}{D}{B}{C}{A}}>
+<(NOT A),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<C,0.70:{0.70:{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
+<(NOT C),0.30:{0.30:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
+<B,0.70:{0.70:{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
+<(NOT B),0.30:{0.30:{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
+<D,0.88:{0.70:{U}0.60:{W}{A}{B}{C}{D}}>
+<(NOT D),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<W,0.60:{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}0.60:{W}}>
+<(NOT W),0.40:{{(NOT D)}{(NOT A)}0.40:{(NOT W)}}>
+<U,0.70:{{(NOT W),D}{(NOT W),A}{B}{C}0.70:{U}}>
+<(NOT U),0.30:{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}0.30:{(NOT U)}}>
+|#
+
+(setq *given-node* (find-node *atms* (causal-given *causal*)))
+(setq *given-p* (node-prob *given-node* *ps*))
