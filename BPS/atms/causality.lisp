@@ -4,7 +4,7 @@
   (priors nil)
   (given nil)
   (intervention nil)
-  (find nil))
+  (outcome nil))
 
 (defun print-causal (causal stream ignore)
   (declare (ignore ignore))
@@ -26,7 +26,7 @@
     (W . 0.7))
   :given 'D
   :intervention '(:NOT A)
-  :find '(:NOT D)))
+  :outcome '(:NOT D)))
 
 (setq *graph* (causal-graph *causal*))
 
@@ -234,3 +234,6 @@
 <U,0.68:{{(NOT A),D}{B}{C}0.68:{U}}>
 <(NOT U),0.32:{{(NOT D)}{(NOT B)}{(NOT C)}0.32:{(NOT U)}}>
 |#
+
+(setq *outcome-node* (find-node *post-atms* (causal-outcome *causal*)))
+(setq *outcome-p* (node-prob *outcome-node* *post-ps*))
