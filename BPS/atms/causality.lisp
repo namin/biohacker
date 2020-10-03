@@ -109,12 +109,24 @@
      (:FALSE :TRUE))))
 
 ;; (negate-literal (car (PLTMS::clause-literals (car *clauses*))))
+
+(defun all-splits (xs &optional (prev nil))
+  (if (null xs)
+      nil
+      (cons
+       (cons (car xs) (append (reverse prev) (cdr xs)))
+       (all-splits (cdr xs) (cons (car xs) prev)))))
+
+;; (all-splits '(1 2 3 4))
+
 (defun translate-clause (atms clause)
-  (let ((ls (PLTMS::clause-literals clause)))
-    (justify-node
-     'PI
-     (translate-node atms (car (last ls)))
-     (mapcar #'(lambda (l) (translate-node atms (negate-literal l))) (butlast ls)))))
+  (mapcar
+   #'(lambda (ls)
+       (justify-node
+        'PI
+        (translate-node atms (car ls))
+        (mapcar #'(lambda (l) (translate-node atms (negate-literal l))) (cdr ls))))
+   (all-splits (PLTMS::clause-literals clause))))
 
 ;; (translate-clause *atms* (car *clauses*))
 
