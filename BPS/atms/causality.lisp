@@ -37,8 +37,6 @@
   :intervention '(:NOT A)
   :outcome '(:NOT D)))
 
-;;(setq *graph* (causal-graph *causal*))
-
 (defun graph-reverse (graph)
   (mapcar #'(lambda (p) (cons (cdr p) (car p))) graph))
 
@@ -53,9 +51,6 @@
                          (cons (list key val) result))))
         (consolidate-alist (cdr alist) result))))
 
-;; (graph-reverse *graph*)
-;; (consolidate-alist (graph-reverse *graph*))
-
 (defun graph-formula (graph)
   `(:and
     .
@@ -63,24 +58,10 @@
       (mapcar #'(lambda (p) `(:implies ,(car p) ,(cdr p))) graph)
       (mapcar #'(lambda (p) `(:implies ,(car p) (:or . ,(cdr p)))) (consolidate-alist (graph-reverse graph))))))
 
-;; (graph-formula *graph*)
-
-;; (setq *formula* (graph-formula *graph*))
-
-;; (setq *p* (PLTMS::prime-implicates *formula*))
-
 (defun print-clauses (cs)
   (loop for c in cs do
     (PLTMS::pretty-print-clause c)
     (format t "~%")))
-
-;; (setq *clauses* (PLTMS::collect *p*))
-
-;; (print-clauses *clauses*)
-
-;; (setq *atms* (create-atms (causal-title *causal*) :debugging t))
-
-;; (car (PLTMS::clause-literals (car *clauses*)))
 
 (defun find-node (atms name)
   (find-if #'(lambda (n) (equal name (tms-node-datum n))) (atms-nodes atms)))
@@ -105,9 +86,6 @@
         (create-node atms (car literal))
         (translate-node atms literal))))
 
-;; (translate-node *atms* (car (PLTMS::clause-literals (car *clauses*))))
-;; (translate-node *atms* (cadr (PLTMS::clause-literals (car *clauses*))))
-
 (defun negate-literal (l)
   (cons
    (car l)
@@ -115,16 +93,12 @@
      (:TRUE :FALSE)
      (:FALSE :TRUE))))
 
-;; (negate-literal (car (PLTMS::clause-literals (car *clauses*))))
-
 (defun all-splits (xs &optional (prev nil))
   (if (null xs)
       nil
       (cons
        (cons (car xs) (append (reverse prev) (cdr xs)))
        (all-splits (cdr xs) (cons (car xs) prev)))))
-
-;; (all-splits '(1 2 3 4))
 
 (defun translate-clause (atms clause)
   (mapcar
@@ -135,10 +109,6 @@
         (mapcar #'(lambda (l) (translate-node atms (negate-literal l))) (cdr ls))))
    (all-splits (PLTMS::clause-literals clause))))
 
-;; (translate-clause *atms* (car *clauses*))
-
-;; (mapcar #'(lambda (c) (translate-clause *atms* c)) *clauses*)
-
 (defun atms-from-graph (graph title &aux formula p clauses atms)
   (setq formula (graph-formula graph))
   (setq p (PLTMS::prime-implicates formula))
@@ -147,32 +117,10 @@
   (mapcar #'(lambda (c) (translate-clause atms c)) clauses)
   atms)
 
-;; (setq *atms* (atms-from-graph *graph* (causal-title *causal*)))
-
-;; (why-nodes *atms*)
-#|
-<The contradiction,{}>
-<A,{{U}{W}{D}{B}{C}{A}}>
-<(NOT A),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
-<C,{{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
-<(NOT C),{{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
-<B,{{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
-<(NOT B),{{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
-<D,{{U}{W}{A}{B}{C}{D}}>
-<(NOT D),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<W,{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}{W}}>
-<(NOT W),{{(NOT D)}{(NOT A)}{(NOT W)}}>
-<U,{{(NOT W),D}{(NOT W),A}{B}{C}{U}}>
-<(NOT U),{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}{(NOT U)}}>
-|#
-
 (defun negate-name (name)
   (if (and (listp name) (eq :not (car name)))
       (cadr name)
       `(:not ,name)))
-
-;; (negate-name 'D)
-;; (negate-name '(:not D))
 
 (defun probabilities-for (atms ps)
   (remove-if-not
@@ -181,74 +129,11 @@
     (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) ps)
     (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (- 1 (cdr p)))) ps))))
 
-;; (setq *ps* (probabilities-for *atms* (causal-priors *causal*)))
-
-;; (why-prob-nodes *atms* *ps*)
-#|
-<The contradiction,0.00:{}>
-<A,0.88:{0.60:{U}0.70:{W}{D}{B}{C}{A}}>
-<(NOT A),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
-<C,0.60:{0.60:{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
-<(NOT C),0.40:{0.40:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
-<B,0.60:{0.60:{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
-<(NOT B),0.40:{0.40:{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
-<D,0.88:{0.60:{U}0.70:{W}{A}{B}{C}{D}}>
-<(NOT D),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<W,0.70:{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}0.70:{W}}>
-<(NOT W),0.30:{{(NOT D)}{(NOT A)}0.30:{(NOT W)}}>
-<U,0.60:{{(NOT W),D}{(NOT W),A}{B}{C}0.60:{U}}>
-<(NOT U),0.40:{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}0.40:{(NOT U)}}>
-|#
-
 (defun post-graph (causal)
   (let* ((i (causal-intervention causal))
          (names (list i (negate-name i))))
     (remove-if #'(lambda (p) (member (cdr p) names))
                (causal-graph causal))))
-
-;; (setq *post-graph* (post-graph *causal*))
-#|
-(setq
- *post-atms*
- (atms-from-graph
-  *post-graph*
-  (format nil "~A (POST)"(causal-title *causal*))))
-|#
-
-;; (setq *intervention* (causal-intervention *causal*))
-;; (nogood-nodes 'nogood-not-intervention (list (find-node *post-atms* (negate-name *intervention*))))
-
-;; (setq *given-node* (find-node *atms* (causal-given *causal*)))
-;; (setq *given-p* (node-prob *given-node* *ps*))
-
-#|
-(setq
- *post-ps*
- (probabilities-for
-  *post-atms*
-  (cons
-   (cons *intervention* 1.0)
-   (mapcar #'(lambda (p) (cons (car p) (/ (cdr p) *given-p*)))
-           (causal-priors *causal*)))))
-|#
-
-;; (why-prob-nodes *post-atms* *post-ps*)
-#|
-<The contradiction,0.00:{}>
-<B,0.68:{0.68:{U}{(NOT A),D}{C}{B}}>
-<(NOT B),0.32:{0.32:{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
-<C,0.68:{0.68:{U}{(NOT A),D}{B}{C}}>
-<(NOT C),0.32:{0.32:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
-<D,0.68:{0.68:{U}{B}{C}{D}}>
-<(NOT D),0.32:{0.32:{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
-<A,0.00:{}>
-<(NOT A),1.00:{{(NOT D)}1.00:{(NOT A)}}>
-<U,0.68:{{(NOT A),D}{B}{C}0.68:{U}}>
-<(NOT U),0.32:{{(NOT D)}{(NOT B)}{(NOT C)}0.32:{(NOT U)}}>
-|#
-
-;; (setq *outcome-node* (find-node *post-atms* (causal-outcome *causal*)))
-;; (setq *outcome-p* (node-prob *outcome-node* *post-ps*))
 
 (defun causal-crank (causal)
   (setf (causal-atms causal) (atms-from-graph (causal-graph causal) (causal-title causal)))
