@@ -157,12 +157,16 @@
 ;; (negate-name 'D)
 ;; (negate-name '(:not D))
 
+(defun probabilities-for (ps)
+  (append
+   (mapcar #'(lambda (p) (cons (find-node *atms* (car p)) (cdr p))) (causal-priors *causal*))
+   (mapcar #'(lambda (p) (cons (find-node *atms* (negate-name (car p))) (- 1 (cdr p)))) ps)
+   ))
+
 (setq
  *ps*
- (append
-  (mapcar #'(lambda (p) (cons (find-node *atms* (car p)) (cdr p))) (causal-priors *causal*))
-  (mapcar #'(lambda (p) (cons (find-node *atms* (negate-name (car p))) (- 1 (cdr p)))) (causal-priors *causal*))
-  ))
+ (probabilities-for (causal-priors *causal*))
+)
 
 (why-prob-nodes *atms* *ps*)
 #|
@@ -180,6 +184,14 @@
 <U,0.70:{{(NOT W),D}{(NOT W),A}{B}{C}0.70:{U}}>
 <(NOT U),0.30:{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}0.30:{(NOT U)}}>
 |#
+
+(defun post-graph (causal)
+  (let* ((i (causal-intervention causal))
+         (names (list i (negate-name i))))
+    (remove-if #'(lambda (p) (member (cdr p) names))
+               (causal-graph causal))))
+
+(setq *post-graph* (post-graph *causal*))
 
 (setq *given-node* (find-node *atms* (causal-given *causal*)))
 (setq *given-p* (node-prob *given-node* *ps*))
