@@ -22,8 +22,8 @@
     (B . D)
     (W . A))
   :priors
-  '((U . 0.7)
-    (W . 0.6))
+  '((U . 0.6)
+    (W . 0.7))
   :given 'D
   :intervention '(:NOT A)
   :find '(:NOT D)))
@@ -179,18 +179,18 @@
 (why-prob-nodes *atms* *ps*)
 #|
 <The contradiction,0.00:{}>
-<A,0.88:{0.70:{U}0.60:{W}{D}{B}{C}{A}}>
+<A,0.88:{0.60:{U}0.70:{W}{D}{B}{C}{A}}>
 <(NOT A),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
-<C,0.70:{0.70:{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
-<(NOT C),0.30:{0.30:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
-<B,0.70:{0.70:{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
-<(NOT B),0.30:{0.30:{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
-<D,0.88:{0.70:{U}0.60:{W}{A}{B}{C}{D}}>
+<C,0.60:{0.60:{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
+<(NOT C),0.40:{0.40:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
+<B,0.60:{0.60:{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
+<(NOT B),0.40:{0.40:{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
+<D,0.88:{0.60:{U}0.70:{W}{A}{B}{C}{D}}>
 <(NOT D),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<W,0.60:{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}0.60:{W}}>
-<(NOT W),0.40:{{(NOT D)}{(NOT A)}0.40:{(NOT W)}}>
-<U,0.70:{{(NOT W),D}{(NOT W),A}{B}{C}0.70:{U}}>
-<(NOT U),0.30:{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}0.30:{(NOT U)}}>
+<W,0.70:{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}0.70:{W}}>
+<(NOT W),0.30:{{(NOT D)}{(NOT A)}0.30:{(NOT W)}}>
+<U,0.60:{{(NOT W),D}{(NOT W),A}{B}{C}0.60:{U}}>
+<(NOT U),0.40:{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}0.40:{(NOT U)}}>
 |#
 
 (defun post-graph (causal)
@@ -223,14 +223,14 @@
 (why-prob-nodes *post-atms* *post-ps*)
 #|
 <The contradiction,0.00:{}>
-<B,0.80:{0.80:{U}{(NOT A),D}{C}{B}}>
-<(NOT B),0.20:{0.20:{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
-<C,0.80:{0.80:{U}{(NOT A),D}{B}{C}}>
-<(NOT C),0.20:{0.20:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
-<D,0.80:{0.80:{U}{B}{C}{D}}>
-<(NOT D),0.20:{0.20:{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<B,0.68:{0.68:{U}{(NOT A),D}{C}{B}}>
+<(NOT B),0.32:{0.32:{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<C,0.68:{0.68:{U}{(NOT A),D}{B}{C}}>
+<(NOT C),0.32:{0.32:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
+<D,0.68:{0.68:{U}{B}{C}{D}}>
+<(NOT D),0.32:{0.32:{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
 <A,0.00:{}>
 <(NOT A),1.00:{{(NOT D)}1.00:{(NOT A)}}>
-<U,0.80:{{(NOT A),D}{B}{C}0.80:{U}}>
-<(NOT U),0.20:{{(NOT D)}{(NOT B)}{(NOT C)}0.20:{(NOT U)}}>
+<U,0.68:{{(NOT A),D}{B}{C}0.68:{U}}>
+<(NOT U),0.32:{{(NOT D)}{(NOT B)}{(NOT C)}0.32:{(NOT U)}}>
 |#
