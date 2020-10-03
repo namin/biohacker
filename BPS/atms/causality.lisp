@@ -28,9 +28,7 @@
   :intervention '(:NOT A)
   :find '(:NOT D)))
 
-(setq
- *graph*
- (causal-graph *causal*))
+(setq *graph* (causal-graph *causal*))
 
 (defun graph-reverse (graph)
   (mapcar #'(lambda (p) (cons (cdr p) (car p))) graph))
@@ -132,6 +130,15 @@
 
 (mapcar #'(lambda (c) (translate-clause *atms* c)) *clauses*)
 
+(defun atms-from-graph (graph title &aux formula p clauses atms)
+  (setq formula (graph-formula graph))
+  (setq p (PLTMS::prime-implicates formula))
+  (setq clauses (PLTMS::collect p))
+  (setq atms (create-atms title :debugging t))
+  (mapcar #'(lambda (c) (translate-clause atms c)) clauses)
+  atms)
+
+(setq *atms* (atms-from-graph *graph* (causal-title *causal*)))
 (why-nodes *atms*)
 #|
 <The contradiction,{}>
