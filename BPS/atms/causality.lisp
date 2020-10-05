@@ -230,8 +230,6 @@ After intervention:
 (setq *print-right-margin* 1000)
 (symbolic-causal-crank *causal*)
 #|
-Before intervention:
-
 <The contradiction,0.00:{}>
 <A,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{D}{B}{C}{A}}>
 <(NOT A),(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
@@ -254,9 +252,9 @@ After intervention:
 <C,(/ P (- (+ P Q) (* P Q))):{(/ P (- (+ P Q) (* P Q))):{U}{(NOT A),D}{B}{C}}>
 <(NOT C),(- 1 (/ P (- (+ P Q) (* P Q)))):{(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
 <D,(/ P (- (+ P Q) (* P Q))):{(/ P (- (+ P Q) (* P Q))):{U}{B}{C}{D}}>
-<(NOT D),(* 1 (- 1 (/ P (- (+ P Q) (* P Q))))):{(* 1 (- 1 (/ P (- (+ P Q) (* P Q))))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<(NOT D),(- 1 (/ P (- (+ P Q) (* P Q)))):{(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
 <A,0.00:{}>
-<(NOT A),1.00:{{(NOT D)}1.00:{(NOT A)}}>
+<(NOT A),0.00:{{(NOT D)}{(NOT A)}}>
 <U,(/ P (- (+ P Q) (* P Q))):{{(NOT A),D}{B}{C}(/ P (- (+ P Q) (* P Q))):{U}}>
 <(NOT U),(- 1 (/ P (- (+ P Q) (* P Q)))):{{(NOT D)}{(NOT B)}{(NOT C)}(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}}>
 |#

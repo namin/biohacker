@@ -1,7 +1,8 @@
 (defun symbolic-* (&rest xs)
-  (if (null (cdr xs))
-      (car xs)
-      (cons '* xs)))
+  (let ((xs (remove-if #'(lambda (x) (eql 1 x)) xs)))
+    (if (null (cdr xs))
+        (car xs)
+        (cons '* xs))))
 
 (defun symbolic-+ (&rest xs)
   (let ((xs (remove-if #'(lambda (x) (eql 0 x)) xs)))
