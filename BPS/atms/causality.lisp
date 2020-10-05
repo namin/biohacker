@@ -138,7 +138,7 @@
    #'car
    (append
     (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) ps)
-    (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (list '- 1 (cdr p)))) ps))))
+    (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (symbolic-- 1 (cdr p)))) ps))))
 
 (defun post-graph (causal)
   (let* ((i (causal-intervention causal))
