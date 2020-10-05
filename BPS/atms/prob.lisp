@@ -1,3 +1,8 @@
+(defun symbolic-* (&rest xs)
+  (if (null (cdr xs))
+      (car xs)
+      (cons '* xs)))
+
 (defun env-prob (e ps)
     (let* ((as (env-assumptions e))
            (kps (mapcar #'(lambda (k) (assoc k ps)) as)))
@@ -10,7 +15,7 @@
            (kps (mapcar #'(lambda (k) (assoc k ps)) as)))
       (if (some #'(lambda (kp) (not kp)) kps)
           nil
-          (cons '* (mapcar #'cdr kps)))))
+          (apply #'symbolic-* (mapcar #'cdr kps)))))
 
 (defun label-prob (l ps)
   (union-prob (remove nil (mapcar #'(lambda (e) (env-prob e ps)) l))))
@@ -47,7 +52,7 @@
     (if (null r)
         0
         (list '-
-              (cons '+ (mapcar #'(lambda (x) (cons '* x)) r))
+              (cons '+ (mapcar #'(lambda (x) (apply #'symbolic-* x)) r))
               (symbolic-union-prob-iter vs (+ k 1) n)))))
 
 (defun node-prob (n ps)
