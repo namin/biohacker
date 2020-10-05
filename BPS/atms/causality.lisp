@@ -233,30 +233,30 @@ After intervention:
 Before intervention:
 
 <The contradiction,0.00:{}>
-<A,(- (+ P Q) (- (* P Q) 0)):{P:{U}Q:{W}{D}{B}{C}{A}}>
-<(NOT A),(- (* (- 1 Q) (- 1 P)) 0):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
-<C,(- P 0):{P:{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
-<(NOT C),(- (- 1 P) 0):{(- 1 P):{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
-<B,(- P 0):{P:{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
-<(NOT B),(- (- 1 P) 0):{(- 1 P):{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
-<D,(- (+ P Q) (- (* P Q) 0)):{P:{U}Q:{W}{A}{B}{C}{D}}>
-<(NOT D),(- (* (- 1 Q) (- 1 P)) 0):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<W,(- Q 0):{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}Q:{W}}>
-<(NOT W),(- (- 1 Q) 0):{{(NOT D)}{(NOT A)}(- 1 Q):{(NOT W)}}>
-<U,(- P 0):{{(NOT W),D}{(NOT W),A}{B}{C}P:{U}}>
-<(NOT U),(- (- 1 P) 0):{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}(- 1 P):{(NOT U)}}>
+<A,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{D}{B}{C}{A}}>
+<(NOT A),(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<C,P:{P:{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
+<(NOT C),(- 1 P):{(- 1 P):{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
+<B,P:{P:{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
+<(NOT B),(- 1 P):{(- 1 P):{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
+<D,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{A}{B}{C}{D}}>
+<(NOT D),(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<W,Q:{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}Q:{W}}>
+<(NOT W),(- 1 Q):{{(NOT D)}{(NOT A)}(- 1 Q):{(NOT W)}}>
+<U,P:{{(NOT W),D}{(NOT W),A}{B}{C}P:{U}}>
+<(NOT U),(- 1 P):{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}(- 1 P):{(NOT U)}}>
 
 After intervention:
 
 <The contradiction,0.00:{}>
-<B,(- (/ P (- (+ P Q) (- (* P Q) 0))) 0):{(/ P (- (+ P Q) (- (* P Q) 0))):{U}{(NOT A),D}{C}{B}}>
-<(NOT B),(- (- 1 (/ P (- (+ P Q) (- (* P Q) 0)))) 0):{(- 1 (/ P (- (+ P Q) (- (* P Q) 0)))):{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
-<C,(- (/ P (- (+ P Q) (- (* P Q) 0))) 0):{(/ P (- (+ P Q) (- (* P Q) 0))):{U}{(NOT A),D}{B}{C}}>
-<(NOT C),(- (- 1 (/ P (- (+ P Q) (- (* P Q) 0)))) 0):{(- 1 (/ P (- (+ P Q) (- (* P Q) 0)))):{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
-<D,(- (/ P (- (+ P Q) (- (* P Q) 0))) 0):{(/ P (- (+ P Q) (- (* P Q) 0))):{U}{B}{C}{D}}>
-<(NOT D),(- (* 1 (- 1 (/ P (- (+ P Q) (- (* P Q) 0))))) 0):{(* 1 (- 1 (/ P (- (+ P Q) (- (* P Q) 0))))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<B,(/ P (- (+ P Q) (* P Q))):{(/ P (- (+ P Q) (* P Q))):{U}{(NOT A),D}{C}{B}}>
+<(NOT B),(- 1 (/ P (- (+ P Q) (* P Q)))):{(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<C,(/ P (- (+ P Q) (* P Q))):{(/ P (- (+ P Q) (* P Q))):{U}{(NOT A),D}{B}{C}}>
+<(NOT C),(- 1 (/ P (- (+ P Q) (* P Q)))):{(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
+<D,(/ P (- (+ P Q) (* P Q))):{(/ P (- (+ P Q) (* P Q))):{U}{B}{C}{D}}>
+<(NOT D),(* 1 (- 1 (/ P (- (+ P Q) (* P Q))))):{(* 1 (- 1 (/ P (- (+ P Q) (* P Q))))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
 <A,0.00:{}>
-<(NOT A),(- 1 0):{{(NOT D)}1.00:{(NOT A)}}>
-<U,(- (/ P (- (+ P Q) (- (* P Q) 0))) 0):{{(NOT A),D}{B}{C}(/ P (- (+ P Q) (- (* P Q) 0))):{U}}>
-<(NOT U),(- (- 1 (/ P (- (+ P Q) (- (* P Q) 0)))) 0):{{(NOT D)}{(NOT B)}{(NOT C)}(- 1 (/ P (- (+ P Q) (- (* P Q) 0)))):{(NOT U)}}>
+<(NOT A),1.00:{{(NOT D)}1.00:{(NOT A)}}>
+<U,(/ P (- (+ P Q) (* P Q))):{{(NOT A),D}{B}{C}(/ P (- (+ P Q) (* P Q))):{U}}>
+<(NOT U),(- 1 (/ P (- (+ P Q) (* P Q)))):{{(NOT D)}{(NOT B)}{(NOT C)}(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}}>
 |#
