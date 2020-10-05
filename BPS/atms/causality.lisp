@@ -218,7 +218,7 @@ After intervention:
     (cons
      (cons (causal-intervention causal) 1.0)
      (mapcar #'(lambda (p) (cons (car p) (list '/ (cdr p) (causal-given-p causal))))
-             (causal-priors causal)))))
+             (causal-symbolic-priors causal)))))
   (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) (causal-outcome causal)))
   (setf (causal-outcome-p causal) (symbolic-node-prob (causal-outcome-node causal) (causal-post-atms-ps causal)))
 
@@ -254,65 +254,65 @@ Before intervention:
 After intervention:
 
 <The contradiction,0.00:{}>
-<B,(- (+ (* (* (/ 0.6
+<B,(- (+ (* (* (/ P
                   (- (+ (* (* P)) (* (* Q)))
                      (- (+ (* (* P) (* Q))) 0))))))
-      0):{(* (/ 0.6
+      0):{(* (/ P
                 (- (+ (* (* P)) (* (* Q))) (- (+ (* (* P) (* Q))) 0)))):{U}{(NOT A),D}{C}{B}}>
 <(NOT B),(- (+ (* (* (- 1
-                        (/ 0.6
+                        (/ P
                            (- (+ (* (* P)) (* (* Q)))
                               (- (+ (* (* P) (* Q))) 0)))))))
             0):{(* (- 1
-                      (/ 0.6
+                      (/ P
                          (- (+ (* (* P)) (* (* Q)))
                             (- (+ (* (* P) (* Q))) 0))))):{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
-<C,(- (+ (* (* (/ 0.6
+<C,(- (+ (* (* (/ P
                   (- (+ (* (* P)) (* (* Q)))
                      (- (+ (* (* P) (* Q))) 0))))))
-      0):{(* (/ 0.6
+      0):{(* (/ P
                 (- (+ (* (* P)) (* (* Q))) (- (+ (* (* P) (* Q))) 0)))):{U}{(NOT A),D}{B}{C}}>
 <(NOT C),(- (+ (* (* (- 1
-                        (/ 0.6
+                        (/ P
                            (- (+ (* (* P)) (* (* Q)))
                               (- (+ (* (* P) (* Q))) 0)))))))
             0):{(* (- 1
-                      (/ 0.6
+                      (/ P
                          (- (+ (* (* P)) (* (* Q)))
                             (- (+ (* (* P) (* Q))) 0))))):{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
-<D,(- (+ (* (* (/ 0.6
+<D,(- (+ (* (* (/ P
                   (- (+ (* (* P)) (* (* Q)))
                      (- (+ (* (* P) (* Q))) 0))))))
-      0):{(* (/ 0.6
+      0):{(* (/ P
                 (- (+ (* (* P)) (* (* Q))) (- (+ (* (* P) (* Q))) 0)))):{U}{B}{C}{D}}>
 <(NOT D),(- (+ (* (* 1.0
                      (- 1
-                        (/ 0.6
+                        (/ P
                            (- (+ (* (* P)) (* (* Q)))
                               (- (+ (* (* P) (* Q))) 0)))))))
             0):{(* 1.0
                    (- 1
-                      (/ 0.6
+                      (/ P
                          (- (+ (* (* P)) (* (* Q)))
                             (- (+ (* (* P) (* Q))) 0))))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
 <A,0.00:{}>
 <(NOT A),(- (+ (* (* 1.0))) 0):{{(NOT D)}(* 1.0):{(NOT A)}}>
-<U,(- (+ (* (* (/ 0.6
+<U,(- (+ (* (* (/ P
                   (- (+ (* (* P)) (* (* Q)))
                      (- (+ (* (* P) (* Q))) 0))))))
-      0):{{(NOT A),D}{B}{C}(* (/ 0.6
+      0):{{(NOT A),D}{B}{C}(* (/ P
                                  (-
                                   (+ (* (* P)) (* (* Q)))
                                   (- (+ (* (* P) (* Q))) 0)))):{U}}>
 <(NOT U),(- (+ (* (* (- 1
-                        (/ 0.6
+                        (/ P
                            (- (+ (* (* P)) (* (* Q)))
                               (- (+ (* (* P) (* Q))) 0)))))))
             0):{{(NOT D)}{(NOT B)}{(NOT C)}(*
                                             (-
                                              1
                                              (/
-                                              0.6
+                                              P
                                               (-
                                                (+ (* (* P)) (* (* Q)))
                                                (-
