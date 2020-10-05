@@ -2,6 +2,7 @@
   (title nil)
   (graph nil)
   (priors nil)
+  (symbolic-priors nil)
   (given nil)
   (intervention nil)
   (outcome nil)
@@ -33,6 +34,9 @@
   :priors
   '((U . 0.6)
     (W . 0.7))
+  :symbolic-priors
+  '((U . p)
+    (W . q))
   :given 'D
   :intervention '(:NOT A)
   :outcome '(:NOT D)))
@@ -129,6 +133,13 @@
     (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) ps)
     (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (- 1 (cdr p)))) ps))))
 
+(defun symbolic-probabilities-for (atms ps)
+  (remove-if-not
+   #'car
+   (append
+    (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) ps)
+    (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (list '- 1 (cdr p)))) ps))))
+
 (defun post-graph (causal)
   (let* ((i (causal-intervention causal))
          (names (list i (negate-name i))))
@@ -191,3 +202,29 @@ After intervention:
 <U,0.68:{{(NOT A),D}{B}{C}0.68:{U}}>
 <(NOT U),0.32:{{(NOT D)}{(NOT B)}{(NOT C)}0.32:{(NOT U)}}>
 |#
+
+(defun symbolic-causal-crank (causal)
+  (setf (causal-atms causal) (atms-from-graph (causal-graph causal) (causal-title causal)))
+  (setf (causal-atms-ps causal) (symbolic-probabilities-for (causal-atms causal) (causal-symbolic-priors causal)))
+  (setf (causal-post-graph causal) (post-graph causal))
+  (setf (causal-post-atms causal) (atms-from-graph (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
+  (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
+  (setf (causal-given-node causal) (find-node (causal-atms causal) (causal-given causal)))
+  (setf (causal-given-p causal) (symbolic-node-prob (causal-given-node causal) (causal-atms-ps causal)))
+  (setf
+   (causal-post-atms-ps causal)
+   (symbolic-probabilities-for
+    (causal-post-atms causal)
+    (cons
+     (cons (causal-intervention causal) 1.0)
+     (mapcar #'(lambda (p) (cons (car p) (list '/ (cdr p) (causal-given-p causal))))
+             (causal-priors causal)))))
+  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) (causal-outcome causal)))
+  (setf (causal-outcome-p causal) (symbolic-node-prob (causal-outcome-node causal) (causal-post-atms-ps causal)))
+
+  (format t "~%~%Before intervention:~%")
+  (symbolic-why-prob-nodes (causal-atms causal) (causal-atms-ps causal))
+  (format t "~%~%After intervention:~%")
+  (symbolic-why-prob-nodes (causal-post-atms causal) (causal-post-atms-ps causal)))
+
+(symbolic-causal-crank *causal*)
