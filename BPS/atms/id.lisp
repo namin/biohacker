@@ -81,8 +81,17 @@
 
 (subedges (kget :pa *m*) '(x z))
 
+(defun graph-cut (g x)
+  (mapcar #'(lambda (e) (if (member (car e) x) (list (car e) '()) e)) g))
+
 (defun pair-cut (pairs x)
   (remove-if #'(lambda (p) (or (member (car p) x) (member (cadr p) x))) pairs))
+
+(defun cut-incoming (m x)
+  (let ((pa (graph-cut (kget :pa m) x))
+        (bi (pair-cut (:bi m) x)))
+    (list (cons :pa pa)
+          (cons :bi bi))))
 
 (defun subgraph (m x)
   (let* ((to-remove (set-difference (vertices m) x))
@@ -105,7 +114,10 @@
                   (intersection x ancestors-y)
                   (sum (difference v ancestors-y) p)
                   (subgraph g ancestors-y))
-              'TODO)))))
+              (let ((w (set-difference (set-difference v x) (ancestors (cut-incoming g x) y))))
+                (if (not (null w))
+                    (id y (union x w) p g)
+                    'TODO)))))))
 
 (defun identify (model query)
   (let ((q (kget :form query)))
