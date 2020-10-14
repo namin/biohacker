@@ -104,7 +104,7 @@
     ((aget :sum form)
      (set-difference (free-vars (aget :sum form)) (aget :sub form)))
     ((aget :numer form)
-     (union (free-vars (:numer form)) (free-vars (:denom form))))
+     (union (free-vars (aget :numer form)) (free-vars (aget :denom form))))
     (t
      (error "free precondition failed"))))
 
