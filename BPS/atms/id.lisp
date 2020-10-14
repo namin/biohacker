@@ -173,6 +173,9 @@
 (topological-sort *m*)
 (topological-sort *m2*)
 
+(defun find-superset (coll s)
+  (car (remove-if-not #'(lambda (x) (subsetp s x)) coll)))
+
 (defun id (y x p g)
   (let ((v (vertices g)))
   ;; line 1
@@ -204,7 +207,15 @@
   (if (member s c)
       (sum (set-difference s y)
            (product #'(lambda (vi) (given-pi p vi pi))))
-      'TODO)))))))))))))
+   ;; line 7
+   (let* ((s-prime (find-superset c s))
+          (p-prime (product (mapcar #'(lambda (vi) (given-pi p vi pi)) s-prime))))
+   (if (not (null s-prime))
+       (id y
+           (intersection x s-prime)
+           p-prime
+           (subgraph g s-prime))
+     (error "ID precondition failed"))))))))))))))))
 
 (defun identify (model query)
   (let ((q (kget :form query)))
