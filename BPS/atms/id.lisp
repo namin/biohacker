@@ -293,8 +293,12 @@
 
 (setq *ident-a* (model '((y (x)) (x ()))))
 (setq *ident-b* (model '((x ()) (y (x z)) (z (x))) '(z y)))
+(setq *ident-c* (model '((x (z)) (y (x z)) (z ())) '(z y)))
 (setq *non-a* (model '((x ()) (y (x))) '(x y)))
+
+(setq *query* '((:form (:p y) (:do (x)))))
 
 (identify *ident-a* *query*)
 (identify *ident-b* *query*)
+(identify *ident-c* *query*)
 (identify *non-a* *query*)
