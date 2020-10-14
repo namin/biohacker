@@ -212,6 +212,12 @@
 
 (find-superset '((1 2 3) (2 4) (1 2 3 4 5)) '(1 2 3 4))
 
+(defun set-denom (x)
+  ;; should remove duplicates too
+  (sort x #'string< :key #'symbol-name))
+(defun equal-sets (x y)
+  (equal (set-denom x) (set-denom y)))
+
 (defun id (y x p g)
   (let ((v (vertices g)))
   (format t " line 1~%")
@@ -236,7 +242,7 @@
   (let ((s (first c-x))
         (c (c-components g)))
   (format t " line 5~%")
-  (if (equal c (list v))
+  (if (and (= 1 (length c)) (equal-sets (car c) v)) ;; c = {v}
       (hedge g s)
   (let ((pi_ (topological-sort g)))
   (format t " line 6~%")
