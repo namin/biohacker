@@ -147,6 +147,29 @@
 (c-components *m*)
 (c-components *m2*)
 
+(defun kahn-cut (g x)
+  (mapcar
+   #'(lambda (kv) (list (car kv) (set-difference (cadr kv) x)))
+   (remove-if #'(lambda (kv) (member (car kv) x)) g)))
+
+(defun sources (g)
+  (remove-if-not #'(lambda (k) (null (car (mget g k)))) (keys g)))
+
+(defun topological-sort-iter (remaining result)
+  (if (null remaining)
+      result
+      (let ((frontier (sources remaining)))
+        (if (null frontier)
+            (error "Not a dag")
+            (topological-sort-iter
+             (kahn-cut remaining frontier)
+             (append result frontier))))))
+(defun topological-sort (m)
+  (topological-sort-iter (kget :pa m) '()))
+
+(topological-sort *m*)
+(topological-sort *m2*)
+
 (defun id (y x p g)
   (let ((v (vertices g)))
     (if (null x)
