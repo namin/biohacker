@@ -76,6 +76,9 @@
       (car exprs)
       `(:prod ,exprs)))
 
+(defun hedge (g s)
+  `((:hedge ,g) (:s ,s)))
+
 (defun subedges (pa x)
   (let ((res '()))
     (dolist (kv pa res)
@@ -161,7 +164,11 @@
                       (if (> (length c-x) 1)
                           (sum (set-difference v (union y x))
                                (product (mapcar #'(lambda (si) (id si (set-difference v si) p g)) c-x)))
-                          'TODO)))))))))
+                          (let ((s (first c-x))
+                                (c (c-components g)))
+                            (if (equal c (list v))
+                                (hedge g s)
+                                'TODO)))))))))))
 
 (defun identify (model query)
   (let ((q (kget :form query)))
