@@ -176,6 +176,8 @@
 (defun find-superset (coll s)
   (car (remove-if-not #'(lambda (x) (subsetp s x)) coll)))
 
+(find-superset '((1 2 3) (2 4) (1 2 3 4 5)) '(1 2 3 4))
+
 (defun id (y x p g)
   (let ((v (vertices g)))
   ;; line 1
