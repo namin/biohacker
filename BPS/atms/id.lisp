@@ -65,3 +65,52 @@
 
 (ancestors *m* '(x))
 
+(defun sum (sub p)
+  ;; Returns \\sum_{sub} p
+  (if (null sub)
+      p
+      `(:sub ,sub :sum p)))
+
+(defun subedges (pa x)
+  (let ((res '()))
+    (dolist (kv pa res)
+      (let ((k (car kv))
+            (v (cadr kv)))
+        (when (member k x)
+          (push (list k (intersection v x)) res))))))
+
+(subedges (kget :pa *m*) '(x z))
+
+(defun pair-cut (pairs x)
+  (remove-if #'(lambda (p) (or (member (car p) x) (member (cadr p) x))) pairs))
+
+(defun subgraph (m x)
+  (let* ((to-remove (set-difference (vertices m) x))
+         (bi (pair-cut (kget :bi m) to-remove))
+         (pa (subedges (kget :pa m) x)))
+    (list (cons :pa pa)
+          (cons :bi bi))))
+
+(subgraph *m* '(x z))
+(subgraph *m2* '(x z))
+(subgraph *m2* '(z y))
+
+(defun id (y x p g)
+  (let ((v (vertices g)))
+    (if (null x)
+        (sum (set-difference v y) p)
+        (let ((ancestors-y (ancestors g y)))
+          (if (not (null (set-difference v ancestors-y)))
+              (id y
+                  (intersection x ancestors-y)
+                  (sum (difference v ancestors-y) p)
+                  (subgraph g ancestors-y))
+              'TODO)))))
+
+(defun identify (model query)
+  (let ((q (kget :form query)))
+    (let ((raw-form (id (getk :p q) (getk :do q) `((:p ,@(vertices model))) model))
+          ;; ...
+          )
+      'TODO)))
+
