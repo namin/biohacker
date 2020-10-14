@@ -5,6 +5,9 @@
 (defun kget (k m)
   (cdr (assoc k m)))
 
+(defun aget (k m)
+  (cadr (assoc k m)))
+
 (defun mget (m k)
   (cdr (assoc k m)))
 
@@ -79,8 +82,39 @@
 (defun hedge (g s)
   `((:hedge ,g) (:s ,s)))
 
+(defun take-while (pred list)
+  (loop for x in list
+        while (funcall pred x)
+        collect x))
+
+(defun predecessors (ordering v)
+  (let ((before (take-while #'(lambda (x) (not (equal x v))) ordering)))
+    (if (= (length before) (length ordering))
+        (error "Not in ordering")
+        before)))
+
+(defun free-vars (form)
+  (cond
+    ((aget :given form)
+     (union (aget :given form) (aget :p form)))
+    ((aget :p form)
+     (aget :p form))
+    ((aget :prod form)
+     (unions (mapcar #'free-vars (aget :prod form))))
+    ((aget :sum form)
+     (set-difference (free-vars (aget :sum form)) (:sub form)))
+    ((aget :numer form)
+     (union (free-vars (:numer form)) (free-vars (:denom form))))
+    (else
+     (error "free precondition failed"))))
+
 (defun given-pi (p vi pi)
-  'TODO)
+  (let* ((pred (predecessors pi vi))
+         (unbound (set-difference (free-vars p) (cons vi pred)))
+         (numer (sum unbound p))
+         (denom (sum (list vi) numer)))
+    (list (list :numer numer)
+          (list :denom denom))))
 
 (defun subedges (pa x)
   (let ((res '()))
