@@ -79,6 +79,9 @@
 (defun hedge (g s)
   `((:hedge ,g) (:s ,s)))
 
+(defun given-pi (p vi pi)
+  'TODO)
+
 (defun subedges (pa x)
   (let ((res '()))
     (dolist (kv pa res)
@@ -191,7 +194,11 @@
                                 (c (c-components g)))
                             (if (equal c (list v))
                                 (hedge g s)
-                                'TODO)))))))))))
+                                (let ((pi (topological-sort g)))
+                                  (if (member s c)
+                                      (sum (set-difference s y)
+                                           (product #'(lambda (vi) (given-pi p vi pi))))
+                                      'TODO)))))))))))))
 
 (defun identify (model query)
   (let ((q (kget :form query)))
