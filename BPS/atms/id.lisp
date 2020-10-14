@@ -108,8 +108,8 @@
     (t
      (error "free precondition failed"))))
 
-(defun given-pi (p vi pi)
-  (let* ((pred (predecessors pi vi))
+(defun given-pi (p vi pi_)
+  (let* ((pred (predecessors pi_ vi))
          (unbound (set-difference (free-vars p) (cons vi pred)))
          (numer (sum unbound p))
          (denom (sum (list vi) numer)))
@@ -134,7 +134,7 @@
 
 (defun cut-incoming (m x)
   (let ((pa (graph-cut (kget :pa m) x))
-        (bi (pair-cut (:bi m) x)))
+        (bi (pair-cut (kget :bi m) x)))
     (list (cons :pa pa)
           (cons :bi bi))))
 
@@ -214,38 +214,38 @@
 
 (defun id (y x p g)
   (let ((v (vertices g)))
-  ;; line 1
+  (format t " line 1~%")
   (if (null x)
       (sum (set-difference v y) p)
-  ;; line 2
   (let ((ancestors-y (ancestors g y)))
+  (format t " line 2~%")
   (if (not (null (set-difference v ancestors-y)))
       (id y
           (intersection x ancestors-y)
-          (sum (difference v ancestors-y) p)
+          (sum (set-difference v ancestors-y) p)
           (subgraph g ancestors-y))
-  ;; line 3
   (let ((w (set-difference (set-difference v x) (ancestors (cut-incoming g x) y))))
+  (format t " line 3~%")
   (if (not (null w))
       (id y (union x w) p g)
-  ;; line 4
   (let ((c-x (c-components (subgraph g (set-difference v x)))))
-  (if (> (length c-x) 1)
+  (format t " line 4~%")
+   (if (> (length c-x) 1)
       (sum (set-difference v (union y x))
            (product (mapcar #'(lambda (si) (id si (set-difference v si) p g)) c-x)))
-  ;; line 5
   (let ((s (first c-x))
         (c (c-components g)))
+  (format t " line 5~%")
   (if (equal c (list v))
       (hedge g s)
-  ;; line 6
-  (let ((pi (topological-sort g)))
+  (let ((pi_ (topological-sort g)))
+  (format t " line 6~%")
   (if (member s c)
       (sum (set-difference s y)
-           (product #'(lambda (vi) (given-pi p vi pi))))
-   ;; line 7
+           (product (mapcar #'(lambda (vi) (given-pi p vi pi_)) s)))
    (let* ((s-prime (find-superset c s))
-          (p-prime (product (mapcar #'(lambda (vi) (given-pi p vi pi)) s-prime))))
+          (p-prime (product (mapcar #'(lambda (vi) (given-pi p vi pi_)) s-prime))))
+   (format t " line 7~%")
    (if (not (null s-prime))
        (id y
            (intersection x s-prime)
@@ -286,10 +286,10 @@
          (list :formula form))))))
 
 (setq *ident-a* (model '((y (x)) (x ()))))
-(identify *ident-a* '((:q (y)) (:do (x))))
+(identify *ident-a* '((:form (:p (y)) (:do (x)))))
 
 (setq *ident-b* (model '((x ()) (y (x z)) (z (x))) '(z y)))
-(identify *ident-b* '((:q (y)) (:do (x))))
+(identify *ident-b* '((:form (:p (y)) (:do (x)))))
 
 (setq *non-a* (model '((x ()) (y (x))) '(x y)))
-(identify *non-a* '((:q (y)) (:do (x))))
+(identify *non-a* '((:form (:p (y)) (:do (x)))))
