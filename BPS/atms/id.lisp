@@ -96,9 +96,9 @@
 (defun free-vars (form)
   (cond
     ((aget :given form)
-     (union (aget :given form) (aget :p form)))
-    ((aget :p form)
-     (aget :p form))
+     (union (aget :given form) (kget :p form)))
+    ((kget :p form)
+     (kget :p form))
     ((aget :prod form)
      (unions (mapcar #'free-vars (aget :prod form))))
     ((aget :sum form)
@@ -276,7 +276,7 @@
 
 (defun identify (model query)
   (let ((q (kget :form query)))
-    (let* ((raw-form (id (aget :p q) (aget :do q) `((:p ,@(vertices model))) model))
+    (let* ((raw-form (id (kget :p q) (aget :do q) `((:p ,@(vertices model))) model))
            (form (simplify-form raw-form))
            (hedges (extract-hedges form)))
       (cond
@@ -286,10 +286,10 @@
          (list :formula form))))))
 
 (setq *ident-a* (model '((y (x)) (x ()))))
-(identify *ident-a* '((:form (:p (y)) (:do (x)))))
+(identify *ident-a* '((:form (:p y) (:do (x)))))
 
 (setq *ident-b* (model '((x ()) (y (x z)) (z (x))) '(z y)))
-(identify *ident-b* '((:form (:p (y)) (:do (x)))))
+(identify *ident-b* '((:form (:p y) (:do (x)))))
 
 (setq *non-a* (model '((x ()) (y (x))) '(x y)))
-(identify *non-a* '((:form (:p (y)) (:do (x)))))
+(identify *non-a* '((:form (:p y) (:do (x)))))
