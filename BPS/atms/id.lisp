@@ -102,7 +102,7 @@
     ((aget :prod form)
      (unions (mapcar #'free-vars (aget :prod form))))
     ((aget :sum form)
-     (set-difference (free-vars (aget :sum form)) (:sub form)))
+     (set-difference (free-vars (aget :sum form)) (aget :sub form)))
     ((aget :numer form)
      (union (free-vars (:numer form)) (free-vars (:denom form))))
     (else
@@ -253,10 +253,37 @@
            (subgraph g s-prime))
      (error "ID precondition failed"))))))))))))))))
 
+(defun simplify-form (form)
+  ;; TODO
+  form)
+
+(defun extract-hedges (form)
+  (cond
+    ((aget :hedge form)
+     form)
+    ((aget :sum form)
+     (extract-hedges (aget :sum form)))
+    ((aget :prod form)
+     (unions (mapcar #'extract-edges (aget :prod form))))
+    ((aget :numer form)
+     (union
+      (extract-hedges (aget :numer form))
+      (extract-hedges (aget :denom form))))
+    ((aget :p form)
+     '())
+    (else
+     (error "Unsupported formula type"))))
+
 (defun identify (model query)
   (let ((q (kget :form query)))
-    (let ((raw-form (id (getk :p q) (getk :do q) `((:p ,@(vertices model))) model))
-          ;; ...
-          )
-      'TODO)))
+    (let* ((raw-form (id (aget :p q) (aget :do q) `((:p ,@(vertices model))) model))
+           (form (simplify-form raw-form))
+           (hedges (extract-hedges form)))
+      (cond
+        ((not (null hedges))
+         (list :fail hedges))
+        (else
+         (list :formula form))))))
 
+(setq *ident-a* (model '((y (x)) (x ()))))
+(identify *ident-a* '((:q (y)) (:do (x))))
