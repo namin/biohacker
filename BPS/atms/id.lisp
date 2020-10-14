@@ -72,12 +72,12 @@
   ;; Returns \\sum_{sub} p
   (if (null sub)
       p
-      `(:sub ,sub :sum p)))
+      `((:sub ,sub) (:sum ,p))))
 
 (defun product (exprs)
   (if (= 1 (length exprs))
       (car exprs)
-      `(:prod ,exprs)))
+      `((:prod ,exprs))))
 
 (defun hedge (g s)
   `((:hedge ,g) (:s ,s)))
@@ -105,7 +105,7 @@
      (set-difference (free-vars (aget :sum form)) (aget :sub form)))
     ((aget :numer form)
      (union (free-vars (:numer form)) (free-vars (:denom form))))
-    (else
+    (t
      (error "free precondition failed"))))
 
 (defun given-pi (p vi pi)
@@ -271,7 +271,7 @@
       (extract-hedges (aget :denom form))))
     ((aget :p form)
      '())
-    (else
+    (t
      (error "Unsupported formula type"))))
 
 (defun identify (model query)
@@ -282,7 +282,7 @@
       (cond
         ((not (null hedges))
          (list :fail hedges))
-        (else
+        (t
          (list :formula form))))))
 
 (setq *ident-a* (model '((y (x)) (x ()))))
