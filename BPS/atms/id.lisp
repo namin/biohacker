@@ -175,25 +175,31 @@
 
 (defun id (y x p g)
   (let ((v (vertices g)))
+  ;; line 1
   (if (null x)
       (sum (set-difference v y) p)
+  ;; line 2
   (let ((ancestors-y (ancestors g y)))
   (if (not (null (set-difference v ancestors-y)))
       (id y
           (intersection x ancestors-y)
           (sum (difference v ancestors-y) p)
           (subgraph g ancestors-y))
+  ;; line 3
   (let ((w (set-difference (set-difference v x) (ancestors (cut-incoming g x) y))))
   (if (not (null w))
       (id y (union x w) p g)
+  ;; line 4
   (let ((c-x (c-components (subgraph g (set-difference v x)))))
   (if (> (length c-x) 1)
       (sum (set-difference v (union y x))
            (product (mapcar #'(lambda (si) (id si (set-difference v si) p g)) c-x)))
+  ;; line 5
   (let ((s (first c-x))
         (c (c-components g)))
   (if (equal c (list v))
       (hedge g s)
+  ;; line 6
   (let ((pi (topological-sort g)))
   (if (member s c)
       (sum (set-difference s y)
