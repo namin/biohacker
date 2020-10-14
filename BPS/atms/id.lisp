@@ -71,6 +71,11 @@
       p
       `(:sub ,sub :sum p)))
 
+(defun product (exprs)
+  (if (= 1 (length exprs))
+      (car exprs)
+      `(:prod ,exprs)))
+
 (defun subedges (pa x)
   (let ((res '()))
     (dolist (kv pa res)
@@ -104,6 +109,41 @@
 (subgraph *m2* '(x z))
 (subgraph *m2* '(z y))
 
+(defun adjacent (pairs node)
+  (remove node (unions (remove-if-not #'(lambda (p) (member node p)) pairs))))
+
+(adjacent (kget :bi *m2*) 'z)
+
+(defun connected-component-iter (pairs frontier visited)
+  (if (null frontier)
+      visited
+      (let ((current (car frontier)))
+        (if (member current visited)
+            (connected-component-iter pairs (cdr frontier) visited)
+            (connected-component-iter
+             pairs
+             (union (cdr frontier) (adjacent pairs current))
+             (cons current visited))))))
+(defun connected-component (pairs node)
+  (connected-component-iter pairs (list node) '()))
+
+(connected-component (kget :bi *m2*) 'z)
+
+(defun c-components-iter (m nodes components)
+  (if (null nodes)
+      components
+      (let* ((current-node (car nodes))
+             (current-component (connected-component (kget :bi m) current-node)))
+        (c-components-iter
+         m
+         (set-difference nodes current-component)
+         (cons current-component components)))))
+(defun c-components (m)
+  (c-components-iter m (vertices m) '()))
+
+(c-components *m*)
+(c-components *m2*)
+
 (defun id (y x p g)
   (let ((v (vertices g)))
     (if (null x)
@@ -117,7 +157,11 @@
               (let ((w (set-difference (set-difference v x) (ancestors (cut-incoming g x) y))))
                 (if (not (null w))
                     (id y (union x w) p g)
-                    'TODO)))))))
+                    (let ((c-x (c-components (subgraph g (set-difference v x)))))
+                      (if (> (length c-x) 1)
+                          (sum (set-difference v (union y x))
+                               (product (mapcar #'(lambda (si) (id si (set-difference v si) p g)) c-x)))
+                          'TODO)))))))))
 
 (defun identify (model query)
   (let ((q (kget :form query)))
