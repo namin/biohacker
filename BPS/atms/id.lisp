@@ -287,3 +287,6 @@
 
 (setq *ident-a* (model '((y (x)) (x ()))))
 (identify *ident-a* '((:q (y)) (:do (x))))
+
+(setq *ident-b* (model '((x ()) (y (x z)) (z (x))) '(z y)))
+(identify *ident-b* '((:q (y)) (:do (x))))
