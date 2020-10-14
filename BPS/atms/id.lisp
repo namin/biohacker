@@ -17,6 +17,12 @@
 (defun lset (xs)
   xs)
 
+(defun set-denom (x)
+  ;; should remove duplicates too
+  (sort x #'string< :key #'symbol-name))
+(defun equal-sets (x y)
+  (equal (set-denom x) (set-denom y)))
+
 (defun unions (xss)
   (if (null xss)
       '()
@@ -25,7 +31,7 @@
           (union (car xss) (unions (cdr xss))))))
 
 (defun parents (m x)
-  (unions (mapcan #'(lambda (node) (mget (kget :pa m) node)) x)))
+  (unions (mapcar #'(lambda (node) (mget (kget :pa m) node)) x)))
 
 (defun ancestors-iter (m frontier visited)
   (if (null frontier)
@@ -211,12 +217,6 @@
   (car (remove-if-not #'(lambda (x) (subsetp s x)) coll)))
 
 (find-superset '((1 2 3) (2 4) (1 2 3 4 5)) '(1 2 3 4))
-
-(defun set-denom (x)
-  ;; should remove duplicates too
-  (sort x #'string< :key #'symbol-name))
-(defun equal-sets (x y)
-  (equal (set-denom x) (set-denom y)))
 
 (defun id (y x p g)
   (let ((v (vertices g)))
