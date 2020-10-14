@@ -292,10 +292,9 @@
          (list :formula form))))))
 
 (setq *ident-a* (model '((y (x)) (x ()))))
-(identify *ident-a* '((:form (:p y) (:do (x)))))
-
 (setq *ident-b* (model '((x ()) (y (x z)) (z (x))) '(z y)))
-(identify *ident-b* '((:form (:p y) (:do (x)))))
-
 (setq *non-a* (model '((x ()) (y (x))) '(x y)))
-(identify *non-a* '((:form (:p y) (:do (x)))))
+
+(identify *ident-a* *query*)
+(identify *ident-b* *query*)
+(identify *non-a* *query*)
