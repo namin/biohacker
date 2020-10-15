@@ -262,8 +262,28 @@
      (error "ID precondition failed"))))))))))))))))
 
 (defun simplify-form (form)
-  ;; TODO
-  form)
+  (cond
+    ((kget :p form)
+     form)
+    ((aget :prod form)
+     `((:prod ,(mapcar #'simplify-form (aget :prod form)))))
+    ((aget :numer form)
+     (let ((snumer (simplify-form (aget :numer form)))
+           (sdenom (simplify-form (aget :denom form))))
+       (if (and (kget :p snumer) (kget :p sdenom)
+                (subsetp (kget :p sdenom) (kget :p snumer)))
+           `((:p ,@(set-difference (kget :p snumer) (kget :p sdenom)))
+             (:given ,(kget :p sdenom)))
+           `((:numer ,snumer) (:denom ,sdenom)))))
+    ((aget :sum form)
+     (let ((ssum (simplify-form (aget :sum form))))
+       (if (kget :p ssum)
+           `((:p ,@(set-difference (kget :p ssum) (aget :sub form))))
+           `((:sum ,ssum) (:sub ,(aget :sub form))))))
+    ((aget :hedge form)
+     form)
+    (else
+     (error "Unsupported formula type"))))
 
 (defun extract-hedges (form)
   (cond
@@ -277,7 +297,9 @@
      (union
       (extract-hedges (aget :numer form))
       (extract-hedges (aget :denom form))))
-    ((aget :p form)
+    ((kget :p form)
+     '())
+    ((equal? form '((:p)))
      '())
     (t
      (error "Unsupported formula type"))))
