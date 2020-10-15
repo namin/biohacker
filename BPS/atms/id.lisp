@@ -297,9 +297,7 @@
      (union
       (extract-hedges (aget :numer form))
       (extract-hedges (aget :denom form))))
-    ((kget :p form)
-     '())
-    ((equal? form '((:p)))
+    ((assoc :p form)
      '())
     (t
      (error "Unsupported formula type"))))
