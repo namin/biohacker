@@ -146,8 +146,6 @@
 (defun adjacent (pairs node)
   (remove node (unions (remove-if-not #'(lambda (p) (member node p)) pairs))))
 
-(adjacent (kget :bi *m2*) 'z)
-
 (defun connected-component-iter (pairs frontier visited)
   (if (null frontier)
       visited
@@ -160,8 +158,6 @@
              (cons current visited))))))
 (defun connected-component (pairs node)
   (connected-component-iter pairs (list node) '()))
-
-(connected-component (kget :bi *m2*) 'z)
 
 (defun c-components-iter (m nodes components)
   (if (null nodes)
