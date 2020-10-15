@@ -107,7 +107,7 @@
 (defun free-vars (form)
   (cond
     ((has? :given form)
-     (union (aget :given form) (kget :p form)))
+     (union (kget :given form) (kget :p form)))
     ((has? :p form)
      (kget :p form))
     ((has? :prod form)
@@ -276,7 +276,7 @@
        (if (and (has? :p snumer) (has? :p sdenom)
                 (subsetp (kget :p sdenom) (kget :p snumer)))
            `((:p ,@(set-difference (kget :p snumer) (kget :p sdenom)))
-             (:given ,(kget :p sdenom)))
+             (:given ,@(kget :p sdenom)))
            `((:numer ,snumer) (:denom ,sdenom)))))
     ((has? :sum form)
      (let ((ssum (simplify-form (aget :sum form))))
