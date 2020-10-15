@@ -31,7 +31,9 @@
           (union (car xss) (unions (cdr xss))))))
 
 (defun parents (m x)
-  (unions (mapcar #'(lambda (node) (mget (kget :pa m) node)) x)))
+  (unions
+   (apply #'concatenate 'list
+          (mapcar #'(lambda (node) (mget (kget :pa m) node)) x))))
 
 (defun ancestors-iter (m frontier visited)
   (if (null frontier)
