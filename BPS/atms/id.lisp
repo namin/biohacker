@@ -272,7 +272,7 @@
     ((aget :sum form)
      (extract-hedges (aget :sum form)))
     ((aget :prod form)
-     (unions (mapcar #'extract-edges (aget :prod form))))
+     (unions (mapcar #'extract-hedges (aget :prod form))))
     ((aget :numer form)
      (union
       (extract-hedges (aget :numer form))
