@@ -299,6 +299,7 @@
 (setq *ident-d* (model '((x (z)) (y (x z)) (z ())) '(x z)))
 (setq *non-a* (model '((x ()) (y (x))) '(x y)))
 (setq *non-b* (model '((x ()) (z (x)) (y (z))) '(x z)))
+(setq *non-d* (model '((x ()) (y (x z)) (z ())) '(x z) '(z y)))
 
 (setq *query* '((:form (:p y) (:do (x)))))
 
@@ -308,3 +309,4 @@
 (identify *ident-d* *query*)
 (identify *non-a* *query*)
 (identify *non-b* *query*)
+(identify *non-d* *query*)
