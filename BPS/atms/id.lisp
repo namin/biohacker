@@ -68,17 +68,6 @@
   `((:pa ,@(mapcar #'(lambda (kv) (list (car kv) (lset (cadr kv)))) dag))
     (:bi ,@(unions (mapcar #'pairs-of confounding)))))
 
-(setq *m* (model '((x ()) (z (x)) (y (z)))))
-(setq *m2* (model '((x (z)) (y (x z)) (z ())) '(z y)))
-
-(vertices *m*)
-
-(parents *m* '(z))
-
-(ancestors *m* '(z))
-
-(ancestors *m* '(x))
-
 (defun sum (sub p)
   ;; Returns \\sum_{sub} p
   (if (null sub)
@@ -135,8 +124,6 @@
         (when (member k x)
           (push (list k (intersection v x)) res))))))
 
-(subedges (kget :pa *m*) '(x z))
-
 (defun graph-cut (g x)
   (mapcar #'(lambda (e) (if (member (car e) x) (list (car e) '()) e)) g))
 
@@ -155,10 +142,6 @@
          (pa (subedges (kget :pa m) x)))
     (list (cons :pa pa)
           (cons :bi bi))))
-
-(subgraph *m* '(x z))
-(subgraph *m2* '(x z))
-(subgraph *m2* '(z y))
 
 (defun adjacent (pairs node)
   (remove node (unions (remove-if-not #'(lambda (p) (member node p)) pairs))))
@@ -192,9 +175,6 @@
 (defun c-components (m)
   (c-components-iter m (vertices m) '()))
 
-(c-components *m*)
-(c-components *m2*)
-
 (defun kahn-cut (g x)
   (mapcar
    #'(lambda (kv) (list (car kv) (set-difference (cadr kv) x)))
@@ -215,13 +195,8 @@
 (defun topological-sort (m)
   (topological-sort-iter (kget :pa m) '()))
 
-(topological-sort *m*)
-(topological-sort *m2*)
-
 (defun find-superset (coll s)
   (car (remove-if-not #'(lambda (x) (subsetp s x)) coll)))
-
-(find-superset '((1 2 3) (2 4) (1 2 3 4 5)) '(1 2 3 4))
 
 (defun id (y x p g)
   (let ((v (vertices g)))
