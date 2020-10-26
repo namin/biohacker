@@ -19,7 +19,96 @@
 (defun print-causal (causal stream ignore)
   (declare (ignore ignore))
   (format stream "#<causal: ~A>" (causal-title causal)))
+;;  Query we would like is :given '(Xray Dys)
+;;    :intervention '((:NOT Cancer) (:NOT TB))  ;; expected sufficiency of Bronchitis
+(setq *expected-disablement*
+      (make-causal
+       :title "How would the symptoms change be if we knew that Bronchitis was not the disease"
+       :graph
+       '((TB . Dys)
+         (TB . Xray)
+	 (Cancer . Dys)
+	 (Cancer . Xray)
+	 (Bronchitis . Dys))
+       :priors
+       '((TB . 0.02)
+	 (Cancer . 0.5)
+	 (Bronchitis . 0.3))
+       :symbolic-priors
+       '((TB . t)
+	 (Cancer . c)
+	 (Bronchitis . b))
+       :given '(Dys (:NOT Xray))  ;; Observed Symptoms  (S)  S+ = {Dys}
+       :intervention '((:NOT Bronchitis))  ;; Do(Bronchitis = F)
+       :outcome '(Dys (:NOT Xray))))  ;; Counterfactual Symptoms (S')  S'+ = {Dys'  Nausea'}
 
+(setq *expected-sufficiency*
+      (make-causal
+       :title "How would the symptoms change if we treated the patient for Cancer and TB?"
+       :graph
+       '((TB . Dys)
+         (TB . Xray)
+	 (Cancer . Dys)
+	 (Cancer . Xray)
+	 (Bronchitis . Dys))
+       :priors
+       '((TB . 0.02)
+	 (Cancer . 0.5)
+	 (Bronchitis . 0.3))
+       :symbolic-priors
+       '((TB . t)
+	 (Cancer . c)
+	 (Bronchitis . b))
+       :given '(Dys (:NOT Xray))   ;; S
+       :intervention '((:NOT TB) (:NOT Cancer))   ;; do(treat TB and Cancer)
+       :outcome '(Dys (:NOT Xray))))  ;; S'
+
+(setq *necessary-causation*
+      (make-causal
+       :title "P({No Dys}_{treated Bronchitis} | Bronchitis, Dys)"
+       :graph
+       '((TB . Dys)
+         (TB . Xray)
+	 (Cancer . Dys)
+	 (Cancer . Xray)
+	 (Bronchitis . Dys))
+       :priors
+       '((TB . 0.02)
+	 (Cancer . 0.5)
+	 (Bronchitis . 0.3))
+       :symbolic-priors
+       '((TB . t)
+	 (Cancer . c)
+	 (Bronchitis . b))
+       :given '(Dys Bronchitis)
+       :intervention '((:NOT Bronchitis))
+       :outcome '((:NOT Dys))))
+
+ (setq *sufficient-causation*
+      (make-causal
+       :title "P({Dys}_{infect with Bronchitis} | no_Bronchitis, no_Dys)"
+       "P(Bronchtis) = .30"
+       "P(Dys | Bronchitis) = ?"
+       "P(Bronchitis | Dys)"
+       :graph
+       '((TB . Dys)
+         (TB . Xray)
+	 (Cancer . Dys)
+	 (Cancer . Xray)
+	 (Bronchitis . Dys))
+       :priors
+       '((TB . 0.02)
+	 (Cancer . 0.5)
+	 (Bronchitis . 0.3))
+       :symbolic-priors
+       '((TB . t)
+	 (Cancer . c)
+	 (Bronchitis . b))
+       :given '((:NOT Dys) (:NOT Bronchitis))
+       :intervention '(Bronchitis)
+       :outcome '(Dys)))
+
+(causal-crank *diagnosis*)
 (setq
  *causal*
  (make-causal
@@ -257,3 +346,7 @@ After intervention:
 <U,(/ P (- (+ P Q) (* P Q))):{{(NOT A),D}{B}{C}(/ P (- (+ P Q) (* P Q))):{U}}>
 <(NOT U),(- 1 (/ P (- (+ P Q) (* P Q)))):{{(NOT D)}{(NOT B)}{(NOT C)}(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}}>
 |#
+
+(symbolic-causal-crank *diagnosis*)
+
+
