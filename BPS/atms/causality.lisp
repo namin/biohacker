@@ -185,8 +185,9 @@
   (let ((pos (tms-create-node atms (name-literal (cons la :TRUE))))
         (neg (tms-create-node atms (name-literal (cons la :FALSE)))))
     (nogood-nodes 'nogood-complement (list pos neg))
-    (assume-node pos)
-    (assume-node neg)
+    (unless (member (PLTMS::tms-node-datum la) '("given" "outcome") :test #'equal)
+      (assume-node pos)
+      (assume-node neg))
     'done))
 
 (defun translate-node (atms literal)
@@ -228,7 +229,7 @@
      (:implies ,(causal-outcome causal) "outcome")))
   (setq p (PLTMS::prime-implicates formula))
   (setq clauses (PLTMS::collect p))
-  (setq atms (create-atms title :debugging t))
+  (setq atms (create-atms title :debugging nil))
   (mapcar #'(lambda (c) (translate-clause atms c)) clauses)
   atms)
 
