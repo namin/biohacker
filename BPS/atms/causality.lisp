@@ -221,8 +221,8 @@
    formula
    `(:and
      ,formula
-     (:implies ,(causal-given causal) 'given)
-     (:implies ,(causal-outcome causal) 'outcome)))
+     (:implies ,(causal-given causal) "given")
+     (:implies ,(causal-outcome causal) "outcome")))
   (setq p (PLTMS::prime-implicates formula))
   (setq clauses (PLTMS::collect p))
   (setq atms (create-atms title :debugging t))
@@ -260,7 +260,7 @@
   (setf (causal-post-graph causal) (post-graph causal))
   (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
   (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
-  (setf (causal-given-node causal) (find-node (causal-atms causal) (causal-given causal)))
+  (setf (causal-given-node causal) (find-node (causal-atms causal) "given"))
   (setf (causal-given-p causal) (node-prob (causal-given-node causal) (causal-atms-ps causal)))
   (setf
    (causal-post-atms-ps causal)
@@ -270,7 +270,7 @@
      (cons (causal-intervention causal) 1.0)
      (mapcar #'(lambda (p) (cons (car p) (/ (cdr p) (causal-given-p causal))))
              (causal-priors causal)))))
-  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) (causal-outcome causal)))
+  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
   (setf (causal-outcome-p causal) (node-prob (causal-outcome-node causal) (causal-post-atms-ps causal)))
 
   (format t "~%~%Before intervention:~%")
@@ -317,7 +317,7 @@ After intervention:
   (setf (causal-post-graph causal) (post-graph causal))
   (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
   (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
-  (setf (causal-given-node causal) (find-node (causal-atms causal) (causal-given causal)))
+  (setf (causal-given-node causal) (find-node (causal-atms causal) "given"))
   (setf (causal-given-p causal) (symbolic-node-prob (causal-given-node causal) (causal-atms-ps causal)))
   (setf
    (causal-post-atms-ps causal)
@@ -327,7 +327,7 @@ After intervention:
      (cons (causal-intervention causal) 1)
      (mapcar #'(lambda (p) (cons (car p) (list '/ (cdr p) (causal-given-p causal))))
              (causal-symbolic-priors causal)))))
-  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) (causal-outcome causal)))
+  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
   (setf (causal-outcome-p causal) (symbolic-node-prob (causal-outcome-node causal) (causal-post-atms-ps causal)))
 
   (format t "~%~%Before intervention:~%")
@@ -337,6 +337,8 @@ After intervention:
 
 (symbolic-causal-crank *causal*)
 #|
+Before intervention:
+
 <The contradiction,0.00:{}>
 <A,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{D}{B}{C}{A}}>
 <(NOT A),(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
