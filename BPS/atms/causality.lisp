@@ -99,6 +99,9 @@
        :intervention '(:NOT Bronchitis)
        :outcome '(:NOT Dys)))
 
+;; uh oh, getting negative probabilities
+;;(causal-crank *necessary-causation*)
+
  (setq *sufficient-causation*
       (make-causal
        :title "P({Dys}_{infect with Bronchitis} | no_Bronchitis, no_Dys) %% P(Bronchtis) = .30 %% P(Dys | Bronchitis) = ? %% P(Bronchitis | Dys)"
@@ -120,7 +123,7 @@
        :intervention 'Bronchitis
        :outcome 'Dys))
 
-;;(causal-crank *diagnosis*)
+;;(causal-crank *sufficient-causation*)
 
 (setq
  *causal*
