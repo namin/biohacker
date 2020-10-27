@@ -40,9 +40,9 @@
        '((TB . t)
 	 (Cancer . c)
 	 (Bronchitis . b))
-       :given '(Dys (:NOT Xray))  ;; Observed Symptoms  (S)  S+ = {Dys}
-       :intervention '((:NOT Bronchitis))  ;; Do(Bronchitis = F)
-       :outcome '(Dys (:NOT Xray))))  ;; Counterfactual Symptoms (S')  S'+ = {Dys'  Nausea'}
+       :given '(:AND Dys (:NOT Xray))  ;; Observed Symptoms  (S)  S+ = {Dys}
+       :intervention '(:NOT Bronchitis)  ;; Do(Bronchitis = F)
+       :outcome '(:AND Dys (:NOT Xray))))  ;; Counterfactual Symptoms (S')  S'+ = {Dys'  Nausea'}
 ;; expectation:  If Bronchitis is the disease then {Dys', Xray'}|{Dys = T, Dys' = F}|P( {Dys'=T, Xray'=F}  | do(Bronchitis = F), {Dys=T, Xray=F})
 ;;                                               < P( {Dys'=T, Xray'= F} | do(Bronchitis = T), {Dys=T, Xray=F})
 
@@ -69,9 +69,9 @@
        '((TB . t)
 	 (Cancer . c)
 	 (Bronchitis . b))
-       :given '(Dys (:NOT Xray))   ;; S
-       :intervention '((:NOT TB) (:NOT Cancer))   ;; do(treat TB and Cancer)
-       :outcome '(Dys (:NOT Xray))))  ;; S'
+       :given '(:AND Dys (:NOT Xray))   ;; S
+       :intervention '(:AND (:NOT TB) (:NOT Cancer))   ;; do(treat TB and Cancer)
+       :outcome '(:AND Dys (:NOT Xray))))  ;; S'
 
 
 ;;
@@ -95,16 +95,13 @@
        '((TB . t)
 	 (Cancer . c)
 	 (Bronchitis . b))
-       :given '(Dys Bronchitis)
-       :intervention '((:NOT Bronchitis))
-       :outcome '((:NOT Dys))))
+       :given '(:AND Dys Bronchitis)
+       :intervention '(:NOT Bronchitis)
+       :outcome '(:NOT Dys)))
 
  (setq *sufficient-causation*
       (make-causal
-       :title "P({Dys}_{infect with Bronchitis} | no_Bronchitis, no_Dys)"
-       "P(Bronchtis) = .30"
-       "P(Dys | Bronchitis) = ?"
-       "P(Bronchitis | Dys)"
+       :title "P({Dys}_{infect with Bronchitis} | no_Bronchitis, no_Dys) %% P(Bronchtis) = .30 %% P(Dys | Bronchitis) = ? %% P(Bronchitis | Dys)"
        :graph
        '((TB . Dys)
          (TB . Xray)
@@ -119,11 +116,12 @@
        '((TB . t)
 	 (Cancer . c)
 	 (Bronchitis . b))
-       :given '((:NOT Dys) (:NOT Bronchitis))
-       :intervention '(Bronchitis)
-       :outcome '(Dys)))
+       :given '(:AND (:NOT Dys) (:NOT Bronchitis))
+       :intervention 'Bronchitis
+       :outcome 'Dys))
 
-(causal-crank *diagnosis*)
+;;(causal-crank *diagnosis*)
+
 (setq
  *causal*
  (make-causal
@@ -361,7 +359,3 @@ After intervention:
 <U,(/ P (- (+ P Q) (* P Q))):{{(NOT A),D}{B}{C}(/ P (- (+ P Q) (* P Q))):{U}}>
 <(NOT U),(- 1 (/ P (- (+ P Q) (* P Q)))):{{(NOT D)}{(NOT B)}{(NOT C)}(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}}>
 |#
-
-(symbolic-causal-crank *diagnosis*)
-
-
