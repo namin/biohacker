@@ -215,8 +215,14 @@
         (mapcar #'(lambda (l) (translate-node atms (negate-literal l))) (cdr ls))))
    (all-splits (PLTMS::clause-literals clause))))
 
-(defun atms-from-graph (graph title &aux formula p clauses atms)
+(defun atms-from-graph (causal graph title &aux formula p clauses atms)
   (setq formula (graph-formula graph))
+  (setq
+   formula
+   `(:and
+     ,formula
+     (:implies ,(causal-given causal) 'given)
+     (:implies ,(causal-outcome causal) 'outcome)))
   (setq p (PLTMS::prime-implicates formula))
   (setq clauses (PLTMS::collect p))
   (setq atms (create-atms title :debugging t))
@@ -249,10 +255,10 @@
                (causal-graph causal))))
 
 (defun causal-crank (causal)
-  (setf (causal-atms causal) (atms-from-graph (causal-graph causal) (causal-title causal)))
+  (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
   (setf (causal-atms-ps causal) (probabilities-for (causal-atms causal) (causal-priors causal)))
   (setf (causal-post-graph causal) (post-graph causal))
-  (setf (causal-post-atms causal) (atms-from-graph (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
+  (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
   (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
   (setf (causal-given-node causal) (find-node (causal-atms causal) (causal-given causal)))
   (setf (causal-given-p causal) (node-prob (causal-given-node causal) (causal-atms-ps causal)))
@@ -306,10 +312,10 @@ After intervention:
 |#
 
 (defun symbolic-causal-crank (causal)
-  (setf (causal-atms causal) (atms-from-graph (causal-graph causal) (causal-title causal)))
+  (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
   (setf (causal-atms-ps causal) (symbolic-probabilities-for (causal-atms causal) (causal-symbolic-priors causal)))
   (setf (causal-post-graph causal) (post-graph causal))
-  (setf (causal-post-atms causal) (atms-from-graph (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
+  (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
   (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
   (setf (causal-given-node causal) (find-node (causal-atms causal) (causal-given causal)))
   (setf (causal-given-p causal) (symbolic-node-prob (causal-given-node causal) (causal-atms-ps causal)))
