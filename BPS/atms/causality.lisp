@@ -21,6 +21,8 @@
   (format stream "#<causal: ~A>" (causal-title causal)))
 ;;  Query we would like is :given '(Xray Dys)
 ;;    :intervention '((:NOT Cancer) (:NOT TB))  ;; expected sufficiency of Bronchitis
+
+;;  Given an observed EHR, how many positive symptoms are expected to go away due to treating the disease?
 (setq *expected-disablement*
       (make-causal
        :title "How would the symptoms change be if we knew that Bronchitis was not the disease"
@@ -41,6 +43,14 @@
        :given '(Dys (:NOT Xray))  ;; Observed Symptoms  (S)  S+ = {Dys}
        :intervention '((:NOT Bronchitis))  ;; Do(Bronchitis = F)
        :outcome '(Dys (:NOT Xray))))  ;; Counterfactual Symptoms (S')  S'+ = {Dys'  Nausea'}
+;; expectation:  If Bronchitis is the disease then {Dys', Xray'}|{Dys = T, Dys' = F}|P( {Dys'=T, Xray'=F}  | do(Bronchitis = F), {Dys=T, Xray=F})
+;;                                               < P( {Dys'=T, Xray'= F} | do(Bronchitis = T), {Dys=T, Xray=F})
+
+
+
+
+;;  given an observed EHR, how many symptoms would remain after treating every disease but one?
+
 
 (setq *expected-sufficiency*
       (make-causal
@@ -62,6 +72,11 @@
        :given '(Dys (:NOT Xray))   ;; S
        :intervention '((:NOT TB) (:NOT Cancer))   ;; do(treat TB and Cancer)
        :outcome '(Dys (:NOT Xray))))  ;; S'
+
+
+;;
+
+
 
 (setq *necessary-causation*
       (make-causal
