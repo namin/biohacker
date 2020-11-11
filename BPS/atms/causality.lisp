@@ -182,32 +182,40 @@
 Before intervention:
 
 <The contradiction,0.00:{}>
-<A,0.88:{0.60:{U}0.70:{W}{D}{B}{C}{A}}>
-<(NOT A),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
-<C,0.60:{0.60:{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
-<(NOT C),0.40:{0.40:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
-<B,0.60:{0.60:{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
-<(NOT B),0.40:{0.40:{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
-<D,0.88:{0.60:{U}0.70:{W}{A}{B}{C}{D}}>
+<D,0.88:{0.60:{U}0.70:{W}{B}{A}{C}{D}}>
 <(NOT D),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<W,0.70:{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}0.70:{W}}>
-<(NOT W),0.30:{{(NOT D)}{(NOT A)}0.30:{(NOT W)}}>
-<U,0.60:{{(NOT W),D}{(NOT W),A}{B}{C}0.60:{U}}>
-<(NOT U),0.40:{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}0.40:{(NOT U)}}>
+<C,0.60:{0.60:{U}{(NOT W),A}{(NOT W),D}{B}{C}}>
+<(NOT C),0.40:{0.40:{(NOT U)}{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}}>
+<A,0.88:{0.60:{U}0.70:{W}{B}{D}{C}{A}}>
+<(NOT A),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<B,0.60:{0.60:{U}{(NOT W),A}{(NOT W),D}{C}{B}}>
+<(NOT B),0.40:{0.40:{(NOT U)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<W,0.70:{{(NOT U),D}{(NOT U),A}{(NOT B),D}{(NOT C),D}{(NOT B),A}{(NOT C),A}0.70:{W}}>
+<(NOT W),0.30:{{(NOT A)}{(NOT D)}0.30:{(NOT W)}}>
+<U,0.60:{{(NOT W),A}{(NOT W),D}{B}{C}0.60:{U}}>
+<(NOT U),0.40:{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}0.40:{(NOT U)}}>
+<outcome,0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<(NOT outcome),0.00:{}>
+<given,0.88:{0.70:{W}{A}{D}0.60:{U}{B}{C}}>
+<(NOT given),0.00:{}>
 
 After intervention:
 
 <The contradiction,0.00:{}>
-<B,0.68:{0.68:{U}{(NOT A),D}{C}{B}}>
-<(NOT B),0.32:{0.32:{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
 <C,0.68:{0.68:{U}{(NOT A),D}{B}{C}}>
-<(NOT C),0.32:{0.32:{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
+<(NOT C),0.32:{0.32:{(NOT U)}{(NOT B)}{(NOT D)}{(NOT C)}}>
 <D,0.68:{0.68:{U}{B}{C}{D}}>
 <(NOT D),0.32:{0.32:{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<B,0.68:{0.68:{U}{(NOT A),D}{C}{B}}>
+<(NOT B),0.32:{0.32:{(NOT U)}{(NOT C)}{(NOT D)}{(NOT B)}}>
 <A,0.00:{}>
 <(NOT A),1.00:{{(NOT D)}1.00:{(NOT A)}}>
 <U,0.68:{{(NOT A),D}{B}{C}0.68:{U}}>
-<(NOT U),0.32:{{(NOT D)}{(NOT B)}{(NOT C)}0.32:{(NOT U)}}>
+<(NOT U),0.32:{{(NOT B)}{(NOT C)}{(NOT D)}0.32:{(NOT U)}}>
+<outcome,0.32:{0.32:{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<(NOT outcome),0.00:{}>
+<given,0.68:{0.68:{U}{B}{C}{D}}>
+<(NOT given),0.00:{}>
 |#
 
 (defun symbolic-causal-crank (causal)
@@ -239,30 +247,38 @@ After intervention:
 Before intervention:
 
 <The contradiction,0.00:{}>
-<A,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{D}{B}{C}{A}}>
-<(NOT A),(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
-<C,P:{P:{U}{(NOT W),D}{(NOT W),A}{B}{C}}>
-<(NOT C),(- 1 P):{(- 1 P):{(NOT U)}{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}}>
-<B,P:{P:{U}{(NOT W),D}{(NOT W),A}{C}{B}}>
-<(NOT B),(- 1 P):{(- 1 P):{(NOT U)}{(NOT D)}{(NOT A)}{(NOT C)}{(NOT B)}}>
-<D,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{A}{B}{C}{D}}>
+<D,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{B}{A}{C}{D}}>
 <(NOT D),(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<W,Q:{{(NOT U),A}{(NOT U),D}{(NOT B),A}{(NOT C),A}{(NOT B),D}{(NOT C),D}Q:{W}}>
-<(NOT W),(- 1 Q):{{(NOT D)}{(NOT A)}(- 1 Q):{(NOT W)}}>
-<U,P:{{(NOT W),D}{(NOT W),A}{B}{C}P:{U}}>
-<(NOT U),(- 1 P):{{(NOT D)}{(NOT B)}{(NOT A)}{(NOT C)}(- 1 P):{(NOT U)}}>
+<C,P:{P:{U}{(NOT W),A}{(NOT W),D}{B}{C}}>
+<(NOT C),(- 1 P):{(- 1 P):{(NOT U)}{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}}>
+<A,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{B}{D}{C}{A}}>
+<(NOT A),(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<B,P:{P:{U}{(NOT W),A}{(NOT W),D}{C}{B}}>
+<(NOT B),(- 1 P):{(- 1 P):{(NOT U)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<W,Q:{{(NOT U),D}{(NOT U),A}{(NOT B),D}{(NOT C),D}{(NOT B),A}{(NOT C),A}Q:{W}}>
+<(NOT W),(- 1 Q):{{(NOT A)}{(NOT D)}(- 1 Q):{(NOT W)}}>
+<U,P:{{(NOT W),A}{(NOT W),D}{B}{C}P:{U}}>
+<(NOT U),(- 1 P):{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}(- 1 P):{(NOT U)}}>
+<outcome,(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<(NOT outcome),0.00:{}>
+<given,(- (+ Q P) (* Q P)):{Q:{W}{A}{D}P:{U}{B}{C}}>
+<(NOT given),0.00:{}>
 
 After intervention:
 
 <The contradiction,0.00:{}>
-<B,(/ P (- (+ P Q) (* P Q))):{(/ P (- (+ P Q) (* P Q))):{U}{(NOT A),D}{C}{B}}>
-<(NOT B),(- 1 (/ P (- (+ P Q) (* P Q)))):{(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}{(NOT D)}{(NOT C)}{(NOT B)}}>
-<C,(/ P (- (+ P Q) (* P Q))):{(/ P (- (+ P Q) (* P Q))):{U}{(NOT A),D}{B}{C}}>
-<(NOT C),(- 1 (/ P (- (+ P Q) (* P Q)))):{(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}{(NOT D)}{(NOT B)}{(NOT C)}}>
-<D,(/ P (- (+ P Q) (* P Q))):{(/ P (- (+ P Q) (* P Q))):{U}{B}{C}{D}}>
-<(NOT D),(- 1 (/ P (- (+ P Q) (* P Q)))):{(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<C,(/ P (- (+ Q P) (* Q P))):{(/ P (- (+ Q P) (* Q P))):{U}{(NOT A),D}{B}{C}}>
+<(NOT C),(- 1 (/ P (- (+ Q P) (* Q P)))):{(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT U)}{(NOT B)}{(NOT D)}{(NOT C)}}>
+<D,(/ P (- (+ Q P) (* Q P))):{(/ P (- (+ Q P) (* Q P))):{U}{B}{C}{D}}>
+<(NOT D),(- 1 (/ P (- (+ Q P) (* Q P)))):{(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<B,(/ P (- (+ Q P) (* Q P))):{(/ P (- (+ Q P) (* Q P))):{U}{(NOT A),D}{C}{B}}>
+<(NOT B),(- 1 (/ P (- (+ Q P) (* Q P)))):{(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT U)}{(NOT C)}{(NOT D)}{(NOT B)}}>
 <A,0.00:{}>
 <(NOT A),0.00:{{(NOT D)}{(NOT A)}}>
-<U,(/ P (- (+ P Q) (* P Q))):{{(NOT A),D}{B}{C}(/ P (- (+ P Q) (* P Q))):{U}}>
-<(NOT U),(- 1 (/ P (- (+ P Q) (* P Q)))):{{(NOT D)}{(NOT B)}{(NOT C)}(- 1 (/ P (- (+ P Q) (* P Q)))):{(NOT U)}}>
+<U,(/ P (- (+ Q P) (* Q P))):{{(NOT A),D}{B}{C}(/ P (- (+ Q P) (* Q P))):{U}}>
+<(NOT U),(- 1 (/ P (- (+ Q P) (* Q P)))):{{(NOT B)}{(NOT C)}{(NOT D)}(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT U)}}>
+<outcome,(- 1 (/ P (- (+ Q P) (* Q P)))):{(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<(NOT outcome),0.00:{}>
+<given,(/ P (- (+ Q P) (* Q P))):{(/ P (- (+ Q P) (* Q P))):{U}{B}{C}{D}}>
+<(NOT given),0.00:{}>
 |#
