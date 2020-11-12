@@ -264,7 +264,9 @@ Outcome probability: 0.32.
 <U,{{(NOT W),A}{(NOT W),D}{B}{C}{U}}>
 <(NOT U),{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT U)}}>
 <outcome,{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<(NOT outcome),{}>
 <given,{{W}{A}{D}{U}{B}{C}}>
+<(NOT given),{}>
 |#
 
 (why-nodes (causal-post-atms *causal*))
@@ -298,7 +300,9 @@ Outcome probability: 0.32.
 <U,{{(NOT A),D}{B}{C}{U}}>
 <(NOT U),{{(NOT B)}{(NOT C)}{(NOT D)}{(NOT U)}}>
 <outcome,{{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<(NOT outcome),{}>
 <given,{{U}{B}{C}{D}}>
+<(NOT given),{}>
 |#
 
 (defun symbolic-causal-crank (causal)
