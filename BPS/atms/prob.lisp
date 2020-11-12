@@ -86,7 +86,7 @@
          (numeric-union-prob-iter n vs (+ k 1) x)))))
 
 (defun node-prob (n ps)
-  (lnumeric-node-prob *numeric* n ps))
+  (numeric-node-prob *numeric* n ps))
 
 (defun numeric-node-prob (n x ps)
   (numeric-label-prob n (tms-node-label x) ps))
