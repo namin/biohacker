@@ -242,6 +242,7 @@ After intervention:
   (format t "~%~%After intervention:~%")
   (symbolic-why-prob-nodes (causal-post-atms causal) (causal-post-atms-ps causal)))
 
+(setq *print-right-margin* 1000)
 (symbolic-causal-crank *causal*)
 #|
 Before intervention:
