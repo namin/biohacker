@@ -25,8 +25,19 @@
 ;; expectation:  If Bronchitis is the disease then {Dys', Xray'}|{Dys = T, Dys' = F}|P( {Dys'=T, Xray'=F}  | do(Bronchitis = F), {Dys=T, Xray=F})
 ;;                                               < P( {Dys'=T, Xray'= F} | do(Bronchitis = T), {Dys=T, Xray=F})
 
+;; TODO: is the null outcome a bug?
 
+(causal-crank *expected-disablement*)
+#|
+Given probability: 0.15.
+Outcome probability: 0.00.
+|#
 
+(symbolic-causal-crank *expected-disablement*)
+#|
+Given probability: (* (- 1 T) (- 1 C) B).
+Outcome probability: NIL.
+|#
 
 ;;  given an observed EHR, how many symptoms would remain after treating every disease but one?
 
@@ -53,7 +64,7 @@
        :outcome '(:AND Dys (:NOT Xray))))  ;; S'
 
 
-;;
+;; TODO: cannot do yet because intervention is not a simple literal.
 
 
 
@@ -79,6 +90,16 @@
        :outcome '(:NOT Dys)))
 
 (causal-crank *necessary-causation*)
+#|
+Given probability: 0.30.
+Outcome probability: 0.49.
+|#
+
+(symbolic-causal-crank *necessary-causation*)
+#|
+Given probability: (+ (* T C B) (* T (- 1 C) B) (* (- 1 T) C B) (* (- 1 T) (- 1 C) B)).
+Outcome probability: (/ (* (- 1 T) (- 1 C) B) (+ (* T C B) (* T (- 1 C) B) (* (- 1 T) C B) (* (- 1 T) (- 1 C) B))).
+|#
 
  (setq *sufficient-causation*
       (make-causal
@@ -101,4 +122,16 @@
        :intervention 'Bronchitis
        :outcome 'Dys))
 
-;;(causal-crank *sufficient-causation*)
+(causal-crank *sufficient-causation*)
+#|
+Given probability: 0.34.
+Outcome probability: 1.00.
+|#
+
+(symbolic-causal-crank *sufficient-causation*)
+#|
+Given probability: (* (- 1 T) (- 1 C) (- 1 B)).
+Outcome probability: (/ (* (- 1 T) (- 1 C) (- 1 B)) (* (- 1 T) (- 1 C) (- 1 B))).
+|#
+
+;; TODO: simplify trivial division
