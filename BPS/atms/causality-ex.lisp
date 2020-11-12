@@ -78,8 +78,7 @@
        :intervention '(:NOT Bronchitis)
        :outcome '(:NOT Dys)))
 
-;; uh oh, getting negative probabilities
-;;(causal-crank *necessary-causation*)
+(causal-crank *necessary-causation*)
 
  (setq *sufficient-causation*
       (make-causal

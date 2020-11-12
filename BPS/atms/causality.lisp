@@ -6,6 +6,9 @@
   (given nil)
   (intervention nil)
   (outcome nil)
+  (exogenous-variables nil)
+  (all-issues nil)
+  (given-issues nil)
   (atms nil)
   (atms-ps nil)
   (post-graph nil)
@@ -146,14 +149,67 @@
     (remove-if #'(lambda (p) (member (cdr p) names))
                (causal-graph causal))))
 
+(defun combinations (ls)
+  (if (null ls)
+      '(())
+      (let ((rests (combinations (cdr ls)))
+            (a (car ls))
+            (na (negate-name (car ls))))
+        (append
+         (mapcar #'(lambda (x) (cons a x)) rests)
+         (mapcar #'(lambda (x) (cons na x)) rests)))))
+
+(defun combination-probability (n atms combination ps)
+  (apply (numeric-* n)
+         (mapcar #'(lambda (l) (cdr (assoc (find-node atms l) ps))) combination)))
+
+(defun make-issue (n atms combination ps)
+  (list
+   combination
+   (find-or-make-env (mapcar #'(lambda (l) (find-node atms l)) combination) atms)
+   (combination-probability n atms combination ps)))
+
+(defun issue-combination (issue) (car issue))
+(defun issue-env (issue) (cadr issue))
+(defun issue-prob (issue) (caddr issue))
+(defun issue-update-prob (issue f)
+  (list (car issue) (cadr issue) (funcall f (caddr issue))))
+
+(defun make-issues (n atms ls ps)
+  (mapcar #'(lambda (combination) (make-issue n atms combination ps)) (combinations ls)))
+
+(defun subset-issues-with (node issues)
+  (remove-if-not
+   #'(lambda (issue) (in-node? node (issue-env issue)))
+   issues))
+
+(defun weight-issues (n issues)
+  (apply (numeric-+ n) (mapcar #'issue-prob issues)))
+
+(defun renormalize-issues (n issues)
+  (let ((w (weight-issues n issues)))
+    (mapcar
+     #'(lambda (issue)
+         (issue-update-prob
+          issue
+          #'(lambda (p) (funcall (numeric-/ n) p w))))
+     issues)))
+
+(defun weight-of-event (n atms issues v)
+  (weight-issues n (subset-issues-with (find-node atms v) issues)))
+
 (defun numeric-causal-crank (n causal-numeric-priors causal)
+  (setf (causal-exogenous-variables causal) (mapcar #'car (funcall causal-numeric-priors causal)))
   (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
   (setf (causal-atms-ps causal) (numeric-probabilities-for n (causal-atms causal) (funcall causal-numeric-priors causal)))
+  (setf (causal-all-issues causal) (make-issues n (causal-atms causal) (causal-exogenous-variables causal) (causal-atms-ps causal)))
   (setf (causal-post-graph causal) (post-graph causal))
   (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
   (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
   (setf (causal-given-node causal) (find-node (causal-atms causal) "given"))
-  (setf (causal-given-p causal) (numeric-node-prob n (causal-given-node causal) (causal-atms-ps causal)))
+  (setf (causal-given-issues causal) (subset-issues-with (causal-given-node causal) (causal-all-issues causal)))
+  (setf (causal-given-p causal) (weight-issues n (causal-given-issues causal)))
+  (setf (causal-given-issues causal) (renormalize-issues n (causal-given-issues causal)))
   (setf
    (causal-post-atms-ps causal)
    (numeric-probabilities-for
@@ -161,8 +217,8 @@
     (causal-post-atms causal)
     (cons
      (cons (causal-intervention causal) 1)
-     (mapcar #'(lambda (p) (cons (car p) (funcall (numeric-/ n) (cdr p) (causal-given-p causal))))
-             (funcall causal-numeric-priors causal)))))
+     (mapcar #'(lambda (v) (cons v (weight-of-event n (causal-atms causal) (causal-given-issues causal) v)))
+             (causal-exogenous-variables causal)))))
   (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
   (setf (causal-outcome-p causal) (numeric-node-prob n (causal-outcome-node causal) (causal-post-atms-ps causal)))
 
