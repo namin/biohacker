@@ -133,19 +133,12 @@
       (cadr name)
       `(:not ,name)))
 
-(defun probabilities-for (atms ps)
+(defun numeric-probabilities-for (n atms ps)
   (remove-if-not
    #'car
    (append
     (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) ps)
-    (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (- 1 (cdr p)))) ps))))
-
-(defun symbolic-probabilities-for (atms ps)
-  (remove-if-not
-   #'car
-   (append
-    (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) ps)
-    (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (symbolic-- 1 (cdr p)))) ps))))
+    (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (funcall (numeric-- n) 1 (cdr p)))) ps))))
 
 (defun post-graph (causal)
   (let* ((i (causal-intervention causal))
@@ -153,9 +146,9 @@
     (remove-if #'(lambda (p) (member (cdr p) names))
                (causal-graph causal))))
 
-(defun numeric-causal-crank (n numeric-probabilities-for causal-numeric-priors causal)
+(defun numeric-causal-crank (n causal-numeric-priors causal)
   (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
-  (setf (causal-atms-ps causal) (funcall numeric-probabilities-for (causal-atms causal) (funcall causal-numeric-priors causal)))
+  (setf (causal-atms-ps causal) (numeric-probabilities-for n (causal-atms causal) (funcall causal-numeric-priors causal)))
   (setf (causal-post-graph causal) (post-graph causal))
   (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
   (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
@@ -163,7 +156,8 @@
   (setf (causal-given-p causal) (numeric-node-prob n (causal-given-node causal) (causal-atms-ps causal)))
   (setf
    (causal-post-atms-ps causal)
-   (funcall numeric-probabilities-for
+   (numeric-probabilities-for
+    n
     (causal-post-atms causal)
     (cons
      (cons (causal-intervention causal) 1)
@@ -178,7 +172,7 @@
   (numeric-why-prob-nodes n (causal-post-atms causal) (causal-post-atms-ps causal)))
 
 (defun causal-crank (causal)
-  (numeric-causal-crank *numeric* #'probabilities-for #'causal-priors causal))
+  (numeric-causal-crank *numeric* #'causal-priors causal))
 
 (causal-crank *causal*)
 #|
@@ -222,7 +216,7 @@ After intervention:
 |#
 
 (defun symbolic-causal-crank (causal)
-  (numeric-causal-crank *symbolic* #'symbolic-probabilities-for #'causal-symbolic-priors causal))
+  (numeric-causal-crank *symbolic* #'causal-symbolic-priors causal))
 
 (setq *print-right-margin* 1000)
 (symbolic-causal-crank *causal*)
