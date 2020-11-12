@@ -9,6 +9,7 @@
   (exogenous-variables nil)
   (all-issues nil)
   (given-issues nil)
+  (post-issues nil)
   (atms nil)
   (atms-ps nil)
   (post-graph nil)
@@ -163,10 +164,13 @@
   (apply (numeric-* n)
          (mapcar #'(lambda (l) (cdr (assoc (find-node atms l) ps))) combination)))
 
+(defun combination-env (atms combination)
+  (find-or-make-env (mapcar #'(lambda (l) (find-node atms l)) combination) atms))
+
 (defun make-issue (n atms combination ps)
   (list
    combination
-   (find-or-make-env (mapcar #'(lambda (l) (find-node atms l)) combination) atms)
+   (combination-env atms combination)
    (combination-probability n atms combination ps)))
 
 (defun issue-combination (issue) (car issue))
@@ -174,6 +178,11 @@
 (defun issue-prob (issue) (caddr issue))
 (defun issue-update-prob (issue f)
   (list (car issue) (cadr issue) (funcall f (caddr issue))))
+(defun port-atms-issue (atms issue extra)
+  (list
+   (issue-combination issue)
+   (combination-env atms (cons extra (issue-combination issue)))
+   (issue-prob issue)))
 
 (defun make-issues (n atms ls ps)
   (mapcar #'(lambda (combination) (make-issue n atms combination ps)) (combinations ls)))
@@ -198,6 +207,9 @@
 (defun weight-of-event (n atms issues v)
   (weight-issues n (subset-issues-with (find-node atms v) issues)))
 
+(defun port-atms-issues (atms issues extra)
+  (mapcar #'(lambda (issue) (port-atms-issue atms issue extra)) issues))
+
 (defun numeric-causal-crank (n causal-numeric-priors causal)
   (setf (causal-exogenous-variables causal) (mapcar #'car (funcall causal-numeric-priors causal)))
   (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
@@ -210,6 +222,7 @@
   (setf (causal-given-issues causal) (subset-issues-with (causal-given-node causal) (causal-all-issues causal)))
   (setf (causal-given-p causal) (weight-issues n (causal-given-issues causal)))
   (setf (causal-given-issues causal) (renormalize-issues n (causal-given-issues causal)))
+  (setf (causal-post-issues causal) (port-atms-issues (causal-post-atms causal) (causal-given-issues causal) (causal-intervention causal)))
   (setf
    (causal-post-atms-ps causal)
    (numeric-probabilities-for
@@ -220,55 +233,72 @@
      (mapcar #'(lambda (v) (cons v (weight-of-event n (causal-atms causal) (causal-given-issues causal) v)))
              (causal-exogenous-variables causal)))))
   (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
-  (setf (causal-outcome-p causal) (numeric-node-prob n (causal-outcome-node causal) (causal-post-atms-ps causal)))
+  (setf (causal-outcome-p causal) (weight-of-event n (causal-post-atms causal) (causal-post-issues causal) "outcome"))
 
-  (format t "~%~%Before intervention:~%")
-  (numeric-why-prob-nodes n (causal-atms causal) (causal-atms-ps causal))
-  (format t "~%~%After intervention:~%")
-  (numeric-why-prob-nodes n (causal-post-atms causal) (causal-post-atms-ps causal)))
+  (format t "~%~%Given probability: ~2$.~%" (causal-given-p causal))
+  (format t "Outcome probability: ~2$.~%" (causal-outcome-p causal))
+  )
 
 (defun causal-crank (causal)
   (numeric-causal-crank *numeric* #'causal-priors causal))
 
 (causal-crank *causal*)
 #|
-Before intervention:
+Given probability: 0.88.
+Outcome probability: 0.32.
+|#
 
-<The contradiction,0.00:{}>
-<D,0.88:{0.60:{U}0.70:{W}{B}{A}{C}{D}}>
-<(NOT D),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<C,0.60:{0.60:{U}{(NOT W),A}{(NOT W),D}{B}{C}}>
-<(NOT C),0.40:{0.40:{(NOT U)}{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}}>
-<A,0.88:{0.60:{U}0.70:{W}{B}{D}{C}{A}}>
-<(NOT A),0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
-<B,0.60:{0.60:{U}{(NOT W),A}{(NOT W),D}{C}{B}}>
-<(NOT B),0.40:{0.40:{(NOT U)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT B)}}>
-<W,0.70:{{(NOT U),D}{(NOT U),A}{(NOT B),D}{(NOT C),D}{(NOT B),A}{(NOT C),A}0.70:{W}}>
-<(NOT W),0.30:{{(NOT A)}{(NOT D)}0.30:{(NOT W)}}>
-<U,0.60:{{(NOT W),A}{(NOT W),D}{B}{C}0.60:{U}}>
-<(NOT U),0.40:{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}0.40:{(NOT U)}}>
-<outcome,0.12:{0.12:{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<(NOT outcome),0.00:{}>
-<given,0.88:{0.70:{W}{A}{D}0.60:{U}{B}{C}}>
-<(NOT given),0.00:{}>
+(why-nodes (causal-atms *causal*))
+#|
+<The contradiction,{}>
+<D,{{U}{W}{B}{A}{C}{D}}>
+<(NOT D),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<C,{{U}{(NOT W),A}{(NOT W),D}{B}{C}}>
+<(NOT C),{{(NOT U)}{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}}>
+<A,{{U}{W}{B}{D}{C}{A}}>
+<(NOT A),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<B,{{U}{(NOT W),A}{(NOT W),D}{C}{B}}>
+<(NOT B),{{(NOT U)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<W,{{(NOT U),D}{(NOT U),A}{(NOT B),D}{(NOT C),D}{(NOT B),A}{(NOT C),A}{W}}>
+<(NOT W),{{(NOT A)}{(NOT D)}{(NOT W)}}>
+<U,{{(NOT W),A}{(NOT W),D}{B}{C}{U}}>
+<(NOT U),{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT U)}}>
+<outcome,{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<given,{{W}{A}{D}{U}{B}{C}}>
+|#
 
-After intervention:
-
-<The contradiction,0.00:{}>
-<C,0.68:{0.68:{U}{(NOT A),D}{B}{C}}>
-<(NOT C),0.32:{0.32:{(NOT U)}{(NOT B)}{(NOT D)}{(NOT C)}}>
-<D,0.68:{0.68:{U}{B}{C}{D}}>
-<(NOT D),0.32:{0.32:{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
-<B,0.68:{0.68:{U}{(NOT A),D}{C}{B}}>
-<(NOT B),0.32:{0.32:{(NOT U)}{(NOT C)}{(NOT D)}{(NOT B)}}>
-<A,0.00:{}>
-<(NOT A),1.00:{{(NOT D)}1.00:{(NOT A)}}>
-<U,0.68:{{(NOT A),D}{B}{C}0.68:{U}}>
-<(NOT U),0.32:{{(NOT B)}{(NOT C)}{(NOT D)}0.32:{(NOT U)}}>
-<outcome,0.32:{0.32:{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
-<(NOT outcome),0.00:{}>
-<given,0.68:{0.68:{U}{B}{C}{D}}>
-<(NOT given),0.00:{}>
+(why-nodes (causal-post-atms *causal*))
+#|
+<The contradiction,{}>
+<D,{{U}{W}{B}{A}{C}{D}}>
+<(NOT D),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<C,{{U}{(NOT W),A}{(NOT W),D}{B}{C}}>
+<(NOT C),{{(NOT U)}{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}}>
+<A,{{U}{W}{B}{D}{C}{A}}>
+<(NOT A),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<B,{{U}{(NOT W),A}{(NOT W),D}{C}{B}}>
+<(NOT B),{{(NOT U)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<W,{{(NOT U),D}{(NOT U),A}{(NOT B),D}{(NOT C),D}{(NOT B),A}{(NOT C),A}{W}}>
+<(NOT W),{{(NOT A)}{(NOT D)}{(NOT W)}}>
+<U,{{(NOT W),A}{(NOT W),D}{B}{C}{U}}>
+<(NOT U),{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT U)}}>
+<outcome,{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<(NOT outcome),{}>
+<given,{{W}{A}{D}{U}{B}{C}}>
+<(NOT given),{}>
+<The contradiction,{}>
+<C,{{U}{(NOT A),D}{B}{C}}>
+<(NOT C),{{(NOT U)}{(NOT B)}{(NOT D)}{(NOT C)}}>
+<D,{{U}{B}{C}{D}}>
+<(NOT D),{{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<B,{{U}{(NOT A),D}{C}{B}}>
+<(NOT B),{{(NOT U)}{(NOT C)}{(NOT D)}{(NOT B)}}>
+<A,{}>
+<(NOT A),{{(NOT D)}{(NOT A)}}>
+<U,{{(NOT A),D}{B}{C}{U}}>
+<(NOT U),{{(NOT B)}{(NOT C)}{(NOT D)}{(NOT U)}}>
+<outcome,{{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<given,{{U}{B}{C}{D}}>
 |#
 
 (defun symbolic-causal-crank (causal)
@@ -277,41 +307,6 @@ After intervention:
 (setq *print-right-margin* 1000)
 (symbolic-causal-crank *causal*)
 #|
-Before intervention:
-
-<The contradiction,0.00:{}>
-<D,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{B}{A}{C}{D}}>
-<(NOT D),(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<C,P:{P:{U}{(NOT W),A}{(NOT W),D}{B}{C}}>
-<(NOT C),(- 1 P):{(- 1 P):{(NOT U)}{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}}>
-<A,(- (+ P Q) (* P Q)):{P:{U}Q:{W}{B}{D}{C}{A}}>
-<(NOT A),(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
-<B,P:{P:{U}{(NOT W),A}{(NOT W),D}{C}{B}}>
-<(NOT B),(- 1 P):{(- 1 P):{(NOT U)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT B)}}>
-<W,Q:{{(NOT U),D}{(NOT U),A}{(NOT B),D}{(NOT C),D}{(NOT B),A}{(NOT C),A}Q:{W}}>
-<(NOT W),(- 1 Q):{{(NOT A)}{(NOT D)}(- 1 Q):{(NOT W)}}>
-<U,P:{{(NOT W),A}{(NOT W),D}{B}{C}P:{U}}>
-<(NOT U),(- 1 P):{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}(- 1 P):{(NOT U)}}>
-<outcome,(* (- 1 Q) (- 1 P)):{(* (- 1 Q) (- 1 P)):{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<(NOT outcome),0.00:{}>
-<given,(- (+ Q P) (* Q P)):{Q:{W}{A}{D}P:{U}{B}{C}}>
-<(NOT given),0.00:{}>
-
-After intervention:
-
-<The contradiction,0.00:{}>
-<C,(/ P (- (+ Q P) (* Q P))):{(/ P (- (+ Q P) (* Q P))):{U}{(NOT A),D}{B}{C}}>
-<(NOT C),(- 1 (/ P (- (+ Q P) (* Q P)))):{(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT U)}{(NOT B)}{(NOT D)}{(NOT C)}}>
-<D,(/ P (- (+ Q P) (* Q P))):{(/ P (- (+ Q P) (* Q P))):{U}{B}{C}{D}}>
-<(NOT D),(- 1 (/ P (- (+ Q P) (* Q P)))):{(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
-<B,(/ P (- (+ Q P) (* Q P))):{(/ P (- (+ Q P) (* Q P))):{U}{(NOT A),D}{C}{B}}>
-<(NOT B),(- 1 (/ P (- (+ Q P) (* Q P)))):{(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT U)}{(NOT C)}{(NOT D)}{(NOT B)}}>
-<A,0.00:{}>
-<(NOT A),0.00:{{(NOT D)}{(NOT A)}}>
-<U,(/ P (- (+ Q P) (* Q P))):{{(NOT A),D}{B}{C}(/ P (- (+ Q P) (* Q P))):{U}}>
-<(NOT U),(- 1 (/ P (- (+ Q P) (* Q P)))):{{(NOT B)}{(NOT C)}{(NOT D)}(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT U)}}>
-<outcome,(- 1 (/ P (- (+ Q P) (* Q P)))):{(- 1 (/ P (- (+ Q P) (* Q P)))):{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
-<(NOT outcome),0.00:{}>
-<given,(/ P (- (+ Q P) (* Q P))):{(/ P (- (+ Q P) (* Q P))):{U}{B}{C}{D}}>
-<(NOT given),0.00:{}>
+Given probability: (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q)).
+Outcome probability: (/ (* (- 1 P) Q) (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q))).
 |#
