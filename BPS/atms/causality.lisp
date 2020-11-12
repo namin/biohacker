@@ -153,29 +153,32 @@
     (remove-if #'(lambda (p) (member (cdr p) names))
                (causal-graph causal))))
 
-(defun causal-crank (causal)
+(defun numeric-causal-crank (n numeric-probabilities-for causal-numeric-priors causal)
   (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
-  (setf (causal-atms-ps causal) (probabilities-for (causal-atms causal) (causal-priors causal)))
+  (setf (causal-atms-ps causal) (funcall numeric-probabilities-for (causal-atms causal) (funcall causal-numeric-priors causal)))
   (setf (causal-post-graph causal) (post-graph causal))
   (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
   (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
   (setf (causal-given-node causal) (find-node (causal-atms causal) "given"))
-  (setf (causal-given-p causal) (node-prob (causal-given-node causal) (causal-atms-ps causal)))
+  (setf (causal-given-p causal) (numeric-node-prob n (causal-given-node causal) (causal-atms-ps causal)))
   (setf
    (causal-post-atms-ps causal)
-   (probabilities-for
+   (funcall numeric-probabilities-for
     (causal-post-atms causal)
     (cons
-     (cons (causal-intervention causal) 1.0)
-     (mapcar #'(lambda (p) (cons (car p) (/ (cdr p) (causal-given-p causal))))
-             (causal-priors causal)))))
+     (cons (causal-intervention causal) 1)
+     (mapcar #'(lambda (p) (cons (car p) (funcall (numeric-/ n) (cdr p) (causal-given-p causal))))
+             (funcall causal-numeric-priors causal)))))
   (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
-  (setf (causal-outcome-p causal) (node-prob (causal-outcome-node causal) (causal-post-atms-ps causal)))
+  (setf (causal-outcome-p causal) (numeric-node-prob n (causal-outcome-node causal) (causal-post-atms-ps causal)))
 
   (format t "~%~%Before intervention:~%")
-  (why-prob-nodes (causal-atms causal) (causal-atms-ps causal))
+  (numeric-why-prob-nodes n (causal-atms causal) (causal-atms-ps causal))
   (format t "~%~%After intervention:~%")
-  (why-prob-nodes (causal-post-atms causal) (causal-post-atms-ps causal)))
+  (numeric-why-prob-nodes n (causal-post-atms causal) (causal-post-atms-ps causal)))
+
+(defun causal-crank (causal)
+  (numeric-causal-crank *numeric* #'probabilities-for #'causal-priors causal))
 
 (causal-crank *causal*)
 #|
@@ -219,28 +222,7 @@ After intervention:
 |#
 
 (defun symbolic-causal-crank (causal)
-  (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
-  (setf (causal-atms-ps causal) (symbolic-probabilities-for (causal-atms causal) (causal-symbolic-priors causal)))
-  (setf (causal-post-graph causal) (post-graph causal))
-  (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
-  (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
-  (setf (causal-given-node causal) (find-node (causal-atms causal) "given"))
-  (setf (causal-given-p causal) (symbolic-node-prob (causal-given-node causal) (causal-atms-ps causal)))
-  (setf
-   (causal-post-atms-ps causal)
-   (symbolic-probabilities-for
-    (causal-post-atms causal)
-    (cons
-     (cons (causal-intervention causal) 1)
-     (mapcar #'(lambda (p) (cons (car p) (list '/ (cdr p) (causal-given-p causal))))
-             (causal-symbolic-priors causal)))))
-  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
-  (setf (causal-outcome-p causal) (symbolic-node-prob (causal-outcome-node causal) (causal-post-atms-ps causal)))
-
-  (format t "~%~%Before intervention:~%")
-  (symbolic-why-prob-nodes (causal-atms causal) (causal-atms-ps causal))
-  (format t "~%~%After intervention:~%")
-  (symbolic-why-prob-nodes (causal-post-atms causal) (causal-post-atms-ps causal)))
+  (numeric-causal-crank *symbolic* #'symbolic-probabilities-for #'causal-symbolic-priors causal))
 
 (setq *print-right-margin* 1000)
 (symbolic-causal-crank *causal*)
@@ -283,30 +265,3 @@ After intervention:
 <given,(/ P (- (+ Q P) (* Q P))):{(/ P (- (+ Q P) (* Q P))):{U}{B}{C}{D}}>
 <(NOT given),0.00:{}>
 |#
-
-(defun numeric-causal-crank (n numeric-probabilities-for causal-numeric-priors causal)
-  (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
-  (setf (causal-atms-ps causal) (funcall numeric-probabilities-for (causal-atms causal) (funcall causal-numeric-priors causal)))
-  (setf (causal-post-graph causal) (post-graph causal))
-  (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
-  (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
-  (setf (causal-given-node causal) (find-node (causal-atms causal) "given"))
-  (setf (causal-given-p causal) (numeric-node-prob n (causal-given-node causal) (causal-atms-ps causal)))
-  (setf
-   (causal-post-atms-ps causal)
-   (funcall numeric-probabilities-for
-    (causal-post-atms causal)
-    (cons
-     (cons (causal-intervention causal) 1)
-     (mapcar #'(lambda (p) (cons (car p) (funcall (numeric-/ n) (cdr p) (causal-given-p causal))))
-             (funcall causal-numeric-priors causal)))))
-  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
-  (setf (causal-outcome-p causal) (numeric-node-prob n (causal-outcome-node causal) (causal-post-atms-ps causal)))
-
-  (format t "~%~%Before intervention:~%")
-  (numeric-why-prob-nodes n (causal-atms causal) (causal-atms-ps causal))
-  (format t "~%~%After intervention:~%")
-  (numeric-why-prob-nodes n (causal-post-atms causal) (causal-post-atms-ps causal)))
-
-(numeric-causal-crank *numeric* #'probabilities-for #'causal-priors *causal*)
-(numeric-causal-crank *symbolic* #'symbolic-probabilities-for #'causal-symbolic-priors *causal*)
