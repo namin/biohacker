@@ -20,15 +20,19 @@
 
 (defun symbolic-* (&rest xs)
   (let ((xs (remove-if #'(lambda (x) (eql 1 x)) xs)))
-    (if (null (cdr xs))
-        (car xs)
-        (cons '* xs))))
+    (if (null xs)
+        1
+        (if (null (cdr xs))
+            (car xs)
+            (cons '* xs)))))
 
 (defun symbolic-+ (&rest xs)
   (let ((xs (remove-if #'(lambda (x) (eql 0 x)) xs)))
-    (if (null (cdr xs))
-        (car xs)
-        (cons '+ xs))))
+    (if (null xs)
+        0
+        (if (null (cdr xs))
+            (car xs)
+            (cons '+ xs)))))
 
 (defun symbolic-- (&rest xs)
   (if (and (not (null (cdr xs))) (null (cddr xs)) (eql 0 (cadr xs)))

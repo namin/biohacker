@@ -25,8 +25,6 @@
 ;; expectation:  If Bronchitis is the disease then {Dys', Xray'}|{Dys = T, Dys' = F}|P( {Dys'=T, Xray'=F}  | do(Bronchitis = F), {Dys=T, Xray=F})
 ;;                                               < P( {Dys'=T, Xray'= F} | do(Bronchitis = T), {Dys=T, Xray=F})
 
-;; TODO: is the null outcome a bug?
-
 (causal-crank *expected-disablement*)
 #|
 Given probability: 0.15.
@@ -36,7 +34,7 @@ Outcome probability: 0.00.
 (symbolic-causal-crank *expected-disablement*)
 #|
 Given probability: (* (- 1 T) (- 1 C) B).
-Outcome probability: NIL.
+Outcome probability: 0.00.
 |#
 
 ;;  given an observed EHR, how many symptoms would remain after treating every disease but one?
