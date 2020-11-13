@@ -72,7 +72,7 @@ Outcome probability: 1.00.
 (symbolic-causal-crank *expected-sufficiency*)
 #|
 Given probability: (* (- 1 T) (- 1 C) B).
-Outcome probability: (/ (* (- 1 T) (- 1 C) B) (* (- 1 T) (- 1 C) B)).
+Outcome probability: 1.00
 |#
 
 (setq *necessary-causation*
@@ -138,7 +138,5 @@ Outcome probability: 1.00.
 (symbolic-causal-crank *sufficient-causation*)
 #|
 Given probability: (* (- 1 T) (- 1 C) (- 1 B)).
-Outcome probability: (/ (* (- 1 T) (- 1 C) (- 1 B)) (* (- 1 T) (- 1 C) (- 1 B))).
+Outcome probability: 1.00
 |#
-
-;; TODO: simplify trivial division

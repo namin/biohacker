@@ -36,7 +36,9 @@
       (cons '- xs)))
 
 (defun symbolic-/ (&rest xs)
-  (cons '/ xs))
+  (if (and (= 2 (length xs)) (equal (car xs) (cadr xs)))
+      1 ;; ignoring div by 0
+      (cons '/ xs)))
 
 (setq
  *symbolic*
