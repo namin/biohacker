@@ -1,3 +1,95 @@
+(setq
+ *causal*
+ (make-causal
+  :title "riflemen"
+  :graph
+  '((U . C)
+    (C . A)
+    (C . B)
+    (A . D)
+    (B . D)
+    (W . A))
+  :priors
+  '((U . 0.6)
+    (W . 0.7))
+  :symbolic-priors
+  '((U . p)
+    (W . q))
+  :given 'D
+  :intervention '(:NOT A)
+  :outcome '(:NOT D)))
+
+(causal-crank *causal*)
+#|
+Given probability: 0.88.
+Outcome probability: 0.32.
+|#
+
+(why-nodes (causal-atms *causal*))
+#|
+<The contradiction,{}>
+<D,{{U}{W}{B}{A}{C}{D}}>
+<(NOT D),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<C,{{U}{(NOT W),A}{(NOT W),D}{B}{C}}>
+<(NOT C),{{(NOT U)}{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}}>
+<A,{{U}{W}{B}{D}{C}{A}}>
+<(NOT A),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<B,{{U}{(NOT W),A}{(NOT W),D}{C}{B}}>
+<(NOT B),{{(NOT U)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<W,{{(NOT U),D}{(NOT U),A}{(NOT B),D}{(NOT C),D}{(NOT B),A}{(NOT C),A}{W}}>
+<(NOT W),{{(NOT A)}{(NOT D)}{(NOT W)}}>
+<U,{{(NOT W),A}{(NOT W),D}{B}{C}{U}}>
+<(NOT U),{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT U)}}>
+<outcome,{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<(NOT outcome),{}>
+<given,{{W}{A}{D}{U}{B}{C}}>
+<(NOT given),{}>
+|#
+
+(why-nodes (causal-post-atms *causal*))
+#|
+<The contradiction,{}>
+<D,{{U}{W}{B}{A}{C}{D}}>
+<(NOT D),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<C,{{U}{(NOT W),A}{(NOT W),D}{B}{C}}>
+<(NOT C),{{(NOT U)}{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}}>
+<A,{{U}{W}{B}{D}{C}{A}}>
+<(NOT A),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
+<B,{{U}{(NOT W),A}{(NOT W),D}{C}{B}}>
+<(NOT B),{{(NOT U)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT B)}}>
+<W,{{(NOT U),D}{(NOT U),A}{(NOT B),D}{(NOT C),D}{(NOT B),A}{(NOT C),A}{W}}>
+<(NOT W),{{(NOT A)}{(NOT D)}{(NOT W)}}>
+<U,{{(NOT W),A}{(NOT W),D}{B}{C}{U}}>
+<(NOT U),{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT U)}}>
+<outcome,{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
+<(NOT outcome),{}>
+<given,{{W}{A}{D}{U}{B}{C}}>
+<(NOT given),{}>
+<The contradiction,{}>
+<C,{{U}{(NOT A),D}{B}{C}}>
+<(NOT C),{{(NOT U)}{(NOT B)}{(NOT D)}{(NOT C)}}>
+<D,{{U}{B}{C}{D}}>
+<(NOT D),{{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<B,{{U}{(NOT A),D}{C}{B}}>
+<(NOT B),{{(NOT U)}{(NOT C)}{(NOT D)}{(NOT B)}}>
+<A,{}>
+<(NOT A),{{(NOT D)}{(NOT A)}}>
+<U,{{(NOT A),D}{B}{C}{U}}>
+<(NOT U),{{(NOT B)}{(NOT C)}{(NOT D)}{(NOT U)}}>
+<outcome,{{(NOT A),(NOT U)}{(NOT A),(NOT B)}{(NOT A),(NOT C)}{(NOT D)}}>
+<(NOT outcome),{}>
+<given,{{U}{B}{C}{D}}>
+<(NOT given),{}>
+|#
+
+(setq *print-right-margin* 1000)
+(symbolic-causal-crank *causal*)
+#|
+Given probability: (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q)).
+Outcome probability: (/ (* (- 1 P) Q) (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q))).
+|#
+
+
 ;;  Query we would like is :given '(Xray Dys)
 ;;    :intervention '((:NOT Cancer) (:NOT TB))  ;; expected sufficiency of Bronchitis
 
