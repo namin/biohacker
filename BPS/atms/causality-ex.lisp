@@ -25,6 +25,31 @@ Given probability: 0.88.
 Outcome probability: 0.32.
 |#
 
+(setq *print-right-margin* 1000)
+(symbolic-causal-crank *causal*)
+#|
+Given probability: (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q)).
+Outcome probability: (/ (* (- 1 P) Q) (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q))).
+
+The textbook answer for the outcome probability is:
+q(1-p)
+-----------------
+1 - (1 - q)(1 - p)
+
+Rewriting...
+(1 - q)(1 - p) = 1 - q - p + pq
+1-(1 - q)(1 - p) = pq + q + p
+
+while here we have
+pq + p(1 - q) + (1 - p)q =
+pq + p - pq + q - pq =
+pq + p + q
+
+So, YES, it's the same.
+Maybe we need a smarter simplifer. :P
+|#
+
+
 (why-nodes (causal-atms *causal*))
 #|
 <The contradiction,{}>
@@ -81,14 +106,6 @@ Outcome probability: 0.32.
 <given,{{U}{B}{C}{D}}>
 <(NOT given),{}>
 |#
-
-(setq *print-right-margin* 1000)
-(symbolic-causal-crank *causal*)
-#|
-Given probability: (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q)).
-Outcome probability: (/ (* (- 1 P) Q) (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q))).
-|#
-
 
 ;;  Query we would like is :given '(Xray Dys)
 ;;    :intervention '((:NOT Cancer) (:NOT TB))  ;; expected sufficiency of Bronchitis
