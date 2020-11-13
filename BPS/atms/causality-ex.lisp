@@ -63,10 +63,17 @@ Outcome probability: NIL.
        :intervention '(:AND (:NOT TB) (:NOT Cancer))   ;; do(treat TB and Cancer)
        :outcome '(:AND Dys (:NOT Xray))))  ;; S'
 
+(causal-crank *expected-sufficiency*)
+#|
+Given probability: 0.15.
+Outcome probability: 1.00.
+|#
 
-;; TODO: cannot do yet because intervention is not a simple literal.
-
-
+(symbolic-causal-crank *expected-sufficiency*)
+#|
+Given probability: (* (- 1 T) (- 1 C) B).
+Outcome probability: (/ (* (- 1 T) (- 1 C) B) (* (- 1 T) (- 1 C) B)).
+|#
 
 (setq *necessary-causation*
       (make-causal

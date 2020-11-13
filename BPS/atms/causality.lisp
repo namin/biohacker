@@ -7,6 +7,7 @@
   (intervention nil)
   (outcome nil)
   (exogenous-variables nil)
+  (intervention-literals nil)
   (all-issues nil)
   (given-issues nil)
   (post-issues nil)
@@ -145,8 +146,8 @@
     (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (funcall (numeric-- n) 1 (cdr p)))) ps))))
 
 (defun post-graph (causal)
-  (let* ((i (causal-intervention causal))
-         (names (list i (negate-name i))))
+  (let* ((ls (causal-intervention-literals causal))
+         (names (apply #'concatenate 'list (mapcar #'(lambda (i) (list i (negate-name i))) ls))))
     (remove-if #'(lambda (p) (member (cdr p) names))
                (causal-graph causal))))
 
@@ -181,7 +182,7 @@
 (defun port-atms-issue (atms issue extra)
   (list
    (issue-combination issue)
-   (combination-env atms (cons extra (issue-combination issue)))
+   (combination-env atms (append extra (issue-combination issue)))
    (issue-prob issue)))
 
 (defun make-issues (n atms ls ps)
@@ -210,19 +211,25 @@
 (defun port-atms-issues (atms issues extra)
   (mapcar #'(lambda (issue) (port-atms-issue atms issue extra)) issues))
 
+(defun intervention-to-literals (intervention)
+  (if (and (listp intervention) (eq ':AND (car intervention)))
+      (cdr intervention)
+      (list intervention)))
+
 (defun numeric-causal-crank (n causal-numeric-priors causal)
   (setf (causal-exogenous-variables causal) (mapcar #'car (funcall causal-numeric-priors causal)))
   (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
   (setf (causal-atms-ps causal) (numeric-probabilities-for n (causal-atms causal) (funcall causal-numeric-priors causal)))
   (setf (causal-all-issues causal) (make-issues n (causal-atms causal) (causal-exogenous-variables causal) (causal-atms-ps causal)))
+  (setf (causal-intervention-literals causal) (intervention-to-literals (causal-intervention causal)))
   (setf (causal-post-graph causal) (post-graph causal))
   (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
-  (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name (causal-intervention causal)))))
+  (mapc #'(lambda (i) (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name i))))) (causal-intervention-literals causal))
   (setf (causal-given-node causal) (find-node (causal-atms causal) "given"))
   (setf (causal-given-issues causal) (subset-issues-with (causal-given-node causal) (causal-all-issues causal)))
   (setf (causal-given-p causal) (weight-issues n (causal-given-issues causal)))
   (setf (causal-given-issues causal) (renormalize-issues n (causal-given-issues causal)))
-  (setf (causal-post-issues causal) (port-atms-issues (causal-post-atms causal) (causal-given-issues causal) (causal-intervention causal)))
+  (setf (causal-post-issues causal) (port-atms-issues (causal-post-atms causal) (causal-given-issues causal) (causal-intervention-literals causal)))
   (setf
    (causal-post-atms-ps causal)
    (numeric-probabilities-for
