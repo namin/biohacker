@@ -74,23 +74,6 @@ Maybe we need a smarter simplifer. :P
 (why-nodes (causal-post-atms *causal*))
 #|
 <The contradiction,{}>
-<D,{{U}{W}{B}{A}{C}{D}}>
-<(NOT D),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<C,{{U}{(NOT W),A}{(NOT W),D}{B}{C}}>
-<(NOT C),{{(NOT U)}{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}}>
-<A,{{U}{W}{B}{D}{C}{A}}>
-<(NOT A),{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT D)}{(NOT A)}}>
-<B,{{U}{(NOT W),A}{(NOT W),D}{C}{B}}>
-<(NOT B),{{(NOT U)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT B)}}>
-<W,{{(NOT U),D}{(NOT U),A}{(NOT B),D}{(NOT C),D}{(NOT B),A}{(NOT C),A}{W}}>
-<(NOT W),{{(NOT A)}{(NOT D)}{(NOT W)}}>
-<U,{{(NOT W),A}{(NOT W),D}{B}{C}{U}}>
-<(NOT U),{{(NOT B)}{(NOT A)}{(NOT D)}{(NOT C)}{(NOT U)}}>
-<outcome,{{(NOT U),(NOT W)}{(NOT B),(NOT W)}{(NOT C),(NOT W)}{(NOT A)}{(NOT D)}}>
-<(NOT outcome),{}>
-<given,{{W}{A}{D}{U}{B}{C}}>
-<(NOT given),{}>
-<The contradiction,{}>
 <C,{{U}{(NOT A),D}{B}{C}}>
 <(NOT C),{{(NOT U)}{(NOT B)}{(NOT D)}{(NOT C)}}>
 <D,{{U}{B}{C}{D}}>
