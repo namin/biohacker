@@ -1,0 +1,697 @@
+{
+"directed": true,
+"multigraph": true,
+"graph": {
+"pybel_version": "0.14.10-dev",
+"document_metadata": {
+"name": "Temporary Network",
+"version": "_akJ3f4e--_"
+},
+"namespace_url": {},
+"namespace_pattern": {},
+"annotation_url": {},
+"annotation_pattern": {},
+"annotation_list": {},
+"biodati_network_id": "01E9HFK1WPDF1W198Y3T86EGV8"
+},
+"nodes": [
+{
+"function": "Abundance",
+"concept": {
+"namespace": "CHEBI",
+"name": "angiotensin II"
+},
+"id": "17c2386466aa664335d7eeca2063bf1f",
+"bel": "a(CHEBI:\"angiotensin II\")"
+},
+{
+"function": "Abundance",
+"concept": {
+"namespace": "TAX",
+"name": "Severe acute respiratory syndrome coronavirus 2"
+},
+"id": "c41851da59cc36c21b2e8acf24c1f46d",
+"bel": "a(TAX:\"Severe acute respiratory syndrome coronavirus 2\")"
+},
+{
+"function": "BiologicalProcess",
+"concept": {
+"namespace": "GO",
+"name": "epidermal growth factor receptor signaling pathway"
+},
+"id": "bd8c8ef63fe64c16b5c234873e164931",
+"bel": "bp(GO:\"epidermal growth factor receptor signaling pathway\")"
+},
+{
+"function": "BiologicalProcess",
+"concept": {
+"namespace": "GO",
+"name": "pattern recognition receptor signaling pathway"
+},
+"id": "7318f23bd3ef6a3393c5bda5d247821a",
+"bel": "bp(GO:\"pattern recognition receptor signaling pathway\")"
+},
+{
+"function": "BiologicalProcess",
+"concept": {
+"namespace": "GO",
+"name": "positive regulation of interleukin-6 production"
+},
+"id": "42b95ca6d521f67bf2dacfc5aa7da5a9",
+"bel": "bp(GO:\"positive regulation of interleukin-6 production\")"
+},
+{
+"function": "BiologicalProcess",
+"concept": {
+"namespace": "GO",
+"name": "tumor necrosis factor-mediated signaling pathway"
+},
+"id": "a4c18d71b2df953793e49c1a7699c5ac",
+"bel": "bp(GO:\"tumor necrosis factor-mediated signaling pathway\")"
+},
+{
+"function": "Complex",
+"concept": {
+"namespace": "GO",
+"name": "NF-kappaB complex"
+},
+"id": "2b8e47488405cbf906efe3bac140985b",
+"bel": "complex(GO:\"NF-kappaB complex\")"
+},
+{
+"function": "Complex",
+"members": [
+{
+"function": "Protein",
+"concept": {
+"namespace": "HGNC",
+"name": "IL6"
+},
+"id": "8a1d3c4828c5416eba867c395cc65caa",
+"bel": "p(HGNC:IL6)"
+},
+{
+"function": "Protein",
+"concept": {
+"namespace": "HGNC",
+"name": "STAT3"
+},
+"id": "9523cd88bdb7daf4a0aaf38eb43fbe28",
+"bel": "p(HGNC:STAT3)"
+}
+],
+"id": "69ed28f0beb7767cf3eff066627216c0",
+"bel": "complex(p(HGNC:IL6), p(HGNC:STAT3))"
+},
+{
+"function": "Protein",
+"concept": {
+"namespace": "HGNC",
+"name": "ACE2"
+},
+"id": "bb9a231a2c68ff8f3bad2adad9ed6a94",
+"bel": "p(HGNC:ACE2)"
+},
+{
+"function": "Protein",
+"concept": {
+"namespace": "HGNC",
+"name": "ADAM17"
+},
+"id": "8351a14adf985bc7b6e72b7fea9a3f1d",
+"bel": "p(HGNC:ADAM17)"
+},
+{
+"function": "Protein",
+"concept": {
+"namespace": "HGNC",
+"name": "AGTR1"
+},
+"id": "aaf1fa632bd4a29e5095caf17491bb89",
+"bel": "p(HGNC:AGTR1)"
+},
+{
+"function": "Protein",
+"concept": {
+"namespace": "HGNC",
+"name": "EGF"
+},
+"id": "7c6e2be826c1c81b55f7f6a99b4bab53",
+"bel": "p(HGNC:EGF)"
+},
+{
+"function": "Protein",
+"concept": {
+"namespace": "HGNC",
+"name": "IL6"
+},
+"id": "8a1d3c4828c5416eba867c395cc65caa",
+"bel": "p(HGNC:IL6)"
+},
+{
+"function": "Protein",
+"concept": {
+"namespace": "HGNC",
+"name": "IL6R"
+},
+"id": "92536fcad84ecfcda5039c198ce6946d",
+"bel": "p(HGNC:IL6R)"
+},
+{
+"function": "Protein",
+"concept": {
+"namespace": "HGNC",
+"name": "STAT3"
+},
+"id": "9523cd88bdb7daf4a0aaf38eb43fbe28",
+"bel": "p(HGNC:STAT3)"
+},
+{
+"function": "Pathology",
+"concept": {
+"namespace": "MESH",
+"name": "Severe Acute Respiratory Syndrome"
+},
+"id": "ed25a06ed1c83ba5083d0f22650e967f",
+"bel": "path(MESH:\"Severe Acute Respiratory Syndrome\")"
+}
+],
+"links": [
+{
+"line": 0,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"object": {
+"modifier": "Activity"
+},
+"source": 5,
+"target": 6,
+"key": "f10251ca95b600e4dc0a3c771560094a"
+},
+{
+"line": 6,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Activity"
+},
+"source": 6,
+"target": 4,
+"key": "f7dd24cba16b9b373fb33eff73eb5dfc"
+},
+{
+"line": 1,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"object": {
+"modifier": "Activity"
+},
+"source": 2,
+"target": 6,
+"key": "c9d26099d80a158ec35235736de09fa4"
+},
+{
+"line": 2,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Activity"
+},
+"source": 11,
+"target": 2,
+"key": "881a887fd4fff8f39a434d6e44c8497a"
+},
+{
+"line": 3,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Activity"
+},
+"source": 9,
+"target": 5,
+"key": "9c80c6d0de0221a1eab53deb805d8086"
+},
+{
+"line": 4,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Activity"
+},
+"object": {
+"modifier": "Activity"
+},
+"source": 9,
+"target": 11,
+"key": "ac2b74d93fb7c6ff6fbfb481a5424fb4"
+},
+{
+"line": 11,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Activity"
+},
+"object": {
+"modifier": "Activity"
+},
+"source": 9,
+"target": 13,
+"key": "2f828dbfd64f218b0d86f526e4da4252"
+},
+{
+"line": 5,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"source": 4,
+"target": 15,
+"key": "cf0315f0185380e8ffbd7c45dc5850f6"
+},
+{
+"line": 7,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"object": {
+"modifier": "Activity"
+},
+"source": 3,
+"target": 6,
+"key": "996e061f309d62e8733f616c3e307f06"
+},
+{
+"line": 8,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"source": 1,
+"target": 3,
+"key": "2c929b64880fa37ff69635b02cc3ce7f"
+},
+{
+"line": 16,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"object": {
+"modifier": "Degradation"
+},
+"source": 1,
+"target": 8,
+"key": "70f05ccac9d57006414794ab058511e0"
+},
+{
+"line": 9,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Activity"
+},
+"source": 7,
+"target": 4,
+"key": "f921cd76972b5fa87cde9b8330719d0f"
+},
+{
+"relation": "partOf",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"source": 12,
+"target": 7,
+"key": "737b3e860bfe42cde2de53c17672f46e"
+},
+{
+"relation": "partOf",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"source": 14,
+"target": 7,
+"key": "c4c6c5bf7c1bb0539d7ca9aca60ffab3"
+},
+{
+"line": 10,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Activity"
+},
+"object": {
+"modifier": "Activity"
+},
+"source": 13,
+"target": 7,
+"key": "1cfecd2e59476534403d35a3de5a9a47"
+},
+{
+"line": 12,
+"relation": "directlyIncreases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Activity"
+},
+"object": {
+"modifier": "Activity"
+},
+"source": 10,
+"target": 9,
+"key": "d96f4e8ba58bc0b7c7156f8ed17d8670"
+},
+{
+"line": 13,
+"relation": "increases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"object": {
+"modifier": "Activity"
+},
+"source": 0,
+"target": 10,
+"key": "212025126171e169aa2b0d22a0319b01"
+},
+{
+"line": 14,
+"relation": "directlyDecreases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Activity"
+},
+"source": 8,
+"target": 0,
+"key": "a61720133f2f4a83b54aa2b1aed46443"
+},
+{
+"line": 15,
+"relation": "directlyDecreases",
+"evidence": "SARS-CoV-2 uses angiotensin converting enzyme II (ACE2) and transmembrane serine protease 2 (TMPRSS2) as cell entry receptors, followed by a cytokine-related syndrome, ARDS, which is induced by the hyper-activation of the transcription factor NF-κB, most likely in nonimmune cells including lung epithelial cells. ACE2 molecules on the cell surface are occupied by SARS-CoV-2. Angiotensin 2 (AngII) then increases in the serum due to a reduction of ACE2mediated degradation. SARS-CoV-2 itself activates NF-κB via pattern recognition receptors (PPRs), and the accumulated AngII induces inflammatory cytokines including TNFα and IL-6-soluble (s)IL-6R via disintegrin and metalloprotease 17 (ADAM17), followed by activation of the IL-6  amplifier (IL-6 AMP), which describes enhanced NF -κB activation machinery via the coactivation of NF-κB and transcription factor STAT3. The molecules underlined indicate possible therapeutic targets for COVID-19, which is a cytokine release syndrome (CRS).",
+"citation": {
+"db": "PubMed",
+"db_id": "32325025"
+},
+"annotations": {
+"biodati_nanopub_id": {
+"01E6GJ0CSPJD8Z87A5E6DSSHQ2": true
+},
+"MESH": {
+"D011024": true,
+"D053586": true,
+"D018352": true,
+"D000080424": true
+},
+"TAX": {
+"9606": true
+}
+},
+"subject": {
+"modifier": "Degradation"
+},
+"object": {
+"modifier": "Activity"
+},
+"source": 8,
+"target": 8,
+"key": "9a6d1ee55d0250d092dcaba922c648e0"
+}
+]
+}
