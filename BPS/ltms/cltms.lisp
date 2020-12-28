@@ -193,6 +193,7 @@
 
 ;;; Implementing Tison's method
 (defmacro insert-list2 (cl list)
+
   `(do ((cl-count (clause-length ,cl))
 	(previous nil tail)
        (tail ,list (cdr tail)))
@@ -408,6 +409,12 @@
 		env)))
       (push env label)))
   label)
+
+
+;; We packaged the cltms functionality to make it available to an atms.
+;; This function prime-implicates computes the logical implications that need to be considered for the problem to be complete and consistent.
+;; Example this required to solve the firing squad problem for transduction.  A fires => B fires.
+;; TODO: be precise about why completeness is needed
 
 (defun prime-implicates (formula &aux ltms tltms literals clauses)
   (setq ltms (create-ltms "Prime Implicates")

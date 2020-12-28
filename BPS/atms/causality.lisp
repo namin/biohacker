@@ -1,3 +1,7 @@
+;;  Causality structure records these intermediate states of information. This allows us to have a crank and inspect it later.
+;;  
+
+
 (defstruct (causal (:PRINT-FUNCTION print-causal))
   (title nil)
   (graph nil)
@@ -195,6 +199,7 @@
       (cdr intervention)
       (list intervention)))
 
+;; 
 (defun numeric-causal-crank (n causal-numeric-priors causal)
   (setf (causal-exogenous-variables causal) (mapcar #'car (funcall causal-numeric-priors causal)))
   (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
