@@ -1,5 +1,10 @@
-# BioHacker ([PDF](http://lampwww.epfl.ch/~amin/doc/biohacker.pdf))
-### Debugging biological networks to reach coherence, completeness and consistency
+# BioHacker
+
+BioHacker is a test bed for using AI and PL in biology. It started as a class project in Gerry Sussman's class at MIT and has grown into a research project on drug repurposing using Causality and Truth-Maintenance Systems. The project also contains an improved code base from the wonderful hacker book _[Building Problem Solvers](BPS)_.
+
+## 2008: Debugging biological networks to reach coherence, completeness and consistency
+
+See [2008 report PDF](http://lampwww.epfl.ch/~amin/doc/biohacker.pdf).
 
 _"Mistakes are the portals of discovery."_ -- James Joyce (1882-1941)
 
@@ -17,5 +22,3 @@ A metabolic network is defined as the set of biochemical reactions that the enzy
 Because of these issues, reconstructing metabolic networks from annotated genomes is currently a time-consuming, error-prone process.
 
 We develop BioHacker, a debugger for metabolic networks. BioHacker not only detects these issues, but also generates explanations as to where the problems lie and generates hypotheses for how to fix them.
-
-BioHacker is based on the wonderful book _[Building Problem Solvers](BPS)_.
