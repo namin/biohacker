@@ -235,3 +235,47 @@
 
 (defun symbolic-causal-crank (causal)
   (numeric-causal-crank *symbolic* #'causal-symbolic-priors causal))
+
+(defun make-joint-issues (n atms ls ps)
+  (mapcar #'(lambda (combination) (make-joint-issue n atms combination ps)) (combinations ls)))
+
+(defun make-joint-issue (n atms combination ps)
+  (list
+   combination
+   (combination-env atms combination)
+   (combination-joint-probability n atms combination ps)))
+
+(defun combination-joint-probability (n atms combination ps)
+  (funcall ps combination))
+
+(defun numeric-joint-causal-crank (n exogenous-variables causal-numeric-joint-priors causal)
+  (setf (causal-exogenous-variables causal) exogenous-variables)
+  (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
+  (setf (causal-all-issues causal) (make-joint-issues n (causal-atms causal) (causal-exogenous-variables causal) causal-numeric-joint-priors))
+  (setf (causal-intervention-literals causal) (intervention-to-literals (causal-intervention causal)))
+  (setf (causal-post-graph causal) (post-graph causal))
+  (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
+  (mapc #'(lambda (i) (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name i))))) (causal-intervention-literals causal))
+  (setf (causal-given-node causal) (find-node (causal-atms causal) "given"))
+  (setf (causal-given-issues causal) (subset-issues-with (causal-given-node causal) (causal-all-issues causal)))
+  (setf (causal-given-p causal) (weight-issues n (causal-given-issues causal)))
+  (setf (causal-given-issues causal) (renormalize-issues n (causal-given-issues causal)))
+  (setf (causal-post-issues causal) (port-atms-issues (causal-post-atms causal) (causal-given-issues causal) (causal-intervention-literals causal)))
+  (setf
+   (causal-post-atms-ps causal)
+   (numeric-probabilities-for
+    n
+    (causal-post-atms causal)
+    (cons
+     (cons (causal-intervention causal) 1)
+     (mapcar #'(lambda (v) (cons v (weight-of-event n (causal-atms causal) (causal-given-issues causal) v)))
+             (causal-exogenous-variables causal)))))
+  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
+  (setf (causal-outcome-p causal) (weight-of-event n (causal-post-atms causal) (causal-post-issues causal) "outcome"))
+
+  (format t "~%~%Given probability: ~2$.~%" (causal-given-p causal))
+  (format t "Outcome probability: ~2$.~%" (causal-outcome-p causal))
+  )
+
+(defun joint-causal-crank (causal exogenous-variables jointf)
+  (numeric-joint-causal-crank *numeric* exogenous-variables jointf causal))

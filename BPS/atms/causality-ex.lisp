@@ -19,6 +19,24 @@
   :intervention '(:NOT A)
   :outcome '(:NOT D)))
 
+;; U=0,W=0: 0.1
+;; U=1,W=0: 0.2
+;; U=0,W=1: 0.3
+;; U=1,W=1: 0.4
+(defun riflemen-jointf (c)
+  (cond
+    ((equal c '((:not U) (:not W))) 0.1)
+    ((equal c '(U (:not W))) 0.2)
+    ((equal c '((:not U) W)) 0.3)
+    ((equal c '(U W)) 0.4)
+    (t (error (format nil "unexpected combination: ~A" c)))))
+
+(joint-causal-crank *causal* '(U W) #'riflemen-jointf)
+#|
+Given probability: 0.90.
+Outcome probability: 0.33.
+|#
+
 (causal-crank *causal*)
 #|
 Given probability: 0.88.
