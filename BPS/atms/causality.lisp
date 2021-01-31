@@ -16,10 +16,8 @@
   (given-issues nil)
   (post-issues nil)
   (atms nil)
-  (atms-ps nil)
   (post-graph nil)
   (post-atms nil)
-  (post-atms-ps nil)
   (given-node nil)
   (given-p nil)
   (outcome-node nil)
@@ -121,13 +119,6 @@
       (cadr name)
       `(:not ,name)))
 
-(defun numeric-probabilities-for (n atms ps)
-  (remove-if-not
-   #'car
-   (append
-    (mapcar #'(lambda (p) (cons (find-node atms (car p)) (cdr p))) ps)
-    (mapcar #'(lambda (p) (cons (find-node atms (negate-name (car p))) (funcall (numeric-- n) 1 (cdr p)))) ps))))
-
 (defun post-graph (causal)
   (let* ((ls (causal-intervention-literals causal))
          (names (apply #'concatenate 'list (mapcar #'(lambda (i) (list i (negate-name i))) ls))))
@@ -144,18 +135,8 @@
          (mapcar #'(lambda (x) (cons a x)) rests)
          (mapcar #'(lambda (x) (cons na x)) rests)))))
 
-(defun combination-probability (n atms combination ps)
-  (apply (numeric-* n)
-         (mapcar #'(lambda (l) (cdr (assoc (find-node atms l) ps))) combination)))
-
 (defun combination-env (atms combination)
   (find-or-make-env (mapcar #'(lambda (l) (find-node atms l)) combination) atms))
-
-(defun make-issue (n atms combination ps)
-  (list
-   combination
-   (combination-env atms combination)
-   (combination-probability n atms combination ps)))
 
 (defun issue-combination (issue) (car issue))
 (defun issue-env (issue) (cadr issue))
@@ -167,9 +148,6 @@
    (issue-combination issue)
    (combination-env atms (append extra (issue-combination issue)))
    (issue-prob issue)))
-
-(defun make-issues (n atms ls ps)
-  (mapcar #'(lambda (combination) (make-issue n atms combination ps)) (combinations ls)))
 
 (defun subset-issues-with (node issues)
   (remove-if-not
@@ -199,42 +177,6 @@
       (cdr intervention)
       (list intervention)))
 
-;; 
-(defun numeric-causal-crank (n causal-numeric-priors causal)
-  (setf (causal-exogenous-variables causal) (mapcar #'car (funcall causal-numeric-priors causal)))
-  (setf (causal-atms causal) (atms-from-graph causal (causal-graph causal) (causal-title causal)))
-  (setf (causal-atms-ps causal) (numeric-probabilities-for n (causal-atms causal) (funcall causal-numeric-priors causal)))
-  (setf (causal-all-issues causal) (make-issues n (causal-atms causal) (causal-exogenous-variables causal) (causal-atms-ps causal)))
-  (setf (causal-intervention-literals causal) (intervention-to-literals (causal-intervention causal)))
-  (setf (causal-post-graph causal) (post-graph causal))
-  (setf (causal-post-atms causal) (atms-from-graph causal (causal-post-graph causal) (format nil "~A (POST)" (causal-title causal))))
-  (mapc #'(lambda (i) (nogood-nodes 'nogood-not-intervention (list (find-node (causal-post-atms causal) (negate-name i))))) (causal-intervention-literals causal))
-  (setf (causal-given-node causal) (find-node (causal-atms causal) "given"))
-  (setf (causal-given-issues causal) (subset-issues-with (causal-given-node causal) (causal-all-issues causal)))
-  (setf (causal-given-p causal) (weight-issues n (causal-given-issues causal)))
-  (setf (causal-given-issues causal) (renormalize-issues n (causal-given-issues causal)))
-  (setf (causal-post-issues causal) (port-atms-issues (causal-post-atms causal) (causal-given-issues causal) (causal-intervention-literals causal)))
-  (setf
-   (causal-post-atms-ps causal)
-   (numeric-probabilities-for
-    n
-    (causal-post-atms causal)
-    (cons
-     (cons (causal-intervention causal) 1)
-     (mapcar #'(lambda (v) (cons v (weight-of-event n (causal-atms causal) (causal-given-issues causal) v)))
-             (causal-exogenous-variables causal)))))
-  (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
-  (setf (causal-outcome-p causal) (weight-of-event n (causal-post-atms causal) (causal-post-issues causal) "outcome"))
-
-  (format t "~%~%Given probability: ~2$.~%" (causal-given-p causal))
-  (format t "Outcome probability: ~2$.~%" (causal-outcome-p causal))
-  )
-
-(defun causal-crank (causal)
-  (numeric-causal-crank *numeric* #'causal-priors causal))
-
-(defun symbolic-causal-crank (causal)
-  (numeric-causal-crank *symbolic* #'causal-symbolic-priors causal))
 
 (defun make-joint-issues (n atms ls ps)
   (mapcar #'(lambda (combination) (make-joint-issue n atms combination ps)) (combinations ls)))
@@ -261,15 +203,6 @@
   (setf (causal-given-p causal) (weight-issues n (causal-given-issues causal)))
   (setf (causal-given-issues causal) (renormalize-issues n (causal-given-issues causal)))
   (setf (causal-post-issues causal) (port-atms-issues (causal-post-atms causal) (causal-given-issues causal) (causal-intervention-literals causal)))
-  (setf
-   (causal-post-atms-ps causal)
-   (numeric-probabilities-for
-    n
-    (causal-post-atms causal)
-    (cons
-     (cons (causal-intervention causal) 1)
-     (mapcar #'(lambda (v) (cons v (weight-of-event n (causal-atms causal) (causal-given-issues causal) v)))
-             (causal-exogenous-variables causal)))))
   (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
   (setf (causal-outcome-p causal) (weight-of-event n (causal-post-atms causal) (causal-post-issues causal) "outcome"))
 
@@ -279,3 +212,22 @@
 
 (defun joint-causal-crank (causal exogenous-variables jointf)
   (numeric-joint-causal-crank *numeric* exogenous-variables jointf causal))
+
+(defun joint-from-independent (n ps)
+  #'(lambda (combination)
+      (apply (numeric-* n)
+             (mapcar #'(lambda (l)
+                         (if (and (consp l) (equal ':not (car l)))
+                             (funcall (numeric-- n) 1 (cdr (assoc (cadr l) ps)))
+                             (cdr (assoc l ps))))
+                     combination))))
+
+(defun numeric-causal-crank (n causal-numeric-priors causal)
+  (setf (causal-exogenous-variables causal) (mapcar #'car (funcall causal-numeric-priors causal)))
+  (numeric-joint-causal-crank n (causal-exogenous-variables causal) (joint-from-independent n (funcall causal-numeric-priors causal)) causal))
+
+(defun causal-crank (causal)
+  (numeric-causal-crank *numeric* #'causal-priors causal))
+
+(defun symbolic-causal-crank (causal)
+  (numeric-causal-crank *symbolic* #'causal-symbolic-priors causal))
