@@ -1,23 +1,60 @@
-(setq
- *causal*
- (make-causal
+;; The Problem of which this is a subproblem
+;; Find the distinguishable events (outcome space)
+;; These distinguishable events are logically connected.  We need to count the possible worlds where things are true.
+;; The LTMS gives us the ability to infer logical facts and the ATMS gives us the ability to count facts.  We augment an ATMS to be an LTMS by embedding an LTMS inside an ATMS. This enables us to perform logical inference and count worlds.  In order to perform counterfactual reasoning, we connect two LATMS's to each other, one for the indiciative world, and the other for the subjunctive world.
+;;
+;; We show one way to build a causal crank out of these parts. We envision many causal cranks that can bee implented depending on the use cases.
+;; We also envision different ways to reason quantitatively over a causal crank (mini-Turing test a la Pearl)
+
+;; Audience is programming language researchers who want to combine logical and probabilistic reasoning.
+;; PPLs start with probability and try to add logic. We start with logic and add probability.
+;; Advertise techniques for building problem solvers by connecting inference engines to truth maintenance systems, as advocated in BPS.
+;; We follow this advice by connecting a causal inference engine to a truth maintenance system.
+;; Doyle says TMSs are far more versatile than as implemented in BPS. He envisioned TMSs as a way to combine multiple reasoning engines into one coherent framework.
+;; For example, two TMSs arguing with each other like philosophers (or lawyers).  As a small step towards this vision, we describe some examples in precision medicine.
+
+
+;; Individual vs average treatment effect (Precision medicine)
+;; In order to predict how a drug works on...
+;; ....
+
+
+(setq *causal* (make-causal
   :title "riflemen"
-  :graph
-  '((U . C)
-    (C . A)
-    (C . B)
-    (A . D)
-    (B . D)
-    (W . A))
-  :priors
-  '((U . 0.6)
-    (W . 0.7))
-  :symbolic-priors
-  '((U . p)
-    (W . q))
-  :given 'D
-  :intervention '(:NOT A)
-  :outcome '(:NOT D)))
+  :graph '((Court-orders . Captain-signals)
+           (Captain-signals . Rifleman-A-shoots)
+           (Captain-signals . Rifleman-B-shoots)
+           (Rifleman-A-shoots . Prisoner-dies)
+           (Rifleman-B-shoots . Prisoner-dies)
+           (Rifleman-A-is-nervous . Rifleman-A-shoots))
+  :priors '((Court-orders . 0.6)
+            (Rifleman-A-is-nervous . 0.7))
+  :symbolic-priors '((Court-orders . p)
+                     (Rifleman-A-is-nervous . q))
+  :given 'Prisoner-dies
+  :intervention '(:NOT Rifleman-A-shoots)
+  :outcome '(:NOT Prisoner-dies)))
+
+;; (setq
+;;  *causal*
+;;  (make-causal
+;;   :title "riflemen"
+;;   :graph
+;;   '((U . C)
+;;     (C . A)
+;;     (C . B)
+;;     (A . D)
+;;     (B . D)
+;;     (W . A))
+;;   :priors
+;;   '((U . 0.6)
+;;     (W . 0.7))
+;;   :symbolic-priors
+;;   '((U . p)
+;;     (W . q))
+;;   :given 'D
+;;   :intervention '(:NOT A)
+;;   :outcome '(:NOT D)))
 
 ;; U=0,W=0: 0.1
 ;; U=1,W=0: 0.2
