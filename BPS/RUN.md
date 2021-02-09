@@ -13,7 +13,7 @@ Running _Building Problem Solvers_
 - Install Slime in Emacs
   - `package-install slime`
   - Then add this to your `emacs.d/init.el`:
-    ```
+```
 ;; slime
 
 ;; update this path to the correct location.
@@ -28,7 +28,7 @@ Running _Building Problem Solvers_
     (setq slime-complete-symbol*-fancy t)
     (setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol)))
 (setq inferior-lisp-program "alisp")
-    ```
+```
 
 # Running
 
