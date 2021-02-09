@@ -4,6 +4,8 @@ by Ken Forbus and Johan de Kleer
 The original code can be obtained [here](http://www.cs.cmu.edu/Groups//AI/areas/reasonng/tms/bps/).
 More information about the book [here](http://www.qrg.northwestern.edu/bps/readme.html), including [a fulltext searchable PDF](http://www.qrg.northwestern.edu/bps/BPS-Searchable.pdf)
 
+[How to run the code](RUN.md).
+
 ## TOC
 
 - `1 & 2`. _Preface and Introduction_
