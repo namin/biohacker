@@ -10,7 +10,7 @@
                 :complete t))
 (setq
  U (tms-create-node *ltms*
-     "CourtOrders" :ASSUMPTIONP t)
+     "Court orders" :ASSUMPTIONP t)
  C (tms-create-node *ltms*
     "Captain signals" :ASSUMPTIONP t)
  A (tms-create-node *ltms*
@@ -40,7 +40,7 @@
            (:NOT "Court orders")
            (:NOT "Captain signals")))))
 (compile-formula *ltms*
-`(:IMPLIES "C := U"
+`(:IMPLIES "A := C"
   (:AND (:IMPLIES
             "Captain signals"
             "Rifleman A shoots")
@@ -77,7 +77,7 @@
 ;; $$\lnot A\implies \lnot D$$
 ;; Standard LTMS works for forward Prediction:
 
-(enable-assumption A :TRUE)
+(enable-assumption A :FALSE)
   (explain-node D)
 
 
