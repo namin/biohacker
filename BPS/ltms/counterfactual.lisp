@@ -5,6 +5,82 @@
 
 ;; (retract! DepA)
 ;; (assert! A)
+(setq *ltms* (create-ltms
+                "Rifleman Example"
+                :complete t))
+(setq
+ U (tms-create-node *ltms*
+     "CourtOrders" :ASSUMPTIONP t)
+ C (tms-create-node *ltms*
+    "Captain signals" :ASSUMPTIONP t)
+ A (tms-create-node *ltms*
+    "Rifleman A shoots" :ASSUMPTIONP t)
+ B (tms-create-node *ltms*
+     "Rifleman B shoots" :ASSUMPTIONP t)
+ D (tms-create-node *ltms*
+     "Prisoner dies" :ASSUMPTIONP t)
+ )
+
+(setq
+  U=>C (tms-create-node *ltms*
+      "C := U" :ASSUMPTIONP t)
+  C=>A (tms-create-node *ltms*
+      "A := C" :ASSUMPTIONP t)
+  C=>B (tms-create-node *ltms*
+      "B := C" :ASSUMPTIONP t)
+  A-or-B=>D (tms-create-node *ltms*
+      "D := A or B" :ASSUMPTIONP t))
+
+(compile-formula *ltms*
+`(:IMPLIES "C := U"
+  (:AND (:IMPLIES
+           "Court orders"
+           "Captain signals")
+        (:IMPLIES
+           (:NOT "Court orders")
+           (:NOT "Captain signals")))))
+(compile-formula *ltms*
+`(:IMPLIES "C := U"
+  (:AND (:IMPLIES
+            "Captain signals"
+            "Rifleman A shoots")
+        (:IMPLIES
+           (:NOT "Captain signals")
+           (:NOT "Rifleman A shoots")))))
+(compile-formula *ltms*
+`(:IMPLIES "B := C"
+  (:AND (:IMPLIES
+           "Captain signals"
+           "Rifleman B shoots")
+        (:IMPLIES
+           (:NOT "Captain signals")
+           (:NOT "Rifleman B shoots")))))
+(compile-formula *ltms*
+`(:IMPLIES "D := A or B"
+ (:AND (:IMPLIES
+          (:OR "Rifleman A shoots"
+               "Rifleman B shoots")
+          "Prisoner dies")
+       (:IMPLIES
+	(:AND
+	    (:NOT "Rifleman A shoots")
+            (:NOT "Rifleman B shoots"))
+	(:NOT "Prisoner dies")))))
+(enable-assumption U=>C :TRUE)
+(enable-assumption C=>A :TRUE)
+(enable-assumption C=>B :TRUE)
+(enable-assumption A-or-B=>D :TRUE)
+
+
+;; \subsection{Prediction}
+;; If rifleman A did not shoot,the prisoner is alive.
+;; $$\lnot A\implies \lnot D$$
+;; Standard LTMS works for forward Prediction:
+
+(enable-assumption A :TRUE)
+  (explain-node D)
+
+
 
 (setq *ltms* (create-ltms "Rifleman Example" :complete t))
 (setq
@@ -30,6 +106,7 @@
 (enable-assumption depA :TRUE)
 (enable-assumption depB :TRUE)
 (enable-assumption depD :TRUE)
+
 
 ;; The court U made the order.
 ;; The prisoder dies.

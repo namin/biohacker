@@ -34,4 +34,4 @@ Running _Building Problem Solvers_
 
 - In Emacs, go to `utils/my.lisp`.
 - Then call `M-x slime`.
-- Now go to a directory of choise, e.g., `atms`. And load the `my.lisp` from there as needed.
+- N
