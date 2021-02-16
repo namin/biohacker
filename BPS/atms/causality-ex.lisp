@@ -62,13 +62,13 @@
 ;; U=1,W=1: 0.4
 (defun riflemen-jointf (c)
   (cond
-    ((equal c '((:not U) (:not W))) 0.1)
-    ((equal c '(U (:not W))) 0.2)
-    ((equal c '((:not U) W)) 0.3)
-    ((equal c '(U W)) 0.4)
+    ((equal c '((:not Court-orders) (:not Rifleman-A-is-nervous))) 0.1)
+    ((equal c '(Court-orders (:not Rifleman-A-is-nervous))) 0.2)
+    ((equal c '((:not Court-orders) Rifleman-A-is-nervous)) 0.3)
+    ((equal c '(Court-orders Rifleman-A-is-nervous)) 0.4)
     (t (error (format nil "unexpected combination: ~A" c)))))
 
-(joint-causal-crank *causal* '(U W) #'riflemen-jointf)
+(joint-causal-crank *causal* '(Court-orders Rifleman-A-is-nervous) #'riflemen-jointf)
 #|
 Given probability: 0.90.
 Outcome probability: 0.33.
