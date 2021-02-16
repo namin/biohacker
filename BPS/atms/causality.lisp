@@ -166,8 +166,8 @@
           #'(lambda (p) (funcall (numeric-/ n) p w))))
      issues)))
 
-(defun weight-of-event (n atms issues v)
-  (weight-issues n (subset-issues-with (find-node atms v) issues)))
+(defun weight-of-event (n atms issues node)
+  (weight-issues n (subset-issues-with node issues)))
 
 (defun port-atms-issues (atms issues extra)
   (mapcar #'(lambda (issue) (port-atms-issue atms issue extra)) issues))
@@ -204,7 +204,7 @@
   (setf (causal-given-issues causal) (renormalize-issues n (causal-given-issues causal)))
   (setf (causal-post-issues causal) (port-atms-issues (causal-post-atms causal) (causal-given-issues causal) (causal-intervention-literals causal)))
   (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
-  (setf (causal-outcome-p causal) (weight-of-event n (causal-post-atms causal) (causal-post-issues causal) "outcome"))
+  (setf (causal-outcome-p causal) (weight-of-event n (causal-post-atms causal) (causal-post-issues causal) (causal-outcome-node causal)))
 
   (format t "~%~%Given probability: ~2$.~%" (causal-given-p causal))
   (format t "Outcome probability: ~2$.~%" (causal-outcome-p causal))
