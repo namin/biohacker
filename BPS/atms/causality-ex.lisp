@@ -80,6 +80,15 @@ Given probability: 0.88.
 Outcome probability: 0.32.
 |#
 
+(cdr (assoc (find-node (causal-atms *causal*) 'Prisoner-dies) (causal-all-ps *causal*)))
+;; 0.88
+
+(cdr (assoc (find-node (causal-atms *causal*) 'Prisoner-dies) (causal-given-ps *causal*)))
+;; 1.0
+
+(cdr (assoc (find-node (causal-post-atms *causal*) 'Prisoner-dies) (causal-post-ps *causal*)))
+;; 0.68
+
 (setq *print-right-margin* 1000)
 (symbolic-causal-crank *causal*)
 #|
