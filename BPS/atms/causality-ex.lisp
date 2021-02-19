@@ -89,6 +89,9 @@ Outcome probability: 0.32.
 (cdr (assoc (find-node (causal-post-atms *causal*) 'Prisoner-dies) (causal-post-ps *causal*)))
 ;; 0.68
 
+(show-pre-intervention *causal*)
+(show-post-intervention *causal*)
+
 (setq *print-right-margin* 1000)
 (symbolic-causal-crank *causal*)
 #|

@@ -219,9 +219,19 @@
         (mapcar #'(lambda (node) (cons node (weight-of-event n (causal-post-atms causal) (causal-post-issues causal) node)))
                 (reverse (atms-nodes (causal-post-atms causal)))))
 
-  (format t "~%~%Given probability: ~2$.~%" (causal-given-p causal))
   (format t "Outcome probability: ~2$.~%" (causal-outcome-p causal))
   )
+
+(defun show-causal-alist (ps)
+  (dolist (r ps)
+    (format t "~A:" (tms-node-datum (car r)))
+    (format t "~2$ " (cdr r))))
+
+(defun show-pre-intervention (causal)
+  (show-causal-alist (causal-given-ps causal)))
+
+(defun show-post-intervention (causal)
+  (show-causal-alist (causal-post-ps causal)))
 
 (defun joint-causal-crank (causal exogenous-variables jointf)
   (numeric-joint-causal-crank *numeric* exogenous-variables jointf causal))
