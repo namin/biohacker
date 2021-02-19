@@ -1,12 +1,3 @@
-
-;; U => C => A => D
-;;      C => B => D
-
-;; (retract! C => A)
-;; (assert! (:NOT A))
-
-
-
 (setq *ltms* (create-ltms
                 "Rifleman Example"
                 :complete t))
