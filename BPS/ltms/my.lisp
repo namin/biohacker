@@ -8,6 +8,8 @@
 (test-explain)
 (run-tests)
 
+(bps-load-file (make-bps-path "ltms") "counterfactual" :action :compile)
+
 ;; pages 292-293 of BPS
 (setq *ltms* (create-ltms "Simple"))
 (setq x (tms-create-node *ltms* "x" :ASSUMPTIONP t) y (tms-create-node *ltms* "y") z (tms-create-node *ltms* "z") r (tms-create-node *ltms* "r"))
