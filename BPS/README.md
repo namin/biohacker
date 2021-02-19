@@ -6,7 +6,13 @@ More information about the book [here](http://www.qrg.northwestern.edu/bps/readm
 
 [How to run the code](RUN.md).
 
-## TOC
+## Causality TOC
+
+- [ltms/counterfactual.lisp](ltms/counterfactual.lisp): Firing Squad in LTMS
+- [atms/causality.lisp](atms/causality.lisp): Causality Crank
+- [atms/causality-ex.lisp](atms/causality-ex.lisp): Causality Crank Examples
+
+## Original TOC
 
 - `1 & 2`. _Preface and Introduction_
 - `3`. [cps](cps)
