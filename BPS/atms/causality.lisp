@@ -226,8 +226,9 @@
   (dolist (r ps)
     (let ((name (tms-node-datum (car r))))
       (when (not (consp name))
-        (format t "~A:" name)
-        (format t "~2$ " (cdr r))))))
+        (unless (equal "The contradiction" name)
+          (format t "~A:" name)
+          (format t "~2$ " (cdr r)))))))
 
 (defun show-pre-intervention (causal)
   (show-causal-alist (causal-given-ps causal)))
