@@ -1,7 +1,4 @@
 ;;  Causality structure records these intermediate states of information. This allows us to have a crank and inspect it later.
-;;  
-
-
 (defstruct (causal (:PRINT-FUNCTION print-causal))
   (title nil)
   (graph nil)
@@ -180,7 +177,6 @@
       (cdr intervention)
       (list intervention)))
 
-
 (defun make-joint-issues (n atms ls ps)
   (mapcar #'(lambda (combination) (make-joint-issue n atms combination ps)) (combinations ls)))
 
@@ -213,8 +209,7 @@
   (setf (causal-given-ps causal) (ps-compute n causal #'causal-atms #'causal-given-issues))
   (setf (causal-post-ps causal) (ps-compute n causal #'causal-post-atms #'causal-post-issues))
 
-  (format t "Outcome probability: ~2$.~%" (causal-outcome-p causal))
-  )
+  (format t "Outcome probability: ~2$.~%" (causal-outcome-p causal)))
 
 (defun ps-compute (n causal atms-fun issues-fun)
   (mapcar #'(lambda (node) (cons node (weight-of-event n (funcall atms-fun causal) (funcall issues-fun causal) node))) (reverse (atms-nodes (funcall atms-fun causal)))))
