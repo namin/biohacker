@@ -70,13 +70,11 @@
 
 (joint-causal-crank *causal* '(Court-orders Rifleman-A-is-nervous) #'riflemen-jointf)
 #|
-Given probability: 0.90.
 Outcome probability: 0.33.
 |#
 
 (causal-crank *causal*)
 #|
-Given probability: 0.88.
 Outcome probability: 0.32.
 |#
 
@@ -98,7 +96,6 @@ Outcome probability: 0.32.
 (setq *print-right-margin* 1000)
 (symbolic-causal-crank *causal*)
 #|
-Given probability: (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q)).
 Outcome probability: (/ (* (- 1 P) Q) (+ (* P Q) (* P (- 1 Q)) (* (- 1 P) Q))).
 
 The textbook answer for the outcome probability is:
@@ -198,13 +195,11 @@ Maybe we need a smarter simplifer. :P
 
 (causal-crank *expected-disablement*)
 #|
-Given probability: 0.15.
 Outcome probability: 0.00.
 |#
 
 (symbolic-causal-crank *expected-disablement*)
 #|
-Given probability: (* (- 1 T) (- 1 C) B).
 Outcome probability: 0.00.
 |#
 
@@ -223,13 +218,11 @@ Outcome probability: 0.00.
 
 (causal-crank *expected-sufficiency*)
 #|
-Given probability: 0.15.
 Outcome probability: 1.00.
 |#
 
 (symbolic-causal-crank *expected-sufficiency*)
 #|
-Given probability: (* (- 1 T) (- 1 C) B).
 Outcome probability: 1.00
 |#
 
@@ -245,13 +238,11 @@ Outcome probability: 1.00
 
 (causal-crank *necessary-causation*)
 #|
-Given probability: 0.30.
 Outcome probability: 0.49.
 |#
 
 (symbolic-causal-crank *necessary-causation*)
 #|
-Given probability: (+ (* T C B) (* T (- 1 C) B) (* (- 1 T) C B) (* (- 1 T) (- 1 C) B)).
 Outcome probability: (/ (* (- 1 T) (- 1 C) B) (+ (* T C B) (* T (- 1 C) B) (* (- 1 T) C B) (* (- 1 T) (- 1 C) B))).
 |#
 
@@ -267,12 +258,10 @@ Outcome probability: (/ (* (- 1 T) (- 1 C) B) (+ (* T C B) (* T (- 1 C) B) (* (-
 
 (causal-crank *sufficient-causation*)
 #|
-Given probability: 0.34.
 Outcome probability: 1.00.
 |#
 
 (symbolic-causal-crank *sufficient-causation*)
 #|
-Given probability: (* (- 1 T) (- 1 C) (- 1 B)).
 Outcome probability: 1.00
 |#

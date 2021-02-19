@@ -209,18 +209,15 @@
   (setf (causal-outcome-node causal) (find-node (causal-post-atms causal) "outcome"))
   (setf (causal-outcome-p causal) (weight-of-event n (causal-post-atms causal) (causal-post-issues causal) (causal-outcome-node causal)))
 
-  (setf (causal-all-ps causal)
-        (mapcar #'(lambda (node) (cons node (weight-of-event n (causal-atms causal) (causal-all-issues causal) node)))
-                (reverse (atms-nodes (causal-atms causal)))))
-  (setf (causal-given-ps causal)
-        (mapcar #'(lambda (node) (cons node (weight-of-event n (causal-atms causal) (causal-given-issues causal) node)))
-                (reverse (atms-nodes (causal-atms causal)))))
-  (setf (causal-post-ps causal)
-        (mapcar #'(lambda (node) (cons node (weight-of-event n (causal-post-atms causal) (causal-post-issues causal) node)))
-                (reverse (atms-nodes (causal-post-atms causal)))))
+  (setf (causal-all-ps causal) (ps-compute n causal #'causal-atms #'causal-all-issues))
+  (setf (causal-given-ps causal) (ps-compute n causal #'causal-atms #'causal-given-issues))
+  (setf (causal-post-ps causal) (ps-compute n causal #'causal-post-atms #'causal-post-issues))
 
   (format t "Outcome probability: ~2$.~%" (causal-outcome-p causal))
   )
+
+(defun ps-compute (n causal atms-fun issues-fun)
+  (mapcar #'(lambda (node) (cons node (weight-of-event n (funcall atms-fun causal) (funcall issues-fun causal) node))) (reverse (atms-nodes (funcall atms-fun causal)))))
 
 (defun show-causal-alist (ps)
   (dolist (r ps)
