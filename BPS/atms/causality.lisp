@@ -224,8 +224,10 @@
 
 (defun show-causal-alist (ps)
   (dolist (r ps)
-    (format t "~A:" (tms-node-datum (car r)))
-    (format t "~2$ " (cdr r))))
+    (let ((name (tms-node-datum (car r))))
+      (when (not (consp name))
+        (format t "~A:" name)
+        (format t "~2$ " (cdr r))))))
 
 (defun show-pre-intervention (causal)
   (show-causal-alist (causal-given-ps causal)))
