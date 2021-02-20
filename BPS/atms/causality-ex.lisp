@@ -87,6 +87,20 @@ Outcome probability: 0.32.
 (cdr (assoc (find-node (causal-post-atms *causal*) 'Prisoner-dies) (causal-post-ps *causal*)))
 ;; 0.68
 
+(defun show-causal-alist (ps)
+  (dolist (r ps)
+    (let ((name (tms-node-datum (car r))))
+      (when (not (consp name))
+        (unless (equal "The contradiction" name)
+          (format t "~A:" name)
+          (format t "~2$ " (cdr r)))))))
+
+(defun show-pre-intervention (causal)
+  (show-causal-alist (causal-given-ps causal)))
+
+(defun show-post-intervention (causal)
+  (show-causal-alist (causal-post-ps causal)))
+
 (show-pre-intervention *causal*)
 ;; PRISONER-DIES:1.00 CAPTAIN-SIGNALS:0.68 RIFLEMAN-A-SHOOTS:1.00 RIFLEMAN-B-SHOOTS:0.68 RIFLEMAN-A-IS-NERVOUS:0.80 COURT-ORDERS:0.68 outcome:0.00 given:1.00
 

@@ -214,20 +214,6 @@
 (defun ps-compute (n causal atms-fun issues-fun)
   (mapcar #'(lambda (node) (cons node (weight-of-event n (funcall atms-fun causal) (funcall issues-fun causal) node))) (reverse (atms-nodes (funcall atms-fun causal)))))
 
-(defun show-causal-alist (ps)
-  (dolist (r ps)
-    (let ((name (tms-node-datum (car r))))
-      (when (not (consp name))
-        (unless (equal "The contradiction" name)
-          (format t "~A:" name)
-          (format t "~2$ " (cdr r)))))))
-
-(defun show-pre-intervention (causal)
-  (show-causal-alist (causal-given-ps causal)))
-
-(defun show-post-intervention (causal)
-  (show-causal-alist (causal-post-ps causal)))
-
 (defun joint-causal-crank (causal exogenous-variables jointf)
   (numeric-joint-causal-crank *numeric* exogenous-variables jointf causal))
 
