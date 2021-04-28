@@ -1,5 +1,5 @@
-(in-package :cl-smt-lib)
-(in-readtable :cl-smt-lib)
+(use-package :cl-smt-lib/cl-smt-lib)
+(named-readtables:in-readtable :cl-smt-lib)
 (defparameter smt (make-smt "z3" "-in" "-smt2"))
 
 (write-to-smt smt
