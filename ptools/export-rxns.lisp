@@ -92,11 +92,11 @@
 	(all-reactants proper-reactants all-products proper-products)
       (substrates-of-pathway pwy)
     `(pathway ,(get-frame-name pwy)
-	      :reactants ,proper-reactants
-	      :products ,all-products
-	      :proper-products ,proper-products
+	      :reactants ,(mapcar #'get-frame-name proper-reactants)
+	      :products ,(mapcar #'get-frame-name all-products)
+	      :proper-products ,(mapcar #'get-frame-name proper-products)
 	      :reversible? nil
-	      :enzymes ,(enzymes-of-pathway pwy)
+	      :enzymes ,(mapcar #'get-frame-name (enzymes-of-pathway pwy))
 	      :reactions ,(reactions-of-pathway pwy))))
 
 (defun substrates-of-pathway (pwy)
@@ -125,17 +125,17 @@
 
 (defun translate-pwy-catalysis-to-tms (pwy)
   `(pwy-catalyze ,(get-frame-name pwy)
-		 ,@(enzymes-of-pathway pwy)))
+		 ,@(mapcar #'get-frame-name (enzymes-of-pathway pwy))))
 
 (defun translate-catalysis-to-tms (rxn)
   `(catalyze ,(get-frame-name rxn)
-	     ,@(enzymes-of-reaction rxn)))
+	     ,@(mapcar #'get-frame-name (enzymes-of-reaction rxn))))
 
 (defun translate-enzyme-to-tms (enzyme)
   (let ((enzymes (genes-of-protein enzyme)))
   `(enzyme ,(get-frame-name enzyme)
 	   ,@(if enzymes
-		 enzymes
+		 (mapcar #'get-frame-name enzymes)
 		 '(unknown)))))
 
 
@@ -153,11 +153,11 @@
 			   t
 			   :unknown)))
       `(reaction ,(get-frame-name rxn) 
-		 :reactants ,reactants
-		 :products ,products
+		 :reactants ,(mapcar #'get-frame-name reactants)
+		 :products ,(mapcar #'get-frame-name products)
 		 ,@(if (not (eq :unknown reversible? ))
 		       `(:reversible? ,reversible?))
-		 :enzymes ,enzymes))))
+		 :enzymes ,(mapcar #'get-frame-name enzymes)))))
 
 (defun substrate-not-frame-p (rxn)
   (loop for substrate in (substrates-of-reaction rxn)
