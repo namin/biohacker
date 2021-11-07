@@ -1,0 +1,16 @@
+digraph {
+A->B [penwidth=1, color=black, arrowhead="vee"]
+A->C [penwidth=1, color=black, arrowhead="tee"]
+B->C [penwidth=1, color=black, arrowhead="tee"]
+E->D [penwidth=1, color=black, arrowhead="tee"]
+D->F [penwidth=1, color=black, arrowhead="vee"]
+C->G [penwidth=1, color=black, arrowhead="vee"]
+E->G [penwidth=1, color=black, arrowhead="vee"]
+A [style=filled, color=blue, fillcolor=lavender, shape=doublecircle];
+B [style=filled, color=blue, fillcolor=lavender];
+C [style=filled, color=red, fillcolor=mistyrose];
+D [style=filled, color=blue, fillcolor=lavender];
+E [style=filled, color=red, fillcolor=mistyrose, shape=doublecircle];
+F [style=filled, color=blue, fillcolor=lavender, shape=doublecircle];
+G [style=filled, color=red, fillcolor=mistyrose, shape=doublecircle];
+}
