@@ -15,6 +15,16 @@
             `(enable-assumption node ',label)
             t))))
 
+(defmacro node (val n &key (measured? nil) (top? nil))
+  (let ((label (ecase val (+ :TRUE) (- :FALSE))))
+    `(progn
+       (push (cons ',n ',label) *node-labels*)
+       ,(if top?
+            `(let ((node (tms-create-node *ltms* ',n :ASSUMPTIONP t)))
+               (enable-assumption node ',label)
+               node)
+            `(tms-create-node *ltms* ',n)))))
+
 (defun edge-name (val src dst)
   (read-from-string (concatenate 'string (string src) (string val) (string dst))))
 
@@ -35,6 +45,20 @@
                 (:AND
                  (:IMPLIES ,src (:NOT ,dst))
                  (:IMPLIES (:NOT ,src) ,dst))))))))
+
+(defmacro edge (val src dst)
+  (let ((edge-name (edge-name val src dst)))
+    (if (ecase val (+ t) (- nil))
+        `(compile-formula
+          *ltms*
+          '(:AND
+            (:IMPLIES ,src ,dst)
+            (:IMPLIES (:NOT ,src) (:NOT ,dst))))
+        `(compile-formula
+          *ltms*
+          '(:AND
+            (:IMPLIES ,src (:NOT ,dst))
+            (:IMPLIES (:NOT ,src) ,dst))))))
 
 (defun check-consistency (&aux c)
   (setq c t)
