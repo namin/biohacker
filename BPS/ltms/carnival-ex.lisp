@@ -15,22 +15,21 @@
   (edge + C G)
   (edge + E G)
   )
-
 (check-consistency)
 
-(explain-node (find-node *ltms* 'A))
+(what-node 'A)
 #|
   1               A             ()   Assumption
 |#
 
-(explain-node (find-node *ltms* 'B))
+(what-node 'B)
 #|
   1             A+B             ()   Assumption
   2               A             ()   Assumption
   3               B           (1 2)  (:OR (:NOT A) B (:NOT A+B))
 |#
 
-(explain-node (find-node *ltms* 'G))
+(what-node 'G)
 #|
   1             C+G             ()   Assumption
   2             A-C             ()   Assumption

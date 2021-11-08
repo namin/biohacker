@@ -48,3 +48,6 @@
                   (explain-node node)))))
         *node-labels*)
   c)
+
+(defun what-node (n)
+  (explain-node (find-node *ltms* n)))
