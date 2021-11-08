@@ -4,7 +4,7 @@
 (defvar *node-labels*)
 
 (defun new-carnival (title)
-  (setq *ltms* (create-ltms (format nil "CARNIVAL ~A" title) :complete t))
+  (setq *ltms* (create-ltms (format nil "CARNIVAL ~A" title)))
   (setq *node-labels* '()))
 
 (defmacro node (val n &key (measured? nil) (top? nil))
@@ -15,6 +15,7 @@
             `(enable-assumption node ',label)
             t))))
 
+#|
 (defmacro node (val n &key (measured? nil) (top? nil))
   (let ((label (ecase val (+ :TRUE) (- :FALSE))))
     `(progn
@@ -24,6 +25,7 @@
                (enable-assumption node ',label)
                node)
             `(tms-create-node *ltms* ',n)))))
+|#
 
 (defun edge-name (val src dst)
   (read-from-string (concatenate 'string (string src) (string val) (string dst))))
@@ -46,6 +48,7 @@
                  (:IMPLIES ,src (:NOT ,dst))
                  (:IMPLIES (:NOT ,src) ,dst))))))))
 
+#|
 (defmacro edge (val src dst)
   (let ((edge-name (edge-name val src dst)))
     (if (ecase val (+ t) (- nil))
@@ -59,6 +62,7 @@
           '(:AND
             (:IMPLIES ,src (:NOT ,dst))
             (:IMPLIES (:NOT ,src) ,dst))))))
+|#
 
 (defun check-consistency (&aux c)
   (setq c t)
