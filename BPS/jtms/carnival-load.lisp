@@ -1,0 +1,6 @@
+(bps-load-file (make-bps-path "jtms") "jtre" :action :compile)
+(compile-jtre)
+(bps-load-file (make-bps-path "jtms") "jtms" :action :compile)
+(bps-load-file (make-bps-path "jtms") "carnival" :action :compile)
+(bps-load-file (make-bps-path "ltms") "carnival-ex" :action :compile)
+(bps-load-file (make-bps-path "ltms") "carnival-play" :action :compile)
