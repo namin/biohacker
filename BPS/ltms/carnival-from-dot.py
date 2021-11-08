@@ -1,6 +1,6 @@
 import pydot
 
-val_colors = {'lavender':'+', 'mistyrose':'-'}
+val_colors = {'lavender':'+', 'mistyrose':'-', None: '?'}
 val_arrowheads = {'"vee"':'+', '"tee"':'-'}
 
 def read_graph(filename):
