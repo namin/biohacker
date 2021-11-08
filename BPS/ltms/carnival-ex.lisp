@@ -2,6 +2,8 @@
                 "CARNIVAL toy example"
                 :complete t))
 
+(setq *node-labels* '())
+
 (progn
   (node + A :measured? t :top? t)
   (node + B)
@@ -18,6 +20,8 @@
   (edge + C G)
   (edge + E G)
   )
+
+(check-consistency)
 
 (explain-node (find-node *ltms* 'A))
 #|

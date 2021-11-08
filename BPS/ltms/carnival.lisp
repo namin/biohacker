@@ -1,15 +1,15 @@
 ;; inspired by
 ;; https://github.com/saezlab/CARNIVAL
 
+(defvar *node-labels*)
+
 (defmacro node (val n &key (measured? nil) (top? nil))
-  `(let ((node (tms-create-node *ltms* ',n :ASSUMPTIONP t)))
-     ,(if top?
-          `(enable-assumption
-            node
-            (ecase ',val
-              (+ :TRUE)
-              (- :FALSE)))
-          t)))
+  (let ((label (ecase val (+ :TRUE) (- :FALSE))))
+    `(let ((node (tms-create-node *ltms* ',n :ASSUMPTIONP t)))
+       (push (cons ',n ',label) *node-labels*)
+       ,(if top?
+            `(enable-assumption node ',label)
+            t))))
 
 (defun edge-name (val src dst)
   (read-from-string (concatenate 'string (string src) (string val) (string dst))))
@@ -31,3 +31,13 @@
                 (:AND
                  (:IMPLIES ,src (:NOT ,dst))
                  (:IMPLIES (:NOT ,src) ,dst))))))))
+
+(defun check-consistency ()
+  (mapc #'(lambda (x)
+            (let ((n (car x))
+                  (v (cdr x)))
+              (let ((node (find-node *ltms* n)))
+                (unless (equal v (tms-node-label node))
+                  (format t "~%Node ~A inconsistent." n)
+                  (explain-node node)))))
+        *node-labels*))
