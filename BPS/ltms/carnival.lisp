@@ -3,6 +3,10 @@
 
 (defvar *node-labels*)
 
+(defun new-carnival (title)
+  (setq *ltms* (create-ltms (format nil "CARNIVAL ~A" title) :complete t))
+  (setq *node-labels* '()))
+
 (defmacro node (val n &key (measured? nil) (top? nil))
   (let ((label (ecase val (+ :TRUE) (- :FALSE))))
     `(let ((node (tms-create-node *ltms* ',n :ASSUMPTIONP t)))

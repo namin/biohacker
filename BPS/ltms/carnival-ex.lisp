@@ -1,10 +1,5 @@
-(setq *ltms* (create-ltms
-                "CARNIVAL toy example"
-                :complete t))
-
-(setq *node-labels* '())
-
 (progn
+  (new-carnival "toy example")
   (node + A :measured? t :top? t)
   (node + B)
   (node - C)
