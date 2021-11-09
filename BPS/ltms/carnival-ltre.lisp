@@ -15,7 +15,7 @@
   (mapcar #'(lambda (e)
               (let ((src (caddr e))
                     (dst (cadddr e)))
-                `((e + ,src ,dst) (e - ,src ,dst))))
+                `((E + ,src ,dst) (E - ,src ,dst))))
           *edge-labels*))
 
 (defmacro node (val n &key (measured? nil) (top? nil))
@@ -60,6 +60,10 @@
         *node-labels*)
   c)
 
+(defvar *solutions*)
+(defvar *n-consistent-solutions*)
+(defvar *n-inconsistent-solutions*)
+
 (defun show-solution ()
   (let ((r (remove-if-not #'true? (fetch-global '(E ?val ?src ?dst)))))
     (format t "~%~A~%" r)
@@ -72,9 +76,6 @@
         ;;(break)
         ))))
 
-(defvar *solutions*)
-(defvar *n-consistent-solutions*)
-(defvar *n-inconsistent-solutions*)
 (defun solve ()
   (setq *solutions* '())
   (setq *n-consistent-solutions* 0)
