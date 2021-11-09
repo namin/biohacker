@@ -64,6 +64,9 @@
             (:IMPLIES (:NOT ,src) ,dst))))))
 |#
 
+(defun solve ()
+  'ok)
+
 (defun check-consistency (&aux c)
   (setq c t)
   (mapc #'(lambda (x)
