@@ -141,24 +141,23 @@
 (define (tms-create-node jtms datum
                          #:assumptionp (assumptionp #f)
                          #:contradictoryp (contradictoryp #f))
-  (let ((counter (+ 1 (jtms-node-counter jtms))))
-    (set-jtms-node-counter! jtms (+ counter 1))
-    (let ((node (tms-node counter
-                          datum
-                          ':OUT
-                          #f
-                          '()
-                          '()
-                          #f
-                          contradictoryp
-                          assumptionp
-                          '()
-                          '()
-                          jtms)))
-      (when assumptionp (push-jtms-assumptions! node jtms))
-      (when contradictoryp (push-jtms-contradictions! node jtms))
-      (push-jtms-nodes! node jtms)
-      node)))
+  (set-jtms-node-counter! jtms (+ 1 (jtms-node-counter jtms)))
+  (let ((node (tms-node (jtms-node-counter jtms)
+                        datum
+                        ':OUT
+                        #f
+                        '()
+                        '()
+                        #f
+                        contradictoryp
+                        assumptionp
+                        '()
+                        '()
+                        jtms)))
+    (when assumptionp (push-jtms-assumptions! node jtms))
+    (when contradictoryp (push-jtms-contradictions! node jtms))
+    (push-jtms-nodes! node jtms)
+    node))
 
 ;;; Converts a regular node to an assumption and enables it.
 
