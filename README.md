@@ -2,9 +2,17 @@
 
 BioHacker is a test bed for using AI and PL in biology. It started as a class project in Gerry Sussman's class at MIT and has grown into a research project on drug repurposing using Causality and Truth-Maintenance Systems. The project also contains an improved code base from the wonderful hacker book _[Building Problem Solvers](BPS)_.
 
+## 2021: Teaching an old AI new tricks:  probabilistic, causal and counterfactual reasoning with a truth maintenance system
+
+See [the ProgProb 2021 poster (PDF)](https://probprog.cc/assets/posters/wed/28.pdf).
+
+See [the code under BPS](https://github.com/namin/biohacker/tree/master/BPS#causality-toc).
+
 ## 2008: Debugging biological networks to reach coherence, completeness and consistency
 
-See [2008 report PDF](http://lampwww.epfl.ch/~amin/doc/biohacker.pdf).
+See [the 2008 report (PDF)](http://lampwww.epfl.ch/~amin/doc/biohacker.pdf).
+
+See [the code](https://github.com/namin/biohacker/tree/master/network-debugger).
 
 _"Mistakes are the portals of discovery."_ -- James Joyce (1882-1941)
 
