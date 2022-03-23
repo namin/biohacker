@@ -7,7 +7,6 @@
 (struct jtms
         (
          title
-         node-counter             ;; unique namer for nodes.
          just-counter             ;; unique namer for justifications.
          nodes                    ;; list of all tms nodes.
          justs                    ;; list of all justifications
@@ -25,16 +24,6 @@
         [(define (write-proc this port mode)
            (fprintf port "<jtms ~a>" (jtms-title this)))]
         ;;#:transparent
-        )
-
-(struct tms-node
-        (
-         index ;;0)
-         datum ;;nil)           ;; pointer to external problem solver
-         )
-        #:methods gen:custom-write
-        [(define (write-proc this port mode)
-           (fprintf port "<node ~a>" (node-string this)))]
         )
 
 (struct just ;;justification
@@ -83,19 +72,15 @@
          (null? (just-antecedents support)))))
 
 ;;; Simple utilities:
-
 (define (node-string n)
-  (format "~a" (tms-node-datum n)))
+  (format "~a" n))
 
 (define-syntax debugging-jtms
   (syntax-rules ()
     [(_  jtms msg e* ...)
      (let ((args (list e* ...)))
-       (let ((args (if (and (not (null? args)) (tms-node? (car args)))
-                       (cons (node-string (car args)) (cdr args))
-                       args)))
-         (when (jtms-debugging jtms)
-           (apply printf msg args))))
+       (when (jtms-debugging jtms)
+         (apply printf msg args)))
      ]))
 
 (define (tms-error proc string node)
@@ -109,7 +94,6 @@
                      #:contradiction-handler (contradiction-handler ask-user-handler))
   (jtms
    title
-   0
    0
    '()
    '()
@@ -128,22 +112,19 @@
 (define  (in-node? tms node) (eq? (tms-node-label tms node) ':IN))
 (define  (out-node? tms node) (eq? (tms-node-label tms node) ':OUT))
 
-(define (tms-create-node tms datum
+(define (tms-create-node tms node
                          #:assumptionp (assumptionp #f)
                          #:contradictoryp (contradictoryp #f))
-  (let ((counter (+ 1 (jtms-node-counter tms))))
-    (let ((node (tms-node counter datum)))
-      (values
-       (struct-copy jtms tms
-                    [node-counter counter]
-                    [nodes (cons node (jtms-nodes tms))]
-                    [assumptions (add-if assumptionp node (jtms-assumptions tms))]
-                    [contradictions (add-if contradictoryp node (jtms-contradictions tms))]
-                    [node-label (hash-set (jtms-node-label tms) node ':OUT)]
-                    [node-support (hash-set (jtms-node-support tms) node #f)]
-                    [node-justs (hash-set (jtms-node-justs tms) node '())]
-                    [node-consequences (hash-set (jtms-node-consequences tms) node '())])
-       node))))
+  (if (member node (jtms-nodes tms))
+      (error 'tms-create-node "node ~a already in TMS" node)
+      (struct-copy jtms tms
+                   [nodes (cons node (jtms-nodes tms))]
+                   [assumptions (add-if assumptionp node (jtms-assumptions tms))]
+                   [contradictions (add-if contradictoryp node (jtms-contradictions tms))]
+                   [node-label (hash-set (jtms-node-label tms) node ':OUT)]
+                   [node-support (hash-set (jtms-node-support tms) node #f)]
+                   [node-justs (hash-set (jtms-node-justs tms) node '())]
+                   [node-consequences (hash-set (jtms-node-consequences tms) node '())])))
 
 ;;; Converts a regular node to an assumption and enables it.
 
@@ -381,7 +362,7 @@
      node)
     (else
      (with-handlers
-      ([tms-node? (lambda (x) x)])
+      ([(lambda (x) #t) (lambda (x) x)])
       (do ((stack '())
            (current node)
            (options '())
@@ -389,8 +370,8 @@
           ((null? current))
         (why-node tms current)
         (set! options (if (just? (tms-node-support tms current))
-                        (just-antecedents (tms-node-support tms current))
-                        '()))
+                          (just-antecedents (tms-node-support tms current))
+                          '()))
         (set! olen (length options))
         (do ((good? #f)
              (choice 0))
