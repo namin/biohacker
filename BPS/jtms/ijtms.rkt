@@ -7,7 +7,6 @@
 (struct jtms
         (
          title
-         just-counter             ;; unique namer for justifications.
          nodes                    ;; list of all tms nodes.
          justs                    ;; list of all justifications
          debugging                ;; debugging flag
@@ -27,25 +26,15 @@
         )
 
 (struct just ;;justification
-        (index ;;0)
+        (
          informant
          consequence
-         antecedents)
+         antecedents
+         )
         #:methods gen:custom-write
         [(define (write-proc this port mode)
-           (fprintf port "<just ~a>" (just-index this)))]
+           (fprintf port "<just ~a>" (just-informant this)))]
         )
-(define (make-just   #:index (index 0)
-                     #:informant informant
-                     #:consequence consequence
-                     #:antecedents antecedents)
-
-  (just
-   index
-   informant
-   consequence
-   antecedents
-   ))
 
 (define (tms-node-support tms node)
   (hash-ref (jtms-node-support tms) node))
@@ -94,7 +83,6 @@
                      #:contradiction-handler (contradiction-handler ask-user-handler))
   (jtms
    title
-   0
    '()
    '()
    debugging
@@ -145,12 +133,8 @@
     (check-for-contradictions tms)))
 
 (define (justify-node tms informant consequence antecedents)
-  (let* ((counter (+ 1 (jtms-just-counter tms)))
-         (just (make-just #:index counter
-                          #:informant informant
-                          #:consequence consequence
-                          #:antecedents antecedents))
-         (per-node-consequences (jtms-node-consequences tms)))
+  (let ((just (just informant consequence antecedents))
+        (per-node-consequences (jtms-node-consequences tms)))
     (for ((node antecedents)) (set! per-node-consequences (push-in per-node-consequences just node)))
     (debugging-jtms tms
                     "\nJustifying ~a by ~a using ~a."
@@ -158,7 +142,6 @@
                     informant
                     (map node-string antecedents))
     (let ((tms (struct-copy jtms tms
-                            [just-counter counter]
                             [node-consequences per-node-consequences]
                             [node-justs (push-in (jtms-node-justs tms) just consequence)]
                             [justs (cons just (jtms-justs tms))])))
