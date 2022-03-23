@@ -7,7 +7,7 @@
 (struct jtms
         (
          title
-         nodes                    ;; list of all tms nodes.
+         nodes                    ;; list of all tms nodes
          justs                    ;; list of all justifications
          debugging                ;; debugging flag
          contradictions           ;; set of contradiction nodes
@@ -105,7 +105,7 @@
                          #:assumptionp (assumptionp #f)
                          #:contradictoryp (contradictoryp #f))
   (if (member node (jtms-nodes tms))
-      (error 'tms-create-node "node ~a already in TMS" node)
+      (tms-error 'tms-create-node "node ~a already in TMS" node)
       (struct-copy jtms tms
                    [nodes (cons node (jtms-nodes tms))]
                    [assumptions (add-if assumptionp node (jtms-assumptions tms))]
