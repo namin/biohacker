@@ -401,5 +401,5 @@
            (cautious-tms (struct-copy jtms tms [contradiction-handler observing-contradiction]))
            (result-tms (justify-node cautious-tms informant consequence antecedents)))
       (if ok
-          result-tms
+          (struct-copy jtms result-tms [contradiction-handler (jtms-contradiction-handler tms)])
           #f))))
