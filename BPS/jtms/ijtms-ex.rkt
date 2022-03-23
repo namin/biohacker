@@ -28,6 +28,8 @@
   (check-false (if-ok-enable-assumption *tms* 'c))
   (set! *tms* (enable-assumption *tms* 'd))
 
+  (why-node *tms* 'Loser)
+
   (printf "\nOK\n\n"))
 
 (define (ex1-ok)
@@ -108,6 +110,7 @@
   (set! *tms* (tms-create-node *tms* 'CONTRADICTION #:contradictoryp #t))
   (set! *tms* (justify-node *tms* 'R3 'CONTRADICTION (list 'g))))
 
+;; these are not enabled, because they are interactive
 ;;(ex1)
 ;;(ex3)
 (ex1-ok)
