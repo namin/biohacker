@@ -1,6 +1,36 @@
 #lang racket
 
 (require "ijtms.rkt")
+(require rackunit)
+
+(define (ex1-ok)
+  (define *tms* (create-jtms "Simple Example" #:debugging #t))
+
+  (set! *tms* (tms-create-node *tms* 'a #:assumptionp #t))
+  (set! *tms* (tms-create-node *tms* 'b #:assumptionp #t))
+  (set! *tms* (tms-create-node *tms* 'c #:assumptionp #t))
+  (set! *tms* (tms-create-node *tms* 'd #:assumptionp #t))
+  (set! *tms* (tms-create-node *tms* 'e #:assumptionp #t))
+  (set! *tms* (tms-create-node *tms* 'f #:assumptionp #t))
+  (set! *tms* (tms-create-node *tms* 'g #:assumptionp #t))
+
+  (set! *tms* (if-ok-justify-node *tms* 'j1 'f (list 'a 'b)))
+  (set! *tms* (if-ok-justify-node *tms* 'j2 'e (list 'b 'c)))
+  (set! *tms* (if-ok-justify-node *tms* 'j3 'g (list 'a 'e)))
+  (set! *tms* (if-ok-justify-node *tms* 'j4 'g (list 'd 'e)))
+
+  (set! *tms* (enable-assumption *tms* 'a))
+  (set! *tms* (enable-assumption *tms* 'b))
+  (set! *tms* (enable-assumption *tms* 'c))
+  (set! *tms* (enable-assumption *tms* 'd))
+
+  (set! *tms* (tms-create-node *tms* 'Loser #:contradictoryp #t))
+
+  (check-false (if-ok-justify-node *tms* 'j5 'Loser (list 'e 'f)))
+
+  (why-node *tms* 'Loser)
+
+  (printf "\nOK\n\n"))
 
 (define (ex1)
 
@@ -51,8 +81,6 @@
   (set! *tms* (tms-create-node *tms* 'CONTRADICTION #:contradictoryp #t))
   (set! *tms* (justify-node *tms* 'R3 'CONTRADICTION (list 'g))))
 
-
-
-
-(ex1)
-(ex3)
+;;(ex1)
+;;(ex3)
+(ex1-ok)

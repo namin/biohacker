@@ -392,3 +392,14 @@
                 (else (printf
                        "\n Must be q or an integer from 0 to ~a."
                        olen)))))))))
+
+;;;;; New Meta Facilities ;;;;;;
+
+(define (if-ok-justify-node tms informant consequence antecedents)
+  (let ((ok #t))
+    (let* ((observing-contradiction (lambda (tms contradiction) (set! ok #f)))
+           (cautious-tms (struct-copy jtms tms [contradiction-handler observing-contradiction]))
+           (result-tms (justify-node cautious-tms informant consequence antecedents)))
+      (if ok
+          result-tms
+          #f))))
