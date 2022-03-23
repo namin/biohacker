@@ -22,7 +22,7 @@
         #:methods gen:custom-write
         [(define (write-proc this port mode)
            (fprintf port "<jtms ~a>" (jtms-title this)))]
-        ;;#:transparent
+        #:transparent
         )
 
 (struct just ;;justification
@@ -34,6 +34,7 @@
         #:methods gen:custom-write
         [(define (write-proc this port mode)
            (fprintf port "<just ~a>" (just-informant this)))]
+        #:transparent
         )
 
 (define (tms-node-support tms node)
