@@ -397,7 +397,9 @@
 
 (define (if-ok tms op)
   (let ((ok #t))
-    (let* ((observing-contradiction (lambda (tms contradiction) (set! ok #f)))
+    (let* ((observing-contradiction (lambda (tms contradiction)
+                                      (printf "\nDetected contradiction on ~a.\n" contradiction)
+                                      (set! ok #f)))
            (cautious-tms (struct-copy jtms tms [contradiction-handler observing-contradiction]))
            (result-tms (op cautious-tms)))
       (if ok
@@ -407,3 +409,6 @@
 
 (define (if-ok-justify-node tms informant consequence antecedents)
   (if-ok tms (lambda (tms) (justify-node tms informant consequence antecedents))))
+
+(define (if-ok-enable-assumption tms node)
+  (if-ok tms (lambda (tms) (enable-assumption tms node))))
