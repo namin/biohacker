@@ -2,6 +2,19 @@
 
 (provide (all-defined-out))
 
+(define (add-if b x xs)
+  (if b (set-add xs x) xs))
+
+(define (per-node)
+  (make-immutable-hasheq))
+
+(define (push-in h v k)
+  (let ((l (hash-ref h k)))
+    (hash-set h k (cons v l))))
+
+(define (set-in h v k)
+  (hash-set h k))
+
 (define-syntax-rule (push! val lst) ;; pushes val to list lst at first pos
   (set! lst (cons val lst)))
 (define-syntax-rule (pop! lst) ;; pops the first position
