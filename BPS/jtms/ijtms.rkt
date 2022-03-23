@@ -395,11 +395,15 @@
 
 ;;;;; New Meta Facilities ;;;;;;
 
-(define (if-ok-justify-node tms informant consequence antecedents)
+(define (if-ok tms op)
   (let ((ok #t))
     (let* ((observing-contradiction (lambda (tms contradiction) (set! ok #f)))
            (cautious-tms (struct-copy jtms tms [contradiction-handler observing-contradiction]))
-           (result-tms (justify-node cautious-tms informant consequence antecedents)))
+           (result-tms (op cautious-tms)))
       (if ok
           (struct-copy jtms result-tms [contradiction-handler (jtms-contradiction-handler tms)])
           #f))))
+
+
+(define (if-ok-justify-node tms informant consequence antecedents)
+  (if-ok tms (lambda (tms) (justify-node tms informant consequence antecedents))))
