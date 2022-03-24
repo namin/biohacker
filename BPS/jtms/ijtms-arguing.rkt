@@ -3,6 +3,24 @@
 (require "ijtms.rkt")
 (require rackunit)
 
+(define (believing1)
+  (define *alice* (tms-for 'Alice))
+  (define *bob* (tms-for 'Bob))
+
+  (hears *alice* '(assumption (Alice believes (Bob believes (Alice is smart)))))
+  (hears *bob* '(assumption (Alice is smart)))
+  (hears *bob* '(assumption (Bob believes (Alice is smart))))
+
+  (believes *bob* '(assumption (Alice is smart)))
+  (believes *bob* '(justification (Bob believes (Alice is smart))
+                                  belief
+                                  ((Alice is smart))))
+  (believes *bob* '(justification (Alice believes (Bob believes (Alice is smart)))
+                                  belief
+                                  ((Bob believes (Alice is smart)))))
+  (check-true (believes? *bob* '(Bob believes (Alice is smart))))
+  (check-true (believes? *alice* '(Alice believes (Bob believes (Alice is smart))))))
+
 (define (arguing1)
   (define *alice* (tms-for 'Alice))
   (define *bob* (tms-for 'Bob))
@@ -30,3 +48,4 @@
   (check-true (believes? *alice* '(Alice is fun)))
   )
 (arguing1)
+(believing1)
