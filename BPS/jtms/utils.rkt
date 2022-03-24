@@ -6,7 +6,7 @@
   (if b (set-add xs x) xs))
 
 (define (per-node)
-  (make-immutable-hasheq))
+  (hash))
 
 (define (push-in h v k)
   (let ((l (hash-ref h k)))

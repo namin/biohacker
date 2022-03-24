@@ -67,10 +67,11 @@
 
 (define-syntax debugging-jtms
   (syntax-rules ()
-    [(_  jtms msg e* ...)
+    [(_  tms msg e* ...)
      (let ((args (list e* ...)))
-       (when (jtms-debugging jtms)
-         (apply printf msg args)))
+       (when (jtms-debugging tms)
+         (apply printf msg args)
+         (printf " [~a]" (jtms-title tms))))
      ]))
 
 (define (tms-error proc string node)
@@ -396,3 +397,40 @@
 
 (define (if-ok-enable-assumption tms node)
   (if-ok tms (lambda (tms) (enable-assumption tms node))))
+
+(define (tms-for name)
+  (create-jtms name #:debugging #t))
+
+(define (pass msg tms x)
+  (cond
+    ((eq? msg 'hears)
+     (tms-create-node tms (cadr x) #:assumptionp (eq? (car x) 'assumption) #:contradictoryp (eq? (car x) 'contradiction)))
+    ((eq? msg 'believes)
+     (cond
+       ((eq? (car x) 'assumption)
+        (enable-assumption tms (cadr x)))
+       ((eq? (car x) 'justification)
+        (justify-node tms (caddr x) (cadr x) (cadddr x)))
+       (else (error 'pass "unknown belief type ~a" (car x)))
+))))
+
+(define-syntax hears
+  (syntax-rules ()
+    [(_ tms x)
+     (set! tms (pass 'hears tms x))]))
+
+(define-syntax believes
+  (syntax-rules ()
+    [(_ tms x)
+     (set! tms (pass 'believes tms x))]))
+
+(define (believes? tms node)
+  (in-node? tms node))
+
+(define (accepts? tms x)
+  (cond
+    ((eq? (car x) 'assumption)
+     (if-ok-enable-assumption tms (cadr x)))
+    ((eq? (car x) 'justification)
+     (if-ok-justify-node tms (caddr x) (cadr x) (cadddr x)))
+    (else (error 'pass "unknown belief type ~a" (car x)))))
