@@ -1,4 +1,4 @@
-  #lang racket
+#lang racket
 
 (require "bms.rkt")
 (require "logic.rkt")
