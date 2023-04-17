@@ -61,6 +61,9 @@
                 (list edge (get-node ',(node-name node-val src)))))
           '(+ -)))))
 
+(defun solve ()
+  'ok)
+
 (defun check-consistency (&aux c)
   (setq c t)
   (mapc #'(lambda (x)

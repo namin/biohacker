@@ -15,6 +15,7 @@
   (edge + C G)
   (edge + E G)
   )
+(solve)
 (check-consistency)
 
 (what-node 'A)
