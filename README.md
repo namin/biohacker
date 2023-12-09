@@ -4,7 +4,7 @@ BioHacker is a test bed for using AI and PL in biology. It started as a class pr
 
 ## 2021: Teaching a (good old-fashioned) AI new tricks: probabilistic, causal and counterfactual reasoning with truth maintenance systems
 
-See [the ProgProb 2021 poster (PDF)](https://probprog.cc/assets/posters/wed/28.pdf).
+See [the ProbProg 2021 poster (PDF)](https://probprog.cc/assets/posters/wed/28.pdf).
 
 See [the code under BPS](https://github.com/namin/biohacker/tree/master/BPS#causality-toc).
 
